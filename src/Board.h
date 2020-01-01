@@ -5,18 +5,13 @@
 #include <limits>
 #include <algorithm>
 #include "Minion.h"
-#include "enums.h"
-
-// -----------------------------------------------------------------------------
-// Array of at most N minions
-// -----------------------------------------------------------------------------
+#include "utils/enums.h"
 
 // -----------------------------------------------------------------------------
 // Board state (for a single player)
 // -----------------------------------------------------------------------------
 
 const int BOARDSIZE = 7;
-const int NUM_EXTRA_POS = 3;
 
 // Board state
 class Board {
@@ -29,6 +24,26 @@ public:
     }
 
     friend std::ostream& operator<<(std::ostream& os, const Board& board);
+
+    std::string toString() const {
+        std::stringstream ss;
+        ss << "\n";
+        if (level_) {
+            ss << "level " << level_ << "\n";
+        }
+        if (health_) {
+            ss << "health " << health_ << "\n";
+        }
+        if (useHeroPower_) {
+            ss << "hero power " << hero_ << "\n";
+        }
+        for (const auto& minion : minions()) {
+            if (minion.exists()) {
+                ss << "* " << minion << "\n";
+            }
+        }
+        return ss.str();
+    }
 
 private:
     std::vector<Minion> minions_;
@@ -46,7 +61,7 @@ private:
     int health_{0};
 };
 
-inline std::ostream &operator<<(std::ostream &os, const Board& board) {
+inline std::ostream &operator<<(std::ostream& os, const Board& board) {
     if (board.level_) {
         os << "level " << board.level_ << std::endl;
     }
@@ -54,7 +69,7 @@ inline std::ostream &operator<<(std::ostream &os, const Board& board) {
         os << "health " << board.health_ << std::endl;
     }
     if (board.useHeroPower_) {
-        os << "heropower " << board.hero_ << std::endl;
+        os << "hero power " << board.hero_ << std::endl;
     }
     for (const auto& minion : board.minions()) {
         if (minion.exists()) {

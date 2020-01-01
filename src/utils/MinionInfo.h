@@ -1,8 +1,8 @@
 #pragma once
 
-#include "enums.h"
 #include <vector>
 #include <ostream>
+#include "enums.h"
 
 // -----------------------------------------------------------------------------
 // Tribe utilities and MinionInfo
@@ -12,13 +12,13 @@ constexpr bool hasTribe(Tribe tribe, Tribe query) {
     return tribe == Tribe::All || tribe == query;
 }
 
-extern const char *gTribeName[TRIBE_COUNT];
+extern std::string gTribeName[TRIBE_COUNT];
 
-inline const char *name(Tribe t) {
+inline std::string name(Tribe t) {
     return gTribeName[static_cast<int>(t)];
 }
 
-inline std::ostream &operator<<(std::ostream &s, Tribe t) {
+inline std::ostream& operator<<(std::ostream& s, Tribe t) {
     return s << name(t);
 }
 
@@ -108,8 +108,8 @@ struct HeroPowerInfo {
 
 struct HeroInfo {
     std::string name_;
-    std::string hs_id_;
-    HeroPowerInfo hero_power_;
+    std::string hsId_;
+    HeroPowerInfo heroPower_;
 };
 
 extern const HeroInfo gHeroInfo[HEROTYPE_COUNT];
@@ -118,6 +118,6 @@ inline std::string name(HeroType x) {
     return gHeroInfo[static_cast<int>(x)].name_;
 }
 
-inline std::ostream &operator<<(std::ostream &s, HeroType x) {
+inline std::ostream& operator<<(std::ostream& s, HeroType x) {
     return s << name(x);
 }

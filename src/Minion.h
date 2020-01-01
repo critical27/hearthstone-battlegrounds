@@ -1,7 +1,7 @@
 #pragma once
 
-#include "MinionInfo.h"
 #include <algorithm>
+#include "utils/MinionInfo.h"
 
 using std::min;
 using std::max;
@@ -48,6 +48,40 @@ public:
 public:
     friend std::ostream& operator<<(std::ostream& os, const Minion& minion);
 
+    std::string toString() const {
+        std::stringstream ss;
+        ss << attack_ << "/" << health_ << " ";
+        if (golden_) {
+            ss << "Golden ";
+        }
+        ss << name();
+        if (taunt_) {
+            ss << ", taunt";
+        }
+        if (divineShield_) {
+            ss << ", divine shield";
+        }
+        if (poison_) {
+            ss << ", poisonous";
+        }
+        if (windfury_) {
+            ss << ", windfury";
+        }
+        if (reborn_) {
+            ss << ", reborn";
+        }
+        for (int i = 0; i < deathrattle_microbots_; i += 3) {
+            ss << ", microbots";
+        }
+        for (int i = 0; i < deathrattle_golden_microbots_; i += 3) {
+            ss << ", golden microbots";
+        }
+        for (int i = 0; i < deathrattle_plants_; i += 2) {
+            ss << ", plants";
+        }
+        return ss.str();
+    }
+
     const std::string name() const {
         return minionInfo_.name_;
     }
@@ -60,7 +94,6 @@ public:
         return exists_;
     }
 
-    /*
     Minion new_copy() const {
         return Minion(minionType_, golden_);
     }
@@ -76,6 +109,7 @@ public:
         this->health_ += health;
     }
 
+    /*
     void buff(Minion const &b) {
         // buff by the stats of the reference minion (want b.type == None)
         this->attack_ += b.attack_;
@@ -106,6 +140,7 @@ public:
         this->attackAura_ = 0;
         this->healthAura_ = 0;
     }
+     */
 
     void add_deathrattle_microbots(int n = 3) {
         this->deathrattle_microbots_ = min(this->deathrattle_microbots_ + n, 7);
@@ -118,10 +153,9 @@ public:
     void add_deathrattle_plants(int n = 2) {
         this->deathrattle_plants_ = min(this->deathrattle_plants_ + n, 7);
     }
-     */
 };
 
-std::ostream& operator<<(std::ostream &os, const Minion& minion) {
+std::ostream& operator<<(std::ostream& os, const Minion& minion) {
     os << minion.attack_ << "/" << minion.health_ << " ";
     if (minion.golden_) {
         os << "Golden ";

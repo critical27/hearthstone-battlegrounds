@@ -103,7 +103,7 @@ extra_names = ["Safeguard", "Plant"]
 
 def extract_data():
     # Load xml file
-    cards = ET.parse('hsdata/CardDefs.xml')
+    cards = ET.parse('3rd-party/hsdata/CardDefs.xml')
     defs = cards.getroot()
 
     # Collect minions and heroes

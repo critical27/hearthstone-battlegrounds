@@ -1,6 +1,15 @@
-aux_source_directory(. SOURCE)
-
 add_executable(
     demo
-    ${SOURCE}
+    Main.cpp
 )
+
+target_link_libraries(
+    demo
+    utils
+    glog
+    gtest
+)
+
+add_subdirectory(test)
+add_subdirectory(utils)
+
