@@ -7,6 +7,20 @@ add_executable(
 
 target_link_libraries(
     minion_board_test
+    simulate
+    utils
+    gtest
+    glog
+)
+
+add_executable(
+    battle_test
+    BattleTest.cpp
+)
+
+target_link_libraries(
+    battle_test
+    simulate
     utils
     gtest
     glog

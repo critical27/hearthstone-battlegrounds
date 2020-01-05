@@ -1,26 +1,23 @@
 #pragma once
 
-#include <algorithm>
 #include "utils/MinionInfo.h"
-
-using std::min;
-using std::max;
 
 // -----------------------------------------------------------------------------
 // Minion instances
 // -----------------------------------------------------------------------------
 
-struct Minion {
+class Minion {
 public:
     Minion(MinionType type, bool golden = false)
         : minionType_(type), minionInfo_(info(type)), golden_(golden),
           attack_(minionInfo_.attack_for(golden)), health_(minionInfo_.health_for(golden)),
           taunt_(minionInfo_.taunt_), divineShield_(minionInfo_.divineShield_), poison_(minionInfo_.poison_),
-          windfury_(minionInfo_.windfury_), reborn_(false),
+          windfury_(minionInfo_.windfury_), cleave_(minionInfo_.cleave_),reborn_(false),
           deathrattle_murlocs_(0), deathrattle_microbots_(0), deathrattle_golden_microbots_(0),
           deathrattle_plants_(0),
           attackAura_(0), healthAura_(0) {}
 
+private:
     // Minion static info
     MinionType minionType_{MinionType::None};
     MinionInfo minionInfo_;
@@ -33,6 +30,7 @@ public:
     bool divineShield_{false};
     bool poison_{false};
     bool windfury_{false};
+    bool cleave_{false};
     bool reborn_{false};                        // for lich king
 
     int deathrattle_murlocs_{0};                // for giantfin
@@ -43,65 +41,77 @@ public:
     int healthAura_{0};
 
     // Minion dynamic info
-    bool exists_{true};
+    bool alive_{true};
 
 public:
+
     friend std::ostream& operator<<(std::ostream& os, const Minion& minion);
 
-    std::string toString() const {
-        std::stringstream ss;
-        ss << attack_ << "/" << health_ << " ";
-        if (golden_) {
-            ss << "Golden ";
-        }
-        ss << name();
-        if (taunt_) {
-            ss << ", taunt";
-        }
-        if (divineShield_) {
-            ss << ", divine shield";
-        }
-        if (poison_) {
-            ss << ", poisonous";
-        }
-        if (windfury_) {
-            ss << ", windfury";
-        }
-        if (reborn_) {
-            ss << ", reborn";
-        }
-        for (int i = 0; i < deathrattle_microbots_; i += 3) {
-            ss << ", microbots";
-        }
-        for (int i = 0; i < deathrattle_golden_microbots_; i += 3) {
-            ss << ", golden microbots";
-        }
-        for (int i = 0; i < deathrattle_plants_; i += 2) {
-            ss << ", plants";
-        }
-        return ss.str();
+    std::string toString() const;
+    std::string toSimpleString() const;
+
+    const std::string& name() const {
+        return minionInfo_.name_;
     }
 
-    const std::string name() const {
-        return minionInfo_.name_;
+    MinionType minionType() const {
+        return minionType_;
+    }
+
+    bool isGolden() const {
+        return golden_;
     }
 
     int stars() const {
         return minionInfo_.stars_;
     }
 
-    bool exists() const {
-        return exists_;
+    int attack() const {
+        return attack_;
     }
 
-    Minion new_copy() const {
-        return Minion(minionType_, golden_);
+    void setAttack(int value) {
+        attack_ = value;
     }
 
-    Minion reborn_copy() const {
-        Minion copy(minionType_, golden_);
-        copy.health_ = 1;
-        return copy;
+    int health() const {
+        return health_;
+    }
+
+    void setHealth(int value) {
+        health_ = value;
+    }
+
+    bool isAlive() const {
+        return health_ > 0;
+    }
+
+    bool isTaunt() const {
+        return taunt_;
+    }
+
+    bool isDivineShield() const {
+        return divineShield_;
+    }
+
+    void setDivineShield(bool value) {
+        divineShield_ = value;
+    }
+
+    bool isPoison() const {
+        return poison_;
+    }
+
+    bool isWindfury() const {
+        return windfury_;
+    }
+
+    bool isCleave() const {
+        return cleave_;
+    }
+
+    bool isReborn() const {
+        return reborn_;
     }
 
     void buff(int attack, int health) {
@@ -143,48 +153,15 @@ public:
      */
 
     void add_deathrattle_microbots(int n = 3) {
-        this->deathrattle_microbots_ = min(this->deathrattle_microbots_ + n, 7);
+        this->deathrattle_microbots_ = std::min(this->deathrattle_microbots_ + n, 7);
     }
 
     void add_deathrattle_golden_microbots(int n = 3) {
-        this->deathrattle_golden_microbots_ = min(this->deathrattle_golden_microbots_ + n, 7);
+        this->deathrattle_golden_microbots_ = std::min(this->deathrattle_golden_microbots_ + n, 7);
     }
 
     void add_deathrattle_plants(int n = 2) {
-        this->deathrattle_plants_ = min(this->deathrattle_plants_ + n, 7);
+        this->deathrattle_plants_ = std::min(this->deathrattle_plants_ + n, 7);
     }
 };
-
-std::ostream& operator<<(std::ostream& os, const Minion& minion) {
-    os << minion.attack_ << "/" << minion.health_ << " ";
-    if (minion.golden_) {
-        os << "Golden ";
-    }
-    os << minion.name();
-    if (minion.taunt_) {
-        os << ", taunt";
-    }
-    if (minion.divineShield_) {
-        os << ", divine shield";
-    }
-    if (minion.poison_) {
-        os << ", poisonous";
-    }
-    if (minion.windfury_) {
-        os << ", windfury";
-    }
-    if (minion.reborn_) {
-        os << ", reborn";
-    }
-    for (int i = 0; i < minion.deathrattle_microbots_; i += 3) {
-        os << ", microbots";
-    }
-    for (int i = 0; i < minion.deathrattle_golden_microbots_; i += 3) {
-        os << ", golden microbots";
-    }
-    for (int i = 0; i < minion.deathrattle_plants_; i += 2) {
-        os << ", plants";
-    }
-    return os;
-}
 
