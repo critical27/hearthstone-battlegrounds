@@ -1,3 +1,4 @@
+#include <numeric>
 #include "Minion.h"
 #include "Board.h"
 
@@ -28,7 +29,7 @@ public:
 
     size_t nextDefenderIndex();
 
-    bool full() const {
+    bool hasEmptySlot() const {
         return battleMinions_.size() < BOARD_SIZE;
     }
 
@@ -39,13 +40,12 @@ public:
                            });
     }
 
-    void insert(Minion minion, size_t pos) {
-        if (pos > battleMinions_.size()) {
-            DLOG(INFO) << "Invalid insert position";
-            return;
+    int remainingStars() const {
+        int result = 0;
+        for (const auto& minion : battleMinions_) {
+            result += minion.stars();
         }
-        auto iter = battleMinions_.begin() + pos;
-        battleMinions_.insert(iter, minion);
+        return result;
     }
 
     Minion& minionWithLowestAttack();

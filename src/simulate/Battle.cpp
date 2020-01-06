@@ -26,17 +26,22 @@ void Battle::prepare() {
     // todo: aurus
 }
 
-void Battle::run() {
+int Battle::run() {
     prepare();
-    while (!done()) {
+    int turn = 0;
+    while (!done() && turn < 100) {
         attack();
-        break;
+        turn++;
+        VLOG(1) << "Battle after " << turn << " turns:" << toString();
     }
+    VLOG(1) << "Battle end after " << turn << " turns.";
+    return result();
 }
 
 void Battle::attack() {
     BattleMinions& active = yourTurn_ ? board[0] : board[1];
     BattleMinions& passive = yourTurn_ ? board[1] : board[0];
+    size_t player = yourTurn_ ? 0 : 1;
     size_t atkIdx = active.nextAttackerIndex();
     if (atkIdx != -1) {
         Minion& attacker = active.nextAttacker();
@@ -45,7 +50,9 @@ void Battle::attack() {
             // todo: cleave
             if (attacker.isCleave()) {
             }
-            VLOG(1) << active[atkIdx] << " attack " << passive[defIdx];
+            VLOG(1) << "Board " << player << " minion " << atkIdx << " " << active[atkIdx].toSimpleString()
+                    << " **attack** "
+                    << "Board " << 1 - player << " minion " << defIdx << " " << passive[defIdx].toSimpleString();
             doAttack(active, atkIdx, passive, defIdx);
         } else {
             // todo
@@ -53,6 +60,7 @@ void Battle::attack() {
         // todo: onAttackAndKill
         checkForDeath();
     }
+    yourTurn_ = !yourTurn_;
 }
 
 void Battle::doAttack(BattleMinions& active, size_t atkIdx, BattleMinions& passive, size_t defIdx) {
@@ -89,22 +97,24 @@ void Battle::checkForDeath() {
     int deadCount = 0;
     do {
         deadCount = 0;
-        for (size_t boardIdx = 0; boardIdx < board.size(); boardIdx++) {
-            // collect all dead minion
-            auto& minions = board[boardIdx].battleMinions();
-            std::vector<size_t> deadIdx;
-            std::vector<Minion> deadMinion;
+        for (size_t player = 0; player < board.size(); player++) {
+            // always
+            auto& minions = board[player].battleMinions();
             for (auto iter = minions.begin(); iter != minions.end(); ) {
                 if (!iter->isAlive()) {
-                    VLOG(2) << iter->toSimpleString() << " is dead";
+                    VLOG(2) << "Board " << player << " " << iter->toSimpleString() << " is dead";
                     deadCount++;
-                    onDeath(boardIdx, iter);
-                    minions.erase(iter);
+                    // 1. remove the dead minion, so there would be at least a empty slot
+                    auto deadMinion = *iter;
+                    iter = minions.erase(iter);
+                    // 2. death rattle, postcondition: iter points to next attack minion
+                    onDeath(player, deadMinion, iter);
+                    // get next element
+                    if (iter != minions.end()) {
+                        iter++;
+                    }
+                } else {
                     iter++;
-                    /*
-                    deadIdx.emplace_back(i);
-                    deadMinion.emplace_back(minions[i]);
-                     */
                 }
             }
         }
@@ -113,5 +123,18 @@ void Battle::checkForDeath() {
 
 bool Battle::done() {
     // return true when one BattleMinions is empty
-    return board[0].hasAliveMinion() && board[1].hasAliveMinion();
+    return !board[0].hasAliveMinion() && !board[1].hasAliveMinion();
+}
+
+// result > 0 if you win, < 0 if opponent win, 0 if tied
+int Battle::result() {
+    int result = board[0].remainingStars();
+    if (result > 0) {
+        return result;
+    }
+    result = board[1].remainingStars();
+    if (result > 0) {
+        return -result;
+    }
+    return 0;
 }

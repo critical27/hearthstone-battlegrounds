@@ -16,15 +16,18 @@ std::string BattleMinions::toString() const {
     return ss.str();
 }
 
-// return -1 if has no valid attacker, else index of attacker
 size_t BattleMinions::nextAttackerIndex() {
-    CHECK(!battleMinions_.empty());
+    // return -1 if has no valid attacker, else index of attacker
+    if (battleMinions_.empty()) {
+        return -1;
+    }
     size_t i = 0;
     size_t size = battleMinions_.size();
     // find next minion which can attack
-    while (battleMinions_[nextAttacker_].attack() == 0 && i < size) {
+    while (battleMinions_[nextAttacker_].attack() == 0 && i++ < size) {
         nextAttacker_ = (nextAttacker_ + 1) % size;
     }
+    // return -1 if all 0 attack minions
     if (i == BOARD_SIZE) {
         return -1;
     }
