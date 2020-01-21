@@ -2,8 +2,13 @@
 #include "Minion.h"
 #include "Board.h"
 
+using IndexResult = std::vector<size_t>;
+using MinionBoolCondition = std::function<bool (Minion& minion)>;
+using MinionAction = std::function<void (Minion& minion)>;
+
 class BattleMinions {
 public:
+
     BattleMinions() = default;
 
     BattleMinions(const std::vector<Minion> minions)
@@ -51,20 +56,25 @@ public:
     Minion& minionWithLowestAttack();
 
     // Duplication effects
-    int extraSummonCount() const {
-        return hasMinion(MinionType::Khadgar) + 1;
-    }
-
-    int extraDeathrattleCount() const {
-        return hasMinion(MinionType::BaronRivendare) + 1;
-    }
-
-    int extraBattlecryCount() const {
-        return hasMinion(MinionType::BrannBronzebeard) + 1;
-    }
+    int extraSummonCount() const;
+    int extraDeathrattleCount() const;
+    int extraBattlecryCount() const;
 
     // Is the minion present? return 0 if not, 1 if yes, 2 if golden
     int hasMinion(MinionType type) const;
+
+    IndexResult livingMinions() const;
+
+    void giveRandomMinionDivineShield();
+
+    void takeDamageRandom(int amount);
+
+    void buffAll(int attack, int health);
+
+    void buffRandomMinion(int attack, int health);
+
+    void forEachMinion(MinionAction func,
+                       MinionBoolCondition pred = [](Minion& minion){return true;});
 
 private:
     std::vector<Minion> battleMinions_;

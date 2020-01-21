@@ -105,6 +105,7 @@ void Battle::checkForDeath() {
                     VLOG(2) << "Board " << player << " " << iter->toSimpleString() << " is dead";
                     deadCount++;
                     // 1. remove the dead minion, so there would be at least a empty slot
+                    // doodle: what about on damaged
                     auto deadMinion = *iter;
                     iter = minions.erase(iter);
                     // 2. death rattle, postcondition: iter points to next attack minion

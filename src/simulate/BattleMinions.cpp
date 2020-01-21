@@ -40,7 +40,7 @@ Minion& BattleMinions::nextAttacker() {
 
 size_t BattleMinions::nextDefenderIndex() {
     CHECK(!battleMinions_.empty());
-    std::vector<size_t> tauntIdx;
+    IndexResult tauntIdx;
     for (size_t i = 0; i < battleMinions_.size(); i++) {
         if (battleMinions_[i].isTaunt()) {
             tauntIdx.emplace_back(i);
@@ -74,4 +74,74 @@ int BattleMinions::hasMinion(MinionType type) const {
                   }
     );
     return result;
+}
+
+IndexResult BattleMinions::livingMinions() const {
+    IndexResult index;
+    for (size_t i = 0; i < battleMinions_.size(); i++) {
+        auto& minion = battleMinions_[i];
+        if (minion.isAlive()) {
+            index.emplace_back(i);
+        }
+    }
+    return index;
+}
+
+void BattleMinions::giveRandomMinionDivineShield() {
+    IndexResult indexResult;
+    for (size_t i = 0; i < battleMinions_.size(); i++) {
+        auto& minion = battleMinions_[i];
+        if (minion.isAlive() && !minion.isDivineShield()) {
+            indexResult.emplace_back(i);
+        }
+    }
+    if (!indexResult.empty()) {
+        auto picked = rand(0, indexResult.size() - 1);
+        battleMinions_[picked].setDivineShield(true);
+    }
+}
+
+void BattleMinions::takeDamageRandom(int amount) {
+    auto indexResult = livingMinions();
+    if (!indexResult.empty()) {
+        auto picked = rand(0, indexResult.size() - 1);
+        int current = battleMinions_[picked].health();
+        battleMinions_[picked].setHealth(current - amount);
+    }
+}
+
+void BattleMinions::buffAll(int attack, int health) {
+    // doodle: we buff all now, do we need to exclude dead ones
+    for (auto& minion : battleMinions_) {
+        minion.buff(attack, health);
+    }
+}
+
+void BattleMinions::buffRandomMinion(int attack, int health) {
+    auto indexResult = livingMinions();
+    if (!indexResult.empty()) {
+        auto picked = rand(0, indexResult.size() - 1);
+        battleMinions_[picked].buff(attack, health);
+    }
+}
+
+void BattleMinions::forEachMinion(MinionAction func, MinionBoolCondition pred) {
+    for (auto& minion : battleMinions_) {
+        if (pred(minion)) {
+            func(minion);
+        }
+    }
+}
+
+// Duplication effects
+int BattleMinions::extraSummonCount() const {
+    return hasMinion(MinionType::Khadgar) + 1;
+}
+
+int BattleMinions::extraDeathrattleCount() const {
+    return hasMinion(MinionType::BaronRivendare) + 1;
+}
+
+int BattleMinions::extraBattlecryCount() const {
+    return hasMinion(MinionType::BrannBronzebeard) + 1;
 }

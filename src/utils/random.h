@@ -6,3 +6,10 @@ static int rand(int min, int max) {
     srand((unsigned int) time(NULL));
     return rand() % (max - min + 1) + min;
 }
+
+/*
+static Minion randomOneCostMinion(bool golden) {
+    int picked = gOneCostMinions
+    return Minion();
+}
+ */

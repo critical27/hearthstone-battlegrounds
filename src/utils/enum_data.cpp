@@ -139,7 +139,7 @@ const MinionInfo gMinionInfo[] = {
 // Lists of minions
 // -----------------------------------------------------------------------------
 
-static const MinionType one_cost_minions[] = {
+const MinionType gOneCostMinions[] = {
     MinionType::Alleycat,
     MinionType::Mecharoo,
     MinionType::MurlocTidecaller,
@@ -152,7 +152,7 @@ static const MinionType one_cost_minions[] = {
     MinionType::Toxfin,
 };
 
-static const MinionType two_cost_minions[] = {
+const MinionType gTwoCostMinions[] = {
     MinionType::DireWolfAlpha,
     MinionType::MicroMachine,
     MinionType::MurlocTidehunter,
@@ -165,7 +165,7 @@ static const MinionType two_cost_minions[] = {
     MinionType::Khadgar,
 };
 
-static const MinionType four_cost_minions[] = {
+const MinionType gFourCostMinions[] = {
     MinionType::OldMurkEye,
     MinionType::CrowdFavorite,
     MinionType::Crystalweaver,
@@ -182,7 +182,7 @@ static const MinionType four_cost_minions[] = {
     MinionType::GentleMegasaur,
 };
 
-static const MinionType deathrattle_minions[] = {
+const MinionType gDeathRattleMinions[] = {
     MinionType::Mecharoo,
     MinionType::SelflessHero,
     MinionType::HarvestGolem,
@@ -208,7 +208,7 @@ static const MinionType deathrattle_minions[] = {
     MinionType::SneedsOldShredder,
 };
 
-static const MinionType legendary_minions[] = {
+const MinionType gLegendaryMinions[] = {
     MinionType::OldMurkEye,
     MinionType::Khadgar,
     MinionType::ShifterZerus,

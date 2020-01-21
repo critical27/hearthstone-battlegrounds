@@ -82,6 +82,10 @@ public:
         health_ = value;
     }
 
+    bool isTribe(Tribe t) {
+        return minionInfo_.tribe_ == t;
+    }
+
     bool isAlive() const {
         return health_ > 0;
     }
@@ -112,6 +116,10 @@ public:
 
     bool isReborn() const {
         return reborn_;
+    }
+
+    int doubleIfGolden(int amount) {
+        return isGolden() ? amount : 2 * amount;
     }
 
     void buff(int attack, int health) {
@@ -163,5 +171,32 @@ public:
     void add_deathrattle_plants(int n = 2) {
         this->deathrattle_plants_ = std::min(this->deathrattle_plants_ + n, 7);
     }
+
+    /*
+    void on_summoned(Minion& summoned, int player);
+    void on_after_friendly_attack(Minion const& attacker, int player);
+    void on_break_divine_shield(int player);
+
+    // Minion specific events
+    void do_deathrattle(Minion const& m, int player, int pos);
+    void do_base_deathrattle(Minion const& m, int player, int pos);
+    void on_damaged(Minion const& m, int player, int pos);
+    void on_after_friendly_attack(Minion& m, Minion const& attacker);
+    void on_friendly_death(Minion& m, Minion const& dead_minion, int player);
+    void on_friendly_summon(Minion& m, Minion& summoned, int player);
+    void on_attack_and_kill(Minion& m, int player, int pos, bool overkill);
+    void on_break_friendly_divine_shield(Minion& m, int player); // for Bolvar
+
+    // qwer
+    bool recompute_aura_from(Board& board, int pos, Board const* enemy_board = nullptr);
+    void do_battlecry(Board& board, int pos);
+    void do_deathrattle(Battle& battle, int player, int pos) const;
+    void on_friendly_summon(Board& board, Minion& summoned, bool played);
+    void on_friendly_death(Battle& battle, Minion const& dead_minion, int player);
+    void on_damaged(Battle& battle, int player, int pos);
+    void on_attack_and_kill(Battle& battle, int player, int pos, bool overkill);
+    void on_after_friendly_attack(Minion const& attacker);
+    void on_break_friendly_divine_shield()
+     */
 };
 

@@ -40,24 +40,11 @@ public:
 
     // summon count minion for player before iter
     void summon(int count, const Minion& minion, size_t player, MinionIter& iter);
+    // summon count minion for player at the end
+    void summon(int count, const Minion& minion, size_t player);
 
     // Events during battle
     void onDeath(size_t player, Minion& deadMinion, MinionIter& iter);
-    /*
-    void on_summoned(Minion& summoned, int player);
-    void on_after_friendly_attack(Minion const& attacker, int player);
-    void on_break_divine_shield(int player);
-
-    // Minion specific events
-    void do_deathrattle(Minion const& m, int player, int pos);
-    void do_base_deathrattle(Minion const& m, int player, int pos);
-    void on_damaged(Minion const& m, int player, int pos);
-    void on_after_friendly_attack(Minion& m, Minion const& attacker);
-    void on_friendly_death(Minion& m, Minion const& dead_minion, int player);
-    void on_friendly_summon(Minion& m, Minion& summoned, int player);
-    void on_attack_and_kill(Minion& m, int player, int pos, bool overkill);
-    void on_break_friendly_divine_shield(Minion& m, int player); // for Bolvar
-     */
 
 private:
     Board you_;

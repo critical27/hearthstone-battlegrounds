@@ -9,98 +9,106 @@ void Battle::onDeath(size_t player, Minion& deadMinion, MinionIter& iter) {
         case MinionType::Mecharoo:
             summon(1, Minion(MinionType::JoEBot, deadMinion.isGolden()), player, iter);
             break;
-        /*
         case MinionType::SelflessHero:
             TWICE_IF_GOLDEN {
-                board[player].give_random_deadMinion_divine_shield(rng, player);
+                board[player].giveRandomMinionDivineShield();
             }
             break;
         // Tier 2
         case MinionType::HarvestGolem:
-            summon(1, Minion(MinionType::DamagedGolem,deadMinion.isGolden()), player, pos);
+            summon(1, Minion(MinionType::DamagedGolem, deadMinion.isGolden()), player, iter);
             break;
         case MinionType::KaboomBot:
             TWICE_IF_GOLDEN {
-                damage_random_deadMinion(1-player, 4);
+                board[1 - player].takeDamageRandom(4);
             }
             break;
         case MinionType::KindlyGrandmother:
-            summon(1, Minion(MinionType::BigBadWolf,deadMinion.isGolden()), player, pos);
+            summon(1, Minion(MinionType::BigBadWolf, deadMinion.isGolden()), player, iter);
             break;
-        // todo:
         case MinionType::MountedRaptor:
             TWICE_IF_GOLDEN {
-                summon(random_one_cost_deadMinion(rng, player), player, pos);
+                // summon(1, randomOneCostMinion(), player, iter);
             }
             break;
         case MinionType::RatPack:
-            summon(deadMinion.attack, Minion(MinionType::Rat, deadMinion.isGolden()), player, pos);
+            summon(deadMinion.attack(), Minion(MinionType::Rat, deadMinion.isGolden()), player, iter);
             break;
-        case MinionType::SpawnOfNZoth:
-            board[player].buffAll(deadMinion.double_if_golden(1), deadMinion.double_if_golden(1));
+        case MinionType::SpawnOfNZoth: {
+            int amount = deadMinion.doubleIfGolden(1);
+            board[player].buffAll(amount, amount);
             break;
-            // Tier 3
+        }
+        // Tier 3
         case MinionType::InfestedWolf:
-            summon(2, Minion(MinionType::Spider, deadMinion.isGolden()), player, pos);
+            summon(2, Minion(MinionType::Spider, deadMinion.isGolden()), player, iter);
             break;
-        // todo:
         case MinionType::PilotedShredder:
-            TWICE_IF_GOLDEN() {
-                summon(random_two_cost_deadMinion(rng, player), player, pos);
+            TWICE_IF_GOLDEN {
+                // summon(1, randomTwoCostMinion(), player, iter);
             }
             break;
         case MinionType::ReplicatingMenace:
-            summon(3, Minion(MinionType::Microbot, deadMinion.isGolden()), player, pos);
+            summon(3, Minion(MinionType::Microbot, deadMinion.isGolden()), player, iter);
             break;
-        case MinionType::TortollanShellraiser:
-            int amount = deadMinion.double_if_golden(1);
-            board[player].buffRandomMinion(amount, amount, rng, player);
+        case MinionType::TortollanShellraiser: {
+            int amount = deadMinion.doubleIfGolden(1);
+            board[player].buffRandomMinion(amount, amount);
             break;
+        }
         case MinionType::TheBeast:
-            summon(MinionType::FinkleEinhorn, player);
+            summon(1, MinionType::FinkleEinhorn, 1 - player);
             break;
         // Tier 4:
         // todo:
         case MinionType::PilotedSkyGolem:
-            TWICE_IF_GOLDEN() {
-                summon(random_four_cost_deadMinion(rng, player), player, pos);
+            TWICE_IF_GOLDEN {
+                // summon(1, randomFourCostMinion(), player, iter);
             }
-            break;
-        // Tier 5
-        case MinionType::GoldrinnTheGreatWolf:
-            int amount = m.double_if_golden(4);
-            board[player].buff_all_if(amount, amount, [](Minion const& x){return x.has_tribe(Tribe::Beast);});
-            break;
-        case MinionType::KingBagurgle:
-            int amount = m.double_if_golden(2);
-            board[player].buff_all_if(amount, amount, [](Minion const& x){return x.has_tribe(Tribe::Murloc);});
             break;
         case MinionType::MechanoEgg:
-            summon(Minion(MinionType::Robosaur,m.isGolden()), player, pos);
+            summon(1, Minion(MinionType::Robosaur, deadMinion.isGolden()), player, iter);
             break;
+        // Tier 5
+        case MinionType::GoldrinnTheGreatWolf: {
+            int amount = deadMinion.doubleIfGolden(4);
+            board[player].forEachMinion([amount] (Minion& m) { m.buff(amount, amount); },
+                                        [](Minion& m) -> bool { return m.isTribe(Tribe::Beast); });
+            break;
+        }
+        case MinionType::KingBagurgle: {
+            int amount = deadMinion.doubleIfGolden(2);
+            board[player].forEachMinion([amount] (Minion& m) { m.buff(amount, amount); },
+                                        [](Minion& m) -> bool { return m.isTribe(Tribe::Murloc); });
+            break;
+        }
         case MinionType::SatedThreshadon:
-            summon_many(3, Minion(MinionType::MurlocScout,m.isGolden()), player, pos);
+            summon(3, Minion(MinionType::MurlocScout, deadMinion.isGolden()), player, iter);
             break;
         case MinionType::SavannahHighmane:
-            summon_many(2, Minion(MinionType::Hyena,m.isGolden()), player, pos);
+            summon(2, Minion(MinionType::Hyena, deadMinion.isGolden()), player, iter);
             break;
-            // Tier 6
+        case MinionType::Voidlord:
+            summon(3, Minion(MinionType::Voidwalker, deadMinion.isGolden()), player, iter);
+            break;
+        // Tier 6
         case MinionType::Ghastcoiler:
-            for (int i=0; i<m.double_if_golden(2); ++i) {
-                summon(random_deathrattle_deadMinion(rng, player), player, pos);
+            TWICE_IF_GOLDEN {
+                // summon(2, randomDeathRattleMinion(), player, iter);
             }
             break;
+        /*
         case MinionType::KangorsApprentice:
             for (int i=0; i<m.double_if_golden(2) && mechs_that_died[player][i].exists(); ++i) {
                 summon(mechs_that_died[player][i].new_copy(), player, pos);
             }
             break;
+        */
         case MinionType::SneedsOldShredder:
             TWICE_IF_GOLDEN {
-                summon(random_legendary_deadMinion(rng, player), player, pos);
+                // summon(1, randomLegendaryMinion(), player, iter);
             }
             break;
-        */
         default:
             break;
     }
@@ -118,3 +126,13 @@ void Battle::summon(int count, const Minion& minion, size_t player, MinionIter& 
         // onSummoned();
     }
 }
+
+void Battle::summon(int count, const Minion& minion, size_t player) {
+    auto& battleMinions = board[player].battleMinions();
+    for (int i = 0; i < count && board[player].hasEmptySlot(); ++i) {
+        battleMinions.emplace_back(minion);
+        // todo:
+        // onSummoned();
+    }
+}
+
