@@ -8,7 +8,6 @@
 // Battle state
 // -----------------------------------------------------------------------------
 
-const int MAX_MECHS_THAT_DIED = 4;
 using MinionIter = std::vector<Minion>::iterator;
 
 class Battle {

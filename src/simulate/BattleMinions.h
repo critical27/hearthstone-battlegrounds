@@ -2,6 +2,7 @@
 #include "Minion.h"
 #include "Board.h"
 
+const size_t MAX_MECHS_THAT_DIED = 4;
 using IndexResult = std::vector<size_t>;
 using MinionBoolCondition = std::function<bool (Minion& minion)>;
 using MinionAction = std::function<void (Minion& minion)>;
@@ -74,10 +75,21 @@ public:
     void buffRandomMinion(int attack, int health);
 
     void forEachMinion(MinionAction func,
-                       MinionBoolCondition pred = [](Minion& minion){return true;});
+                       MinionBoolCondition pred = [] (Minion& minion) { return true; });
+
+    void addDeadMech(Minion& minion) {
+        if (deadMechs_.size() < MAX_MECHS_THAT_DIED) {
+            deadMechs_.emplace_back(minion.newCopy());
+        }
+    }
+
+    std::vector<Minion> deadMechs() {
+        return deadMechs_;
+    }
 
 private:
     std::vector<Minion> battleMinions_;
+    std::vector<Minion> deadMechs_;
 
     // Next attacker index
     int nextAttacker_{0};

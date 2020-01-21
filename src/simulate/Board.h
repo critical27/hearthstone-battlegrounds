@@ -31,7 +31,6 @@ public:
 private:
     std::vector<Minion> minions_;
 
-    // hero power to start with
     HeroType hero_{HeroType::None};
     bool useHeroPower_{false};
 

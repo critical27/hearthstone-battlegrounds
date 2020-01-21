@@ -1,6 +1,6 @@
 #include <sstream>
 #include "BattleMinions.h"
-#include "utils/random.h"
+#include "utils/Random.h"
 
 std::ostream& operator<<(std::ostream& os, const BattleMinions& battleMinions) {
     os << battleMinions.toString();

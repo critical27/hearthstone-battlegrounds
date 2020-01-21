@@ -28,7 +28,7 @@ void Battle::onDeath(size_t player, Minion& deadMinion, MinionIter& iter) {
             break;
         case MinionType::MountedRaptor:
             TWICE_IF_GOLDEN {
-                // summon(1, randomOneCostMinion(), player, iter);
+                summon(1, Minion(HsDataUtils::randomOneCostMinion()), player, iter);
             }
             break;
         case MinionType::RatPack:
@@ -45,7 +45,7 @@ void Battle::onDeath(size_t player, Minion& deadMinion, MinionIter& iter) {
             break;
         case MinionType::PilotedShredder:
             TWICE_IF_GOLDEN {
-                // summon(1, randomTwoCostMinion(), player, iter);
+                summon(1, Minion(HsDataUtils::randomTwoCostMinion()), player, iter);
             }
             break;
         case MinionType::ReplicatingMenace:
@@ -60,10 +60,9 @@ void Battle::onDeath(size_t player, Minion& deadMinion, MinionIter& iter) {
             summon(1, MinionType::FinkleEinhorn, 1 - player);
             break;
         // Tier 4:
-        // todo:
         case MinionType::PilotedSkyGolem:
             TWICE_IF_GOLDEN {
-                // summon(1, randomFourCostMinion(), player, iter);
+                summon(1, Minion(HsDataUtils::randomFourCostminion()), player, iter);
             }
             break;
         case MinionType::MechanoEgg:
@@ -94,19 +93,19 @@ void Battle::onDeath(size_t player, Minion& deadMinion, MinionIter& iter) {
         // Tier 6
         case MinionType::Ghastcoiler:
             TWICE_IF_GOLDEN {
-                // summon(2, randomDeathRattleMinion(), player, iter);
+                summon(2, Minion(HsDataUtils::randomDeathRattleMinion()), player, iter);
             }
             break;
-        /*
-        case MinionType::KangorsApprentice:
-            for (int i=0; i<m.double_if_golden(2) && mechs_that_died[player][i].exists(); ++i) {
-                summon(mechs_that_died[player][i].new_copy(), player, pos);
+        case MinionType::KangorsApprentice: {
+            auto deadMechs = board[player].deadMechs();
+            for (int i = 0; i < deadMinion.doubleIfGolden(2) && i < deadMechs.size(); ++i) {
+                summon(1, deadMechs[i], player, iter);
             }
             break;
-        */
+        }
         case MinionType::SneedsOldShredder:
             TWICE_IF_GOLDEN {
-                // summon(1, randomLegendaryMinion(), player, iter);
+                summon(1, Minion(HsDataUtils::randomLegendaryMinion()), player, iter);
             }
             break;
         default:
@@ -122,8 +121,7 @@ void Battle::summon(int count, const Minion& minion, size_t player, MinionIter& 
         size_t pos = iter - board[player].battleMinions().begin();
         VLOG(2) << "Board " << player << " insert " << minion << " at pos " << pos;
         iter = battleMinions.insert(iter, minion);
-        // todo:
-        // onSummoned();
+        // todo: onSummoned
     }
 }
 
@@ -131,8 +129,7 @@ void Battle::summon(int count, const Minion& minion, size_t player) {
     auto& battleMinions = board[player].battleMinions();
     for (int i = 0; i < count && board[player].hasEmptySlot(); ++i) {
         battleMinions.emplace_back(minion);
-        // todo:
-        // onSummoned();
+        // todo: onSummoned
     }
 }
 

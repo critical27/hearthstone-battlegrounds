@@ -1,7 +1,7 @@
 #include "Battle.h"
 #include <glog/logging.h>
-#include "utils/enums.h"
-#include "utils/random.h"
+#include "utils/Enums.h"
+#include "utils/Random.h"
 
 std::ostream& operator<<(std::ostream& os, const Battle& battle) {
     os << battle.board[0];
@@ -55,7 +55,7 @@ void Battle::attack() {
                     << "Board " << 1 - player << " minion " << defIdx << " " << passive[defIdx].toSimpleString();
             doAttack(active, atkIdx, passive, defIdx);
         } else {
-            // todo
+            // todo: ZappSlywick
         }
         // todo: onAttackAndKill
         checkForDeath();
@@ -114,6 +114,7 @@ void Battle::checkForDeath() {
                     if (iter != minions.end()) {
                         iter++;
                     }
+                    board[player].addDeadMech(deadMinion);
                 } else {
                     iter++;
                 }

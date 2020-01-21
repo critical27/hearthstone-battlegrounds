@@ -1,6 +1,7 @@
 #pragma once
 
 #include "utils/MinionInfo.h"
+#include "utils/HsDataUtils.h"
 
 // -----------------------------------------------------------------------------
 // Minion instances
@@ -9,8 +10,8 @@
 class Minion {
 public:
     Minion(MinionType type, bool golden = false)
-        : minionType_(type), minionInfo_(info(type)), golden_(golden),
-          attack_(minionInfo_.attack_for(golden)), health_(minionInfo_.health_for(golden)),
+        : minionType_(type), minionInfo_(HsDataUtils::minionInfo(type)), golden_(golden),
+          attack_(minionInfo_.attack(golden)), health_(minionInfo_.health(golden)),
           taunt_(minionInfo_.taunt_), divineShield_(minionInfo_.divineShield_), poison_(minionInfo_.poison_),
           windfury_(minionInfo_.windfury_), cleave_(minionInfo_.cleave_),reborn_(false),
           deathrattle_murlocs_(0), deathrattle_microbots_(0), deathrattle_golden_microbots_(0),
@@ -127,6 +128,17 @@ public:
         this->health_ += health;
     }
 
+    Minion newCopy() const {
+        return Minion(minionType_, golden_);
+    }
+
+    Minion rebornCopy() const {
+        Minion copy(minionType_, golden_);
+        copy.setHealth(1);
+        return copy;
+    }
+
+    // For later tavern operation
     /*
     void buff(Minion const &b) {
         // buff by the stats of the reference minion (want b.type == None)
@@ -158,7 +170,6 @@ public:
         this->attackAura_ = 0;
         this->healthAura_ = 0;
     }
-     */
 
     void add_deathrattle_microbots(int n = 3) {
         this->deathrattle_microbots_ = std::min(this->deathrattle_microbots_ + n, 7);
@@ -171,7 +182,9 @@ public:
     void add_deathrattle_plants(int n = 2) {
         this->deathrattle_plants_ = std::min(this->deathrattle_plants_ + n, 7);
     }
+     */
 
+    // qwer
     /*
     void on_summoned(Minion& summoned, int player);
     void on_after_friendly_attack(Minion const& attacker, int player);
@@ -187,7 +200,6 @@ public:
     void on_attack_and_kill(Minion& m, int player, int pos, bool overkill);
     void on_break_friendly_divine_shield(Minion& m, int player); // for Bolvar
 
-    // qwer
     bool recompute_aura_from(Board& board, int pos, Board const* enemy_board = nullptr);
     void do_battlecry(Board& board, int pos);
     void do_deathrattle(Battle& battle, int player, int pos) const;

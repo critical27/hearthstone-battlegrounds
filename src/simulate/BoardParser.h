@@ -4,8 +4,6 @@
 #include <iostream>
 #include "Minion.h"
 
-// qwer: MinionRef MinionAndSideRef Objective
-
 // -----------------------------------------------------------------------------
 // Error handling
 // -----------------------------------------------------------------------------

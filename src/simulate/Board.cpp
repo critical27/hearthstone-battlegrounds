@@ -1,7 +1,7 @@
 #include "Board.h"
 #include <glog/logging.h>
-#include "utils/enums.h"
-#include "utils/random.h"
+#include "utils/Enums.h"
+#include "utils/Random.h"
 
 std::ostream& operator<<(std::ostream& os, const Board& board) {
     os << board.toString();
@@ -18,7 +18,8 @@ std::string Board::toString() const {
         ss << "health " << health_ << "\n";
     }
     if (useHeroPower_) {
-        ss << "hero power " << hero_ << "\n";
+        // doodle: show hero name instead
+        ss << "hero power " << static_cast<size_t>(hero_) << "\n";
     }
     for (const auto& minion : minions()) {
         ss << "* " << minion.toString() << "\n";
