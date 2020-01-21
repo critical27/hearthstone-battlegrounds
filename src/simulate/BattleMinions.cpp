@@ -9,7 +9,6 @@ std::ostream& operator<<(std::ostream& os, const BattleMinions& battleMinions) {
 
 std::string BattleMinions::toString() const {
     std::stringstream ss;
-    ss << "\n";
     for (const auto& minion : battleMinions_) {
         ss << "* " << minion.toString() << "\n";
     }

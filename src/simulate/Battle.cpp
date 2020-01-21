@@ -32,7 +32,8 @@ int Battle::run() {
     while (!done() && turn < 100) {
         attack();
         turn++;
-        VLOG(1) << "Battle after " << turn << " turns:" << toString();
+        VLOG(1) << "Battle after " << turn << " turns:";
+        VLOG(1) << toString();
     }
     VLOG(1) << "Battle end after " << turn << " turns.";
     return result();
@@ -50,7 +51,7 @@ void Battle::attack() {
             // todo: cleave
             if (attacker.isCleave()) {
             }
-            VLOG(1) << "Board " << player << " minion " << atkIdx << " " << active[atkIdx].toSimpleString()
+            VLOG(2) << "Board " << player << " minion " << atkIdx << " " << active[atkIdx].toSimpleString()
                     << " **attack** "
                     << "Board " << 1 - player << " minion " << defIdx << " " << passive[defIdx].toSimpleString();
             doAttack(active, atkIdx, passive, defIdx);
@@ -102,7 +103,7 @@ void Battle::checkForDeath() {
             auto& minions = board[player].battleMinions();
             for (auto iter = minions.begin(); iter != minions.end(); ) {
                 if (!iter->isAlive()) {
-                    VLOG(2) << "Board " << player << " " << iter->toSimpleString() << " is dead";
+                    VLOG(3) << "Board " << player << " " << iter->toSimpleString() << " is dead";
                     deadCount++;
                     // 1. remove the dead minion, so there would be at least a empty slot
                     // doodle: what about on damaged

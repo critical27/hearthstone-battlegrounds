@@ -22,8 +22,9 @@ public:
 
     std::string toString() const {
         std::stringstream ss;
+        ss << "\n";
         ss << board.front().toString();
-        ss << "VS";
+        ss << "VS" << "\n";
         ss << board.back().toString();
         return ss.str();
     }

@@ -119,7 +119,7 @@ void Battle::summon(int count, const Minion& minion, size_t player, MinionIter& 
     auto& battleMinions = board[player].battleMinions();
     for (int i = 0; i < count && board[player].hasEmptySlot(); ++i) {
         size_t pos = iter - board[player].battleMinions().begin();
-        VLOG(2) << "Board " << player << " insert " << minion << " at pos " << pos;
+        VLOG(3) << "Board " << player << " insert " << minion << " at pos " << pos;
         iter = battleMinions.insert(iter, minion);
         // todo: onSummoned
     }

@@ -120,7 +120,7 @@ public:
     }
 
     int doubleIfGolden(int amount) {
-        return isGolden() ? amount : 2 * amount;
+        return isGolden() ? 2 * amount : amount;
     }
 
     void buff(int attack, int health) {
