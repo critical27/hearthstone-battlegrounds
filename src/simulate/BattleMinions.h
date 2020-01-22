@@ -40,10 +40,16 @@ public:
     }
 
     bool hasAliveMinion() const {
-        return std::any_of(battleMinions_.begin(), battleMinions_.end(),
-                           [] (const Minion& minion) {
-                               return minion.isAlive();
-                           });
+        if (!battleMinions_.empty()) {
+            bool ret = std::any_of(battleMinions_.begin(), battleMinions_.end(),
+                                   [] (const Minion& minion) {
+                                       return minion.isAlive();
+                                   });
+            CHECK(ret);
+            return ret;
+        } else {
+            return false;
+        }
     }
 
     int remainingStars() const {

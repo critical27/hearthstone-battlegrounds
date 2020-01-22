@@ -116,6 +116,7 @@ void Battle::onDeath(size_t player, Minion& deadMinion, MinionIter& iter) {
 // if we summon minions, we insert them before iter, and iter points to the newly add minion,
 // which is the newly summoned one
 void Battle::summon(int count, const Minion& minion, size_t player, MinionIter& iter) {
+    CHECK(minion.minionType() != MinionType::None);
     auto& battleMinions = board[player].battleMinions();
     for (int i = 0; i < count && board[player].hasEmptySlot(); ++i) {
         size_t pos = iter - board[player].battleMinions().begin();
@@ -125,7 +126,9 @@ void Battle::summon(int count, const Minion& minion, size_t player, MinionIter& 
     }
 }
 
+// for TheBeast, always insert at opponent's last empty slot
 void Battle::summon(int count, const Minion& minion, size_t player) {
+    CHECK(minion.minionType() != MinionType::None);
     auto& battleMinions = board[player].battleMinions();
     for (int i = 0; i < count && board[player].hasEmptySlot(); ++i) {
         battleMinions.emplace_back(minion);

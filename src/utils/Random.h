@@ -1,9 +1,11 @@
 #pragma once
 
-#include <time.h>
+#include <random>
 
-// [min, max]
-static int rand(int min, int max) {
-    srand((unsigned int) time(NULL));
-    return rand() % (max - min + 1) + min;
+// random num in [min, max]
+static size_t rand(size_t min, size_t max) {
+    std::uniform_int_distribution<size_t > dist(min, max);
+    std::random_device rd;
+    std::default_random_engine engine{rd()};
+    return dist(engine);
 }

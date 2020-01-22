@@ -98,6 +98,7 @@ TEST(BattleTest, TierTwoDeathRattleTest) {
         EXPECT_EQ(0, result);
     }
     {
+        DRAW_LINE;
         // 1 MountedRaptor vs 1 MountedRaptor
         std::vector<Minion> minions;
         minions.emplace_back(Minion(MinionType::MountedRaptor));
@@ -120,6 +121,20 @@ TEST(BattleTest, TierTwoDeathRattleTest) {
         Battle battle(you, opponent);
         int result = battle.run();
         EXPECT_EQ(0, result);
+    }
+}
+
+TEST(BattleTest, RandomTest) {
+    sleep(1);
+    {
+        DRAW_LINE;
+        // 1 MountedRaptor vs 1 MountedRaptor
+        std::vector<Minion> minions;
+        minions.emplace_back(Minion(MinionType::MountedRaptor));
+        Board you(minions, HeroType::None, false, 1, 40);
+        Board opponent(minions, HeroType::None, false, 1, 40);
+        Battle battle(you, opponent);
+        int result = battle.run();
     }
 }
 

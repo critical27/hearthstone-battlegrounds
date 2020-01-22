@@ -39,27 +39,27 @@ public:
     }
 
     static MinionType randomOneCostMinion() {
-        auto picked = rand(0, OneCostMinions.size());
+        auto picked = rand(0, OneCostMinions.size() - 1);
         return OneCostMinions[picked];
     }
 
     static MinionType randomTwoCostMinion() {
-        auto picked = rand(0, TwoCostMinions.size());
+        auto picked = rand(0, TwoCostMinions.size() - 1);
         return TwoCostMinions[picked];
     }
 
     static MinionType randomFourCostminion() {
-        auto picked = rand(0, FourCostMinions.size());
+        auto picked = rand(0, FourCostMinions.size() - 1);
         return FourCostMinions[picked];
     }
 
     static MinionType randomDeathRattleMinion() {
-        auto picked = rand(0, DeathRattleMinions.size());
+        auto picked = rand(0, DeathRattleMinions.size() - 1);
         return DeathRattleMinions[picked];
     }
 
     static MinionType randomLegendaryMinion() {
-        auto picked = rand(0, LengendaryMinions.size());
+        auto picked = rand(0, LengendaryMinions.size() - 1);
         return LengendaryMinions[picked];
     }
 };

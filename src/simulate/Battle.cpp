@@ -121,12 +121,12 @@ void Battle::checkForDeath() {
                 }
             }
         }
-    } while (deadCount != 0);
+    } while (deadCount);
 }
 
 bool Battle::done() {
-    // return true when one BattleMinions is empty
-    return !board[0].hasAliveMinion() && !board[1].hasAliveMinion();
+    // return true when one of BattleMinions is empty
+    return !board[0].hasAliveMinion() || !board[1].hasAliveMinion();
 }
 
 // result > 0 if you win, < 0 if opponent win, 0 if tied
