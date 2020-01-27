@@ -1,6 +1,9 @@
 #pragma once
+
 #include <iostream>
 #include <cstdlib>
+#include <iomanip>
+#include <gtest/gtest_prod.h>
 #include "Minion.h"
 #include "Board.h"
 #include "BattleMinions.h"
@@ -10,8 +13,34 @@
 // -----------------------------------------------------------------------------
 
 using MinionIter = std::vector<Minion>::iterator;
+const int OUTPUT_WIDTH = 30;
+const int MAX_TURN = 100;
+const std::string BLANK(OUTPUT_WIDTH, ' ');
+
+class BattleResult {
+public:
+    BattleResult(int stars, int count)
+        :stars_(stars), count_(count) {}
+
+    int stars() {
+        return stars_;
+    }
+
+    int count() {
+        return count_;
+    }
+
+private:
+    int stars_;
+    int count_;
+};
 
 class Battle {
+    FRIEND_TEST(BattleTest, AlleycatTest);
+    FRIEND_TEST(BattleTest, MultiMecharooTest);
+    FRIEND_TEST(BattleTest, TierOneDeathRattleTest);
+    FRIEND_TEST(BattleTest, TierTwoDeathRattleTest);
+    FRIEND_TEST(BattleTest, RandomTest);
 public:
     Battle(const Board& you, const Board& opponent)
         : you_(you), opponent_(opponent) {
@@ -21,17 +50,15 @@ public:
 
     friend std::ostream& operator<<(std::ostream& os, const Battle& battle);
 
-    std::string toString() const {
-        std::stringstream ss;
-        ss << "\n";
-        ss << board.front().toString();
-        ss << "VS" << "\n";
-        ss << board.back().toString();
-        return ss.str();
-    }
+    friend class Minion;
 
+    std::string toString();
+    std::string toPrettyString();
+
+    BattleResult run();
+
+private:
     void prepare();
-    int run();
 
     void attack();
     void singleAttack(BattleMinions& active, BattleMinions& passive, size_t atkIdx);
@@ -41,7 +68,7 @@ public:
 
     void checkForDeath();
     bool done();
-    int result();
+    BattleResult result();
 
     // Events during battle
     void onAllySummon(size_t player, Minion &summoned, bool played = false);
@@ -58,12 +85,6 @@ public:
     // death rattle
     void deathRattle(size_t player, const Minion& deadMinion, MinionIter& iter);
 
-    BattleMinions& player(size_t idx) {
-        return board[idx];
-    }
-
-private:
-
     Board you_;
     Board opponent_;
 
@@ -73,6 +94,10 @@ private:
 
     BattleMinions& defender() {
         return yourTurn_ ? board[1] : board[0];
+    }
+
+    BattleMinions& player(size_t idx) {
+        return board[idx];
     }
 
     void nextTurn() {

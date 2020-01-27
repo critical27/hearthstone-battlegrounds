@@ -3,6 +3,38 @@
 #include "utils/Enums.h"
 #include "utils/Random.h"
 
+std::string Battle::toString() {
+    std::stringstream ss;
+    ss << board.front().toString();
+    ss << "VS" << "\n";
+    ss << board.back().toString();
+    return ss.str();
+}
+
+std::string Battle::toPrettyString() {
+    size_t m = board.front().size(), n = board.back().size();
+    size_t vs = std::max(m, n) / 2;
+    std::stringstream ss;
+    for (size_t i = 0; i < std::max(m, n); i++) {
+        if (i < m) {
+            ss << std::left << std::setfill(' ') << std::setw(OUTPUT_WIDTH) << board[0][i].toString();
+        } else {
+            ss << BLANK;
+        }
+        if (i == vs) {
+            ss << " VS ";
+        } else {
+            ss << "    ";
+        }
+        if (i < n) {
+            ss << std::right << std::setfill(' ') << std::setw(OUTPUT_WIDTH) << board[1][i].toString();
+        } else {
+            ss << BLANK;
+        }
+        ss << "\n";
+    }
+    return ss.str();
+}
 std::ostream& operator<<(std::ostream& os, const Battle& battle) {
     os << battle.board[0];
     os << "VS" << std::endl;
@@ -26,12 +58,14 @@ void Battle::prepare() {
     // todo: aurus
 }
 
-int Battle::run() {
+BattleResult Battle::run() {
     prepare();
-    while (!done() && turn_ < 100) {
+    VLOG(1) << "Battle after " << turn_ << " turns:";
+    VLOG(1) << "\n" << toPrettyString();
+    while (!done() && turn_ < MAX_TURN) {
         attack();
         VLOG(1) << "Battle after " << turn_ << " turns:";
-        VLOG(1) << toString();
+        VLOG(1) << "\n" << toPrettyString();
         nextTurn();
     }
     VLOG(1) << "Battle end after " << turn_ << " turns.";
@@ -171,15 +205,17 @@ bool Battle::done() {
     return !board[0].hasAliveMinion() || !board[1].hasAliveMinion();
 }
 
-// result > 0 if you win, < 0 if opponent win, 0 if tied
-int Battle::result() {
-    int result = board[0].remainingStars();
-    if (result > 0) {
-        return result;
+BattleResult Battle::result() {
+    // stars > 0 if you win, < 0 if opponent win, 0 if tied
+    int stars = board[0].remainingStars();
+    if (stars > 0) {
+        int count = board[0].remainingMinions();
+        return BattleResult(stars, count);
     }
-    result = board[1].remainingStars();
-    if (result > 0) {
-        return -result;
+    stars = board[1].remainingStars();
+    if (stars > 0) {
+        int count = board[1].remainingMinions();
+        return BattleResult(-stars, count);
     }
-    return 0;
+    return BattleResult(0, 0);
 }

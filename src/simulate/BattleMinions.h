@@ -1,3 +1,5 @@
+#pragma once
+
 #include <numeric>
 #include "Minion.h"
 #include "Board.h"
@@ -33,6 +35,10 @@ public:
 
     size_t nextDefenderIndex();
 
+    size_t size() const {
+        return battleMinions_.size();
+    }
+
     bool hasEmptySlot() const {
         return battleMinions_.size() < BOARD_SIZE;
     }
@@ -50,12 +56,22 @@ public:
         }
     }
 
-    int remainingStars() const {
-        int result = 0;
+    int remainingMinions() const {
+        int count = 0;
         for (const auto& minion : battleMinions_) {
-            result += minion.stars();
+            CHECK(minion.isAlive());
+            count++;
         }
-        return result;
+        return count;
+    }
+
+    int remainingStars() const {
+        int count = 0;
+        for (const auto& minion : battleMinions_) {
+            CHECK(minion.isAlive());
+            count += minion.stars();
+        }
+        return count;
     }
 
     std::vector<size_t> getAdajacent(size_t idx) {

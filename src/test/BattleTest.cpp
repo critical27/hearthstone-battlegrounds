@@ -6,18 +6,17 @@
 #define DRAW_LINE LOG(INFO) << "---------------------------------------------"
 
 TEST(BattleTest, AlleycatTest) {
-    sleep(1);
     std::vector<Minion> minions;
     minions.emplace_back(Minion(MinionType::Alleycat));
     Board you(minions, HeroType::None, false, 1, 40);
     Board opponent(minions, HeroType::None, false, 1, 40);
     Battle battle(you, opponent);
-    int result = battle.run();
-    EXPECT_EQ(0, result);
+    auto result = battle.run();
+    ASSERT_EQ(0, result.stars());
+    ASSERT_EQ(0, result.count());
 }
 
 TEST(BattleTest, MultiMecharooTest) {
-    sleep(1);
     std::vector<Minion> minions;
     for (int i = 0; i < BOARD_SIZE; i++) {
         DRAW_LINE;
@@ -25,13 +24,13 @@ TEST(BattleTest, MultiMecharooTest) {
         Board you(minions, HeroType::None, false, 1, 40);
         Board opponent(minions, HeroType::None, false, 1, 40);
         Battle battle(you, opponent);
-        int result = battle.run();
-        EXPECT_EQ(0, result);
+        auto result = battle.run();
+        ASSERT_EQ(0, result.stars());
+        ASSERT_EQ(0, result.count());
     }
 }
 
 TEST(BattleTest, TierOneDeathRattleTest) {
-    sleep(1);
     {
         DRAW_LINE;
         // 1 Mecharoo vs 1 Mecharoo
@@ -40,8 +39,9 @@ TEST(BattleTest, TierOneDeathRattleTest) {
         Board you(minions, HeroType::None, false, 1, 40);
         Board opponent(minions, HeroType::None, false, 1, 40);
         Battle battle(you, opponent);
-        int result = battle.run();
-        EXPECT_EQ(0, result);
+        auto result = battle.run();
+        ASSERT_EQ(0, result.stars());
+        ASSERT_EQ(0, result.count());
     }
     {
         DRAW_LINE;
@@ -53,8 +53,9 @@ TEST(BattleTest, TierOneDeathRattleTest) {
         Board you(p1, HeroType::None, false, 1, 40);
         Board opponent(p2, HeroType::None, false, 1, 40);
         Battle battle(you, opponent);
-        int result = battle.run();
-        EXPECT_EQ(0, result);
+        auto result = battle.run();
+        ASSERT_EQ(0, result.stars());
+        ASSERT_EQ(0, result.count());
     }
     {
         DRAW_LINE;
@@ -67,13 +68,13 @@ TEST(BattleTest, TierOneDeathRattleTest) {
         Board you(minions, HeroType::None, false, 1, 40);
         Board opponent(minions, HeroType::None, false, 1, 40);
         Battle battle(you, opponent);
-        int result = battle.run();
-        EXPECT_EQ(0, result);
+        auto result = battle.run();
+        ASSERT_EQ(0, result.stars());
+        ASSERT_EQ(0, result.count());
     }
 }
 
 TEST(BattleTest, TierTwoDeathRattleTest) {
-    sleep(1);
     {
         DRAW_LINE;
         // 1 HarvestGolem vs 1 HarvestGolem
@@ -82,8 +83,9 @@ TEST(BattleTest, TierTwoDeathRattleTest) {
         Board you(minions, HeroType::None, false, 1, 40);
         Board opponent(minions, HeroType::None, false, 1, 40);
         Battle battle(you, opponent);
-        int result = battle.run();
-        EXPECT_EQ(0, result);
+        auto result = battle.run();
+        ASSERT_EQ(0, result.stars());
+        ASSERT_EQ(0, result.count());
     }
     {
         DRAW_LINE;
@@ -94,8 +96,22 @@ TEST(BattleTest, TierTwoDeathRattleTest) {
         Board you(minions, HeroType::None, false, 1, 40);
         Board opponent(minions, HeroType::None, false, 1, 40);
         Battle battle(you, opponent);
-        int result = battle.run();
-        EXPECT_EQ(0, result);
+        auto result = battle.run();
+        ASSERT_EQ(0, result.stars());
+        ASSERT_EQ(0, result.count());
+    }
+    {
+        DRAW_LINE;
+        // 2 KindlyGrandmother vs 2 KindlyGrandmother
+        std::vector<Minion> minions;
+        minions.emplace_back(Minion(MinionType::KindlyGrandmother));
+        minions.emplace_back(Minion(MinionType::KindlyGrandmother));
+        Board you(minions, HeroType::None, false, 1, 40);
+        Board opponent(minions, HeroType::None, false, 1, 40);
+        Battle battle(you, opponent);
+        auto result = battle.run();
+        ASSERT_EQ(0, result.stars());
+        ASSERT_EQ(0, result.count());
     }
     {
         DRAW_LINE;
@@ -105,7 +121,20 @@ TEST(BattleTest, TierTwoDeathRattleTest) {
         Board you(minions, HeroType::None, false, 1, 40);
         Board opponent(minions, HeroType::None, false, 1, 40);
         Battle battle(you, opponent);
-        int result = battle.run();
+        auto result = battle.run();
+        ASSERT_LE(result.count(), 1);
+    }
+    {
+        DRAW_LINE;
+        // 2 RatPack vs 2 RatPack
+        std::vector<Minion> minions;
+        minions.emplace_back(Minion(MinionType::RatPack));
+        minions.emplace_back(Minion(MinionType::RatPack));
+        Board you(minions, HeroType::None, false, 1, 40);
+        Board opponent(minions, HeroType::None, false, 1, 40);
+        Battle battle(you, opponent);
+        auto result = battle.run();
+        ASSERT_LE(result.count(), 1);
     }
     {
         DRAW_LINE;
@@ -118,22 +147,25 @@ TEST(BattleTest, TierTwoDeathRattleTest) {
         Board you(minions, HeroType::None, false, 1, 40);
         Board opponent(minions, HeroType::None, false, 1, 40);
         Battle battle(you, opponent);
-        int result = battle.run();
-        EXPECT_EQ(0, result);
+        auto result = battle.run();
+        ASSERT_EQ(0, result.stars());
+        ASSERT_EQ(0, result.count());
     }
 }
 
 TEST(BattleTest, RandomTest) {
-    sleep(1);
-    {
+    for (int i = 0; i < 10; i++){
         DRAW_LINE;
-        // 1 MountedRaptor vs 1 MountedRaptor
+        // 2 RatPack vs 2 RatPack
         std::vector<Minion> minions;
-        minions.emplace_back(Minion(MinionType::MountedRaptor));
+        minions.emplace_back(Minion(MinionType::SpawnOfNZoth));
+        minions.emplace_back(Minion(MinionType::RatPack));
+        minions.emplace_back(Minion(MinionType::RatPack));
         Board you(minions, HeroType::None, false, 1, 40);
         Board opponent(minions, HeroType::None, false, 1, 40);
         Battle battle(you, opponent);
-        int result = battle.run();
+        auto result = battle.run();
+        ASSERT_LE(result.count(), 1);
     }
 }
 
