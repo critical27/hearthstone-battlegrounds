@@ -15,6 +15,7 @@ std::string BattleMinions::toString() const {
     return ss.str();
 }
 
+// todo: when do we forward nextAttacker_
 size_t BattleMinions::nextAttackerIndex() {
     // return -1 if has no valid attacker, else index of attacker
     if (battleMinions_.empty()) {
@@ -33,10 +34,6 @@ size_t BattleMinions::nextAttackerIndex() {
     return nextAttacker_;
 }
 
-Minion& BattleMinions::nextAttacker() {
-    return battleMinions_[nextAttacker_];
-}
-
 size_t BattleMinions::nextDefenderIndex() {
     CHECK(!battleMinions_.empty());
     IndexResult tauntIdx;
@@ -52,15 +49,15 @@ size_t BattleMinions::nextDefenderIndex() {
     }
 }
 
-Minion& BattleMinions::minionWithLowestAttack() {
+size_t BattleMinions::minionWithLowestAttack() {
     CHECK(!battleMinions_.empty());
-    Minion& result = battleMinions_.front();
-    for (auto& minion : battleMinions_) {
-        if (minion.attack() < result.attack()) {
-            result = minion;
+    size_t ret = 0;
+    for (size_t i = 1; i < battleMinions_.size(); i++) {
+        if (battleMinions_[i].attack() < battleMinions_[ret].attack()) {
+            ret = i;
         }
     }
-    return result;
+    return ret;
 }
 
 int BattleMinions::hasMinion(MinionType type) const {
@@ -126,6 +123,7 @@ void BattleMinions::buffRandomMinion(int attack, int health) {
 
 void BattleMinions::forEachMinion(MinionAction func, MinionBoolCondition pred) {
     for (auto& minion : battleMinions_) {
+        // doodle: isAlive?
         if (pred(minion)) {
             func(minion);
         }
@@ -144,3 +142,4 @@ int BattleMinions::extraDeathrattleCount() const {
 int BattleMinions::extraBattlecryCount() const {
     return hasMinion(MinionType::BrannBronzebeard) + 1;
 }
+

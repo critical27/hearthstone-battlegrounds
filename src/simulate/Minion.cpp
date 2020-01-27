@@ -11,6 +11,12 @@ std::string Minion::toSimpleString() const {
     std::stringstream ss;
     ss << attack_ << "/" << health_ << " ";
     ss << name();
+    if (cleave_) {
+        ss << " [Cleave]";
+    }
+    if (windfury_) {
+        ss << " [WindFury]";
+    }
     return ss.str();
 }
 

@@ -3,6 +3,8 @@
 #include "utils/MinionInfo.h"
 #include "utils/HsDataUtils.h"
 
+class Battle;
+
 // -----------------------------------------------------------------------------
 // Minion instances
 // -----------------------------------------------------------------------------
@@ -83,7 +85,7 @@ public:
         health_ = value;
     }
 
-    bool isTribe(Tribe t) {
+    bool isTribe(Tribe t) const {
         return minionInfo_.tribe_ == t;
     }
 
@@ -119,7 +121,7 @@ public:
         return reborn_;
     }
 
-    int doubleIfGolden(int amount) {
+    int doubleIfGolden(int amount) const {
         return isGolden() ? 2 * amount : amount;
     }
 
@@ -185,30 +187,30 @@ public:
      */
 
     // qwer
-    /*
-    void on_summoned(Minion& summoned, int player);
-    void on_after_friendly_attack(Minion const& attacker, int player);
-    void on_break_divine_shield(int player);
+    // void on_summoned(Minion& summoned, int player);
+    // void on_after_friendly_attack(Minion const& attacker, int player);
+    // void on_break_divine_shield(int player);
 
     // Minion specific events
-    void do_deathrattle(Minion const& m, int player, int pos);
-    void do_base_deathrattle(Minion const& m, int player, int pos);
-    void on_damaged(Minion const& m, int player, int pos);
-    void on_after_friendly_attack(Minion& m, Minion const& attacker);
-    void on_friendly_death(Minion& m, Minion const& dead_minion, int player);
-    void on_friendly_summon(Minion& m, Minion& summoned, int player);
-    void on_attack_and_kill(Minion& m, int player, int pos, bool overkill);
-    void on_break_friendly_divine_shield(Minion& m, int player); // for Bolvar
+    // void do_deathrattle(Minion const& m, int player, int pos);
+    // void do_base_deathrattle(Minion const& m, int player, int pos);
+    // void on_damaged(Minion const& m, int player, int pos);
+    // void on_after_friendly_attack(Minion& m, Minion const& attacker);
+    // void on_friendly_death(Minion& m, Minion const& dead_minion, int player);
+    // void on_friendly_summon(Minion& m, Minion& summoned, int player);
+    // void on_attack_and_kill(Minion& m, int player, int pos, bool overkill);
+    // void on_break_friendly_divine_shield(Minion& m, int player); // for Bolvar
 
-    bool recompute_aura_from(Board& board, int pos, Board const* enemy_board = nullptr);
-    void do_battlecry(Board& board, int pos);
-    void do_deathrattle(Battle& battle, int player, int pos) const;
-    void on_friendly_summon(Board& board, Minion& summoned, bool played);
-    void on_friendly_death(Battle& battle, Minion const& dead_minion, int player);
-    void on_damaged(Battle& battle, int player, int pos);
-    void on_attack_and_kill(Battle& battle, int player, int pos, bool overkill);
-    void on_after_friendly_attack(Minion const& attacker);
-    void on_break_friendly_divine_shield()
-     */
+    // bool recompute_aura_from(Board& board, int pos, Board const* enemy_board = nullptr);
+    // void do_battlecry(Board& board, int pos);
+    // void do_deathrattle(Battle& battle, int player, int pos) const;
+    // void on_friendly_summon(Board& board, Minion& summoned, bool played);
+    void onAllySummon(Battle* battle, size_t player, Minion& summoned, bool played);
+    void onAllyAttack(Battle* battle, size_t player);
+    void onAllyBreakDivineShield(Battle* battle, size_t player);
+    void onAllyDeath(Battle* battle, size_t player, const Minion& deadMinion);
+    void onDamaged(Battle* battle, size_t player, size_t pos);
+    void onKill(Battle* battle, size_t player);
+    void onOverKill(Battle* battle, size_t player, size_t pos);
 };
 

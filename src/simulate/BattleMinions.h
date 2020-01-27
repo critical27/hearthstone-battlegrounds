@@ -31,8 +31,6 @@ public:
     // return -1 if has no valid attacker, else index of attacker
     size_t nextAttackerIndex();
 
-    Minion& nextAttacker();
-
     size_t nextDefenderIndex();
 
     bool hasEmptySlot() const {
@@ -60,7 +58,18 @@ public:
         return result;
     }
 
-    Minion& minionWithLowestAttack();
+    std::vector<size_t> getAdajacent(size_t idx) {
+        std::vector<size_t> ret;
+        if (idx > 0) {
+            ret.emplace_back(idx - 1);
+        }
+        if (idx < battleMinions_.size() - 1) {
+            ret.emplace_back(idx + 1);
+        }
+        return ret;
+    }
+
+    size_t minionWithLowestAttack();
 
     // Duplication effects
     int extraSummonCount() const;

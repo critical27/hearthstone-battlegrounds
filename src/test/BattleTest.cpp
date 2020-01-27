@@ -106,7 +106,6 @@ TEST(BattleTest, TierTwoDeathRattleTest) {
         Board opponent(minions, HeroType::None, false, 1, 40);
         Battle battle(you, opponent);
         int result = battle.run();
-        EXPECT_EQ(0, result);
     }
     {
         DRAW_LINE;
@@ -142,6 +141,6 @@ int main(int argc, char** argv) {
     google::InitGoogleLogging(argv[0]);
     testing::InitGoogleTest(&argc, argv);
     FLAGS_logtostderr = true;
-    FLAGS_v = 1;
+    FLAGS_v = 2;
     return RUN_ALL_TESTS();
 }

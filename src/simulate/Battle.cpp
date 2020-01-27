@@ -15,11 +15,11 @@ void Battle::prepare() {
 
     // decide which player attacks first, 0 is you, 1 is opponent
     if (!rand(0, 1)) {
+        coin_ = true;
         yourTurn_ = true;
-        isMainPlayer_ = true;
     } else {
+        coin_ = false;
         yourTurn_ = false;
-        isMainPlayer_ = false;
     }
 
     // todo: hero_power
@@ -28,57 +28,100 @@ void Battle::prepare() {
 
 int Battle::run() {
     prepare();
-    int turn = 0;
-    while (!done() && turn < 100) {
+    while (!done() && turn_ < 100) {
         attack();
-        turn++;
-        VLOG(1) << "Battle after " << turn << " turns:";
+        VLOG(1) << "Battle after " << turn_ << " turns:";
         VLOG(1) << toString();
+        nextTurn();
     }
-    VLOG(1) << "Battle end after " << turn << " turns.";
+    VLOG(1) << "Battle end after " << turn_ << " turns.";
     return result();
 }
 
 void Battle::attack() {
-    BattleMinions& active = yourTurn_ ? board[0] : board[1];
-    BattleMinions& passive = yourTurn_ ? board[1] : board[0];
-    size_t player = yourTurn_ ? 0 : 1;
+    attackPlayer_ = yourTurn_ ? 0 : 1;
+    BattleMinions& active = attacker();
+    BattleMinions& passive = defender();
     size_t atkIdx = active.nextAttackerIndex();
     if (atkIdx != -1) {
-        Minion& attacker = active.nextAttacker();
-        if (attacker.minionType() != MinionType::ZappSlywick) {
-            size_t defIdx = passive.nextDefenderIndex();
-            // todo: cleave
-            if (attacker.isCleave()) {
-            }
-            VLOG(2) << "Board " << player << " minion " << atkIdx << " " << active[atkIdx].toSimpleString()
-                    << " **attack** "
-                    << "Board " << 1 - player << " minion " << defIdx << " " << passive[defIdx].toSimpleString();
-            doAttack(active, atkIdx, passive, defIdx);
-        } else {
-            // todo: ZappSlywick
+        Minion& attacker = active[atkIdx];
+        singleAttack(active, passive, atkIdx);
+        onAllyAttack(attackPlayer_);
+        // wind fury
+        if (attacker.isAlive() && attacker.isWindfury()) {
+            singleAttack(active, passive, atkIdx);
+            onAllyAttack(attackPlayer_);
         }
-        // todo: onAttackAndKill
         checkForDeath();
     }
-    yourTurn_ = !yourTurn_;
+}
+
+void Battle::singleAttack(BattleMinions& active, BattleMinions& passive, size_t atkIdx) {
+    Minion& attacker = active[atkIdx];
+    if (attacker.minionType() != MinionType::ZappSlywick) {
+        size_t defIdx = passive.nextDefenderIndex();
+        if (attacker.isCleave()) {
+            auto adjacent = passive.getAdajacent(defIdx);
+            doAttack(active, atkIdx, passive, defIdx, adjacent);
+            VLOG(2) << "Board " << attackPlayer_ << " minion " << atkIdx << " " << active[atkIdx].toSimpleString() << " [Cleave]"
+                    << " **attack** "
+                    << "Board " << 1 - attackPlayer_ << " minion " << defIdx << " " << passive[defIdx].toSimpleString();
+        } else {
+            VLOG(2) << "Board " << attackPlayer_ << " minion " << atkIdx << " " << active[atkIdx].toSimpleString()
+                    << " **attack** "
+                    << "Board " << 1 - attackPlayer_ << " minion " << defIdx << " " << passive[defIdx].toSimpleString();
+            doAttack(active, atkIdx, passive, defIdx);
+        }
+    } else {
+        size_t defIdx = passive.minionWithLowestAttack();
+        VLOG(2) << "Board " << attackPlayer_ << " minion " << atkIdx << " " << active[atkIdx].toSimpleString()
+                << " **attack** "
+                << "Board " << 1 - attackPlayer_ << " minion " << defIdx << " " << passive[defIdx].toSimpleString();
+        doAttack(active, atkIdx, passive, defIdx);
+    }
 }
 
 void Battle::doAttack(BattleMinions& active, size_t atkIdx, BattleMinions& passive, size_t defIdx) {
     Minion& attacker = active[atkIdx];
     Minion& defender = passive[defIdx];
 
-    // todo: kill and overkill
     int kill = 0, overkill = 0;
-    damage(defender, attacker.attack(), attacker.isPoison(), kill, overkill);
-    damage(attacker, defender.attack(), defender.isPoison(), kill, overkill);
+    damage(1 - attackPlayer_, defender, defIdx, attacker.isPoison(), overkill, kill, attacker.attack());
+    damage(attackPlayer_, attacker, atkIdx, defender.isPoison(), overkill, kill, defender.attack());
+
+    if (kill) {
+        attacker.onKill(this, attackPlayer_);
+    }
+    if (overkill) {
+        attacker.onOverKill(this, attackPlayer_, atkIdx);
+    }
 }
 
-void Battle::damage(Minion& defender, int amount, bool poison, int& kill, int& overkill) {
-    assert(amount > 0);
+void Battle::doAttack(BattleMinions& active, size_t atkIdx, BattleMinions& passive, size_t defIdx, std::vector<size_t> adjacent) {
+    Minion& attacker = active[atkIdx];
+    Minion& defender = passive[defIdx];
+
+    int kill = 0, overkill = 0;
+    damage(1 - attackPlayer_, defender, defIdx, attacker.isPoison(), overkill, kill, attacker.attack());
+    for (auto idx : adjacent) {
+        damage(1 - attackPlayer_, passive[idx], idx, attacker.isPoison(), overkill, kill, attacker.attack());
+    }
+    damage(attackPlayer_, attacker, atkIdx, defender.isPoison(), overkill, kill, defender.attack());
+
+    if (kill) {
+        attacker.onKill(this, attackPlayer_);
+    }
+    if (overkill) {
+        attacker.onOverKill(this, attackPlayer_, atkIdx);
+    }
+}
+
+// deal amount damage to defender minion of player idx
+void Battle::damage(size_t idx, Minion& defender, size_t defIdx, bool poison, int& overkill, int& kill, int amount) {
+    CHECK(amount > 0);
     if (defender.isDivineShield()) {
         defender.setDivineShield(false);
-        // todo: onBreakDivineShield
+        onAllyBreakDivineShield(idx);
     } else {
         defender.setHealth(defender.health() - amount);
         if (defender.health() > 0 && poison) {
@@ -90,7 +133,7 @@ void Battle::damage(Minion& defender, int amount, bool poison, int& kill, int& o
         } else if (defender.health() == 0) {
             kill++;
         }
-        // todo: onDamaged
+        defender.onDamaged(this, idx, defIdx);
     }
 }
 
@@ -106,16 +149,15 @@ void Battle::checkForDeath() {
                     VLOG(3) << "Board " << player << " " << iter->toSimpleString() << " is dead";
                     deadCount++;
                     // 1. remove the dead minion, so there would be at least a empty slot
-                    // doodle: what about on damaged
                     auto deadMinion = *iter;
                     iter = minions.erase(iter);
-                    // 2. death rattle, postcondition: iter points to next attack minion
+                    // 2. death trigger, pre/post condition: iter points to next attack minion
                     onDeath(player, deadMinion, iter);
+                    board[player].addDeadMech(deadMinion);
                     // get next element
                     if (iter != minions.end()) {
                         iter++;
                     }
-                    board[player].addDeadMech(deadMinion);
                 } else {
                     iter++;
                 }
