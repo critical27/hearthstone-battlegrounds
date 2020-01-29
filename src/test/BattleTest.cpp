@@ -72,6 +72,23 @@ TEST(BattleTest, TierOneDeathRattleTest) {
         ASSERT_EQ(0, result.stars());
         ASSERT_EQ(0, result.count());
     }
+    {
+        DRAW_LINE;
+        // 1 SelflessHero 1 Mecharoo
+        // vs
+        // 1 Mecharoo 1 SelflessHero
+        std::vector<Minion> p1, p2;
+        p1.emplace_back(Minion(MinionType::SelflessHero));
+        p1.emplace_back(Minion(MinionType::Mecharoo));
+        p2.emplace_back(Minion(MinionType::Mecharoo));
+        p2.emplace_back(Minion(MinionType::SelflessHero));
+        Board you(p1, HeroType::None, false, 1, 40);
+        Board opponent(p2, HeroType::None, false, 1, 40);
+        Battle battle(you, opponent);
+        auto result = battle.run();
+        ASSERT_LE(abs(result.stars()), 1);
+        ASSERT_LE(result.count(), 1);
+    }
 }
 
 TEST(BattleTest, TierTwoDeathRattleTest) {
@@ -122,7 +139,7 @@ TEST(BattleTest, TierTwoDeathRattleTest) {
         Board opponent(minions, HeroType::None, false, 1, 40);
         Battle battle(you, opponent);
         auto result = battle.run();
-        ASSERT_LE(result.count(), 1);
+        ASSERT_LE(abs(result.count()), 1);
     }
     {
         DRAW_LINE;
@@ -134,7 +151,7 @@ TEST(BattleTest, TierTwoDeathRattleTest) {
         Board opponent(minions, HeroType::None, false, 1, 40);
         Battle battle(you, opponent);
         auto result = battle.run();
-        ASSERT_LE(result.count(), 1);
+        ASSERT_LE(abs(result.count()), 1);
     }
     {
         DRAW_LINE;
@@ -153,19 +170,274 @@ TEST(BattleTest, TierTwoDeathRattleTest) {
     }
 }
 
-TEST(BattleTest, RandomTest) {
-    for (int i = 0; i < 10; i++){
+TEST(BattleTest, TierThreeDeathRattleTest) {
+    {
         DRAW_LINE;
-        // 2 RatPack vs 2 RatPack
+        // 1 InfestedWolf vs 1 InfestedWolf
         std::vector<Minion> minions;
-        minions.emplace_back(Minion(MinionType::SpawnOfNZoth));
-        minions.emplace_back(Minion(MinionType::RatPack));
+        minions.emplace_back(Minion(MinionType::InfestedWolf));
+        Board you(minions, HeroType::None, false, 1, 40);
+        Board opponent(minions, HeroType::None, false, 1, 40);
+        Battle battle(you, opponent);
+        auto result = battle.run();
+        ASSERT_EQ(0, result.stars());
+        ASSERT_EQ(0, result.count());
+    }
+    {
+        DRAW_LINE;
+        // 1 golden InfestedWolf vs 1 golden InfestedWolf
+        std::vector<Minion> minions;
+        minions.emplace_back(Minion(MinionType::InfestedWolf, true));
+        Board you(minions, HeroType::None, false, 1, 40);
+        Board opponent(minions, HeroType::None, false, 1, 40);
+        Battle battle(you, opponent);
+        auto result = battle.run();
+        ASSERT_EQ(0, result.stars());
+        ASSERT_EQ(0, result.count());
+    }
+    {
+        DRAW_LINE;
+        // 1 PilotedShredder vs 1 PilotedShredder
+        std::vector<Minion> minions;
+        minions.emplace_back(Minion(MinionType::PilotedShredder));
+        Board you(minions, HeroType::None, false, 1, 40);
+        Board opponent(minions, HeroType::None, false, 1, 40);
+        Battle battle(you, opponent);
+        auto result = battle.run();
+        ASSERT_LE(abs(result.count()), 1);
+    }
+    {
+        DRAW_LINE;
+        // 1 ReplicatingMenace vs 1 ReplicatingMenace
+        std::vector<Minion> minions;
+        minions.emplace_back(Minion(MinionType::ReplicatingMenace));
+        Board you(minions, HeroType::None, false, 1, 40);
+        Board opponent(minions, HeroType::None, false, 1, 40);
+        Battle battle(you, opponent);
+        auto result = battle.run();
+        ASSERT_EQ(0, result.stars());
+        ASSERT_EQ(0, result.count());
+    }
+    {
+        DRAW_LINE;
+        // 1 TortollanShellraiser vs 1 TortollanShellraiser
+        std::vector<Minion> minions;
+        minions.emplace_back(Minion(MinionType::TortollanShellraiser));
+        Board you(minions, HeroType::None, false, 1, 40);
+        Board opponent(minions, HeroType::None, false, 1, 40);
+        Battle battle(you, opponent);
+        auto result = battle.run();
+        ASSERT_EQ(0, result.stars());
+        ASSERT_EQ(0, result.count());
+    }
+    {
+        DRAW_LINE;
+        // 1 TheBeast vs 1 TheBeast
+        std::vector<Minion> minions;
+        minions.emplace_back(Minion(MinionType::TheBeast));
+        Board you(minions, HeroType::None, false, 1, 40);
+        Board opponent(minions, HeroType::None, false, 1, 40);
+        Battle battle(you, opponent);
+        auto result = battle.run();
+        ASSERT_EQ(0, result.stars());
+        ASSERT_EQ(0, result.count());
+    }
+    {
+        DRAW_LINE;
+        // 1 TheBeast vs 1 TortollanShellraiser 1 InfestedWolf
+        std::vector<Minion> p1, p2;
+        p1.emplace_back(Minion(MinionType::TheBeast));
+        p2.emplace_back(Minion(MinionType::TortollanShellraiser));
+        p2.emplace_back(Minion(MinionType::InfestedWolf));
+        Board you(p1, HeroType::None, false, 1, 40);
+        Board opponent(p2, HeroType::None, false, 1, 40);
+        Battle battle(you, opponent);
+        auto result = battle.run();
+        ASSERT_EQ(-2, result.stars());
+        ASSERT_EQ(2, result.count());
+    }
+}
+
+TEST(BattleTest, TierFourDeathRattleTest) {
+    {
+        DRAW_LINE;
+        // 1 PilotedSkyGolem vs 1 PilotedSkyGolem
+        std::vector<Minion> minions;
+        minions.emplace_back(Minion(MinionType::PilotedSkyGolem));
+        Board you(minions, HeroType::None, false, 1, 40);
+        Board opponent(minions, HeroType::None, false, 1, 40);
+        Battle battle(you, opponent);
+        auto result = battle.run();
+        // we can not make sure that abs(count) < 1, e.g.,
+        // 1/7 Baron Rivendare VS 3/3 Infested Wolf
+    }
+    {
+        DRAW_LINE;
+        // 1 MechanoEgg vs 1 MechanoEgg
+        // no one could attack
+        std::vector<Minion> minions;
+        minions.emplace_back(Minion(MinionType::MechanoEgg));
+        Board you(minions, HeroType::None, false, 1, 40);
+        Board opponent(minions, HeroType::None, false, 1, 40);
+        Battle battle(you, opponent);
+        auto result = battle.run();
+        ASSERT_EQ(0, result.stars());
+        ASSERT_EQ(0, result.count());
+        ASSERT_EQ(MAX_TURN, result.turn());
+    }
+    {
+        DRAW_LINE;
+        // 1 TortollanShellraiser 1 MechanoEgg vs 1 TortollanShellraiser 1 MechanoEgg
+        std::vector<Minion> minions;
+        minions.emplace_back(Minion(MinionType::TortollanShellraiser));
+        minions.emplace_back(Minion(MinionType::MechanoEgg));
+        Board you(minions, HeroType::None, false, 1, 40);
+        Board opponent(minions, HeroType::None, false, 1, 40);
+        Battle battle(you, opponent);
+        auto result = battle.run();
+        ASSERT_EQ(0, result.stars());
+        ASSERT_EQ(0, result.count());
+    }
+}
+
+TEST(BattleTest, TierFiveDeathRattleTest) {
+    {
+        DRAW_LINE;
+        // 1 GoldrinnTheGreatWolf [taunt], 1 RatPack
+        // vs
+        // 1 GoldrinnTheGreatWolf [taunt], 1 RatPack
+        std::vector<Minion> minions;
+        Minion tauntGoldrinnTheGreatWolf(MinionType::GoldrinnTheGreatWolf);
+        tauntGoldrinnTheGreatWolf.setTaunt(true);
+        minions.emplace_back(tauntGoldrinnTheGreatWolf);
         minions.emplace_back(Minion(MinionType::RatPack));
         Board you(minions, HeroType::None, false, 1, 40);
         Board opponent(minions, HeroType::None, false, 1, 40);
         Battle battle(you, opponent);
         auto result = battle.run();
-        ASSERT_LE(result.count(), 1);
+        ASSERT_EQ(0, result.stars());
+        ASSERT_EQ(0, result.count());
+    }
+    {
+        DRAW_LINE;
+        // 1 KingBagurgle [taunt], 1 OldMurkEye
+        // vs
+        // 1 KingBagurgle [taunt], 1 OldMurkEye
+        std::vector<Minion> minions;
+        Minion tauntKingBagurgle(MinionType::KingBagurgle);
+        tauntKingBagurgle.setTaunt(true);
+        minions.emplace_back(tauntKingBagurgle);
+        minions.emplace_back(Minion(MinionType::OldMurkEye));
+        Board you(minions, HeroType::None, false, 1, 40);
+        Board opponent(minions, HeroType::None, false, 1, 40);
+        Battle battle(you, opponent);
+        auto result = battle.run();
+        ASSERT_EQ(0, result.stars());
+        ASSERT_EQ(0, result.count());
+    }
+    {
+        DRAW_LINE;
+        // 1 SatedThreshadon vs 1 SatedThreshadon
+        std::vector<Minion> minions;
+        minions.emplace_back(Minion(MinionType::SatedThreshadon));
+        Board you(minions, HeroType::None, false, 1, 40);
+        Board opponent(minions, HeroType::None, false, 1, 40);
+        Battle battle(you, opponent);
+        auto result = battle.run();
+        ASSERT_EQ(0, result.stars());
+        ASSERT_EQ(0, result.count());
+    }
+    {
+        DRAW_LINE;
+        // 1 SavannahHighmane vs 1 SavannahHighmane
+        std::vector<Minion> minions;
+        minions.emplace_back(Minion(MinionType::SavannahHighmane));
+        Board you(minions, HeroType::None, false, 1, 40);
+        Board opponent(minions, HeroType::None, false, 1, 40);
+        Battle battle(you, opponent);
+        auto result = battle.run();
+        ASSERT_EQ(0, result.stars());
+        ASSERT_EQ(0, result.count());
+    }
+    {
+        DRAW_LINE;
+        // 1 Voidlord vs 1 Voidlord
+        std::vector<Minion> minions;
+        minions.emplace_back(Minion(MinionType::Voidlord));
+        Board you(minions, HeroType::None, false, 1, 40);
+        Board opponent(minions, HeroType::None, false, 1, 40);
+        Battle battle(you, opponent);
+        auto result = battle.run();
+        ASSERT_EQ(0, result.stars());
+        ASSERT_EQ(0, result.count());
+    }
+}
+
+TEST(BattleTest, TierSixDeathRattleTest) {
+    {
+        DRAW_LINE;
+        // 1 Ghastcoiler vs 1 Ghastcoiler
+        std::vector<Minion> minions;
+        minions.emplace_back(Minion(MinionType::Ghastcoiler));
+        Board you(minions, HeroType::None, false, 1, 40);
+        Board opponent(minions, HeroType::None, false, 1, 40);
+        Battle battle(you, opponent);
+        auto result = battle.run();
+    }
+    {
+        DRAW_LINE;
+        // 1 KangorsApprentice vs 1 KangorsApprentice
+        std::vector<Minion> minions;
+        minions.emplace_back(Minion(MinionType::KangorsApprentice));
+        Board you(minions, HeroType::None, false, 1, 40);
+        Board opponent(minions, HeroType::None, false, 1, 40);
+        Battle battle(you, opponent);
+        auto result = battle.run();
+        ASSERT_EQ(0, result.stars());
+        ASSERT_EQ(0, result.count());
+    }
+    {
+        DRAW_LINE;
+        // 1 KangorsApprentice vs 1 KangorsApprentice
+        std::vector<Minion> minions;
+        minions.emplace_back(Minion(MinionType::AnnoyOModule));
+        minions.emplace_back(Minion(MinionType::AnnoyOModule));
+        minions.emplace_back(Minion(MinionType::KangorsApprentice));
+        Board you(minions, HeroType::None, false, 1, 40);
+        Board opponent(minions, HeroType::None, false, 1, 40);
+        Battle battle(you, opponent);
+        auto result = battle.run();
+        ASSERT_EQ(0, result.stars());
+        ASSERT_EQ(0, result.count());
+    }
+    {
+        DRAW_LINE;
+        // 1 SneedsOldShredder vs 1 SneedsOldShredder
+        std::vector<Minion> minions;
+        minions.emplace_back(Minion(MinionType::SneedsOldShredder));
+        Board you(minions, HeroType::None, false, 1, 40);
+        Board opponent(minions, HeroType::None, false, 1, 40);
+        Battle battle(you, opponent);
+        auto result = battle.run();
+    }
+}
+
+TEST(BattleTest, RandomTest) {
+    for (int i = 0; i < 100; i++) {
+        DRAW_LINE;
+        // 1 MountedRaptor, 1 PilotedShredder, 1 PilotedSkyGolem, 1 Ghastcoiler, 1 SneedsOldShredder
+        // vs
+        // 1 MountedRaptor, 1 PilotedShredder, 1 PilotedSkyGolem, 1 Ghastcoiler, 1 SneedsOldShredder
+        std::vector<Minion> minions;
+        minions.emplace_back(Minion(MinionType::MountedRaptor));
+        minions.emplace_back(Minion(MinionType::PilotedShredder));
+        minions.emplace_back(Minion(MinionType::PilotedSkyGolem));
+        minions.emplace_back(Minion(MinionType::Ghastcoiler));
+        minions.emplace_back(Minion(MinionType::SneedsOldShredder));
+        Board you(minions, HeroType::None, false, 1, 40);
+        Board opponent(minions, HeroType::None, false, 1, 40);
+        Battle battle(you, opponent);
+        auto result = battle.run();
     }
 }
 
@@ -173,6 +445,6 @@ int main(int argc, char** argv) {
     google::InitGoogleLogging(argv[0]);
     testing::InitGoogleTest(&argc, argv);
     FLAGS_logtostderr = true;
-    FLAGS_v = 2;
+    FLAGS_v = 1;
     return RUN_ALL_TESTS();
 }

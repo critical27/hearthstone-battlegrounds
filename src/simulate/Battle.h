@@ -13,14 +13,14 @@
 // -----------------------------------------------------------------------------
 
 using MinionIter = std::vector<Minion>::iterator;
-const int OUTPUT_WIDTH = 30;
+const int OUTPUT_WIDTH = 40;
 const int MAX_TURN = 100;
 const std::string BLANK(OUTPUT_WIDTH, ' ');
 
 class BattleResult {
 public:
-    BattleResult(int stars, int count)
-        :stars_(stars), count_(count) {}
+    BattleResult(int stars, int count, int turn)
+        :stars_(stars), count_(count), turn_(turn) {}
 
     int stars() {
         return stars_;
@@ -30,9 +30,14 @@ public:
         return count_;
     }
 
+    int turn() {
+        return turn_;
+    }
+
 private:
     int stars_;
     int count_;
+    int turn_;
 };
 
 class Battle {
@@ -63,7 +68,7 @@ private:
     void attack();
     void singleAttack(BattleMinions& active, BattleMinions& passive, size_t atkIdx);
     void doAttack(BattleMinions& active, size_t atkIdx, BattleMinions& passive, size_t defIdx);
-    void doAttack(BattleMinions& active, size_t atkIdx, BattleMinions& passive, size_t defIdx, std::vector<size_t> adjacent);
+    void doCleaveAttack(BattleMinions& active, size_t atkIdx, BattleMinions& passive, size_t defIdx, std::vector<size_t> adjacent);
     void damage(size_t playerIdx, Minion& defender, size_t defIdx, bool poison, int& overkill, int& kill, int amount);
 
     void checkForDeath();

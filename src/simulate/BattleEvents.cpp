@@ -1,6 +1,6 @@
 #include "Battle.h"
 
-#define TWICE_IF_GOLDEN for (int i = 0; i < (deadMinion.isGolden() ? 2 : 1); ++i)
+#define TWICE_IF_GOLDEN for (int count = 0; count < (deadMinion.isGolden() ? 2 : 1); ++count)
 
 void Battle::onDeath(size_t player, const Minion& deadMinion, MinionIter& iter) {
     // reborn
@@ -107,7 +107,10 @@ void Battle::deathRattle(size_t player, const Minion& deadMinion, MinionIter& it
         // Tier 6
         case MinionType::Ghastcoiler:
             TWICE_IF_GOLDEN {
-                summon(2, Minion(HsDataUtils::randomDeathRattleMinion()), player, iter);
+                // we need to summon one by one, otherwise we would summon two same minion
+                for (int i = 0; i < 2; i++) {
+                    summon(1, Minion(HsDataUtils::randomDeathRattleMinion()), player, iter);
+                }
             }
             break;
         case MinionType::KangorsApprentice: {

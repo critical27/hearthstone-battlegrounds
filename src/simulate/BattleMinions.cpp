@@ -21,18 +21,28 @@ size_t BattleMinions::nextAttackerIndex() {
     if (battleMinions_.empty()) {
         return -1;
     }
-    size_t i = 0;
-    size_t size = battleMinions_.size();
+
+    // when nextAttacker_ exceed size, we need to reset it to 0.
+    // e.g., we have only two alive minions, when previous minion attacked and survived, we move forward nextAttacker_,
+    // however, the latter was killed by opponent, and nextAttacker_ points to a valid position
+    if (nextAttacker_ >= battleMinions_.size()) {
+        nextAttacker_ = 0;
+    }
+
+    // count is used to determine whether we have checked every minion
+    size_t count = 0;
     // find next minion which can attack
-    while (battleMinions_[nextAttacker_].attack() == 0 && i++ < size) {
-        nextAttacker_ = (nextAttacker_ + 1) % size;
+    while (battleMinions_[nextAttacker_].attack() == 0 && count < battleMinions_.size()) {
+        forwardAttackerIndex();
+        ++count;
     }
     // return -1 if all 0 attack minions
-    if (i == BOARD_SIZE) {
+    if (count == battleMinions_.size()) {
         return -1;
     }
     return nextAttacker_;
 }
+
 
 size_t BattleMinions::nextDefenderIndex() {
     CHECK(!battleMinions_.empty());

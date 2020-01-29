@@ -22,7 +22,8 @@ public:
     }
 
     Minion& operator[](size_t idx) {
-        CHECK(0 <= idx && idx < battleMinions_.size());
+        CHECK_LE(0, idx);
+        CHECK_LT(idx, battleMinions_.size());
         return battleMinions_[idx];
     }
 
@@ -34,6 +35,10 @@ public:
     size_t nextAttackerIndex();
 
     size_t nextDefenderIndex();
+
+    void forwardAttackerIndex() {
+        nextAttacker_ = (nextAttacker_ + 1) % battleMinions_.size();
+    }
 
     size_t size() const {
         return battleMinions_.size();

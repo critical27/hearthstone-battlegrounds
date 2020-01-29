@@ -97,6 +97,10 @@ public:
         return taunt_;
     }
 
+    void setTaunt(bool value) {
+        taunt_ = value;
+    }
+
     bool isDivineShield() const {
         return divineShield_;
     }
@@ -107,6 +111,10 @@ public:
 
     bool isPoison() const {
         return poison_;
+    }
+
+    void setPoison(bool value) {
+        poison_ = value;
     }
 
     bool isWindfury() const {

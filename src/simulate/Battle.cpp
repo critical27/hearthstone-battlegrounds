@@ -64,9 +64,9 @@ BattleResult Battle::run() {
     VLOG(1) << "\n" << toPrettyString();
     while (!done() && turn_ < MAX_TURN) {
         attack();
+        nextTurn();
         VLOG(1) << "Battle after " << turn_ << " turns:";
         VLOG(1) << "\n" << toPrettyString();
-        nextTurn();
     }
     VLOG(1) << "Battle end after " << turn_ << " turns.";
     return result();
@@ -86,6 +86,9 @@ void Battle::attack() {
             singleAttack(active, passive, atkIdx);
             onAllyAttack(attackPlayer_);
         }
+        if (attacker.isAlive()) {
+            active.forwardAttackerIndex();
+        }
         checkForDeath();
     }
 }
@@ -96,7 +99,7 @@ void Battle::singleAttack(BattleMinions& active, BattleMinions& passive, size_t 
         size_t defIdx = passive.nextDefenderIndex();
         if (attacker.isCleave()) {
             auto adjacent = passive.getAdajacent(defIdx);
-            doAttack(active, atkIdx, passive, defIdx, adjacent);
+            doCleaveAttack(active, atkIdx, passive, defIdx, adjacent);
             VLOG(2) << "Board " << attackPlayer_ << " minion " << atkIdx << " " << active[atkIdx].toSimpleString() << " [Cleave]"
                     << " **attack** "
                     << "Board " << 1 - attackPlayer_ << " minion " << defIdx << " " << passive[defIdx].toSimpleString();
@@ -121,7 +124,9 @@ void Battle::doAttack(BattleMinions& active, size_t atkIdx, BattleMinions& passi
 
     int kill = 0, overkill = 0;
     damage(1 - attackPlayer_, defender, defIdx, attacker.isPoison(), overkill, kill, attacker.attack());
-    damage(attackPlayer_, attacker, atkIdx, defender.isPoison(), overkill, kill, defender.attack());
+    if (defender.attack() > 0) {
+        damage(attackPlayer_, attacker, atkIdx, defender.isPoison(), overkill, kill, defender.attack());
+    }
 
     if (kill) {
         attacker.onKill(this, attackPlayer_);
@@ -131,7 +136,7 @@ void Battle::doAttack(BattleMinions& active, size_t atkIdx, BattleMinions& passi
     }
 }
 
-void Battle::doAttack(BattleMinions& active, size_t atkIdx, BattleMinions& passive, size_t defIdx, std::vector<size_t> adjacent) {
+void Battle::doCleaveAttack(BattleMinions& active, size_t atkIdx, BattleMinions& passive, size_t defIdx, std::vector<size_t> adjacent) {
     Minion& attacker = active[atkIdx];
     Minion& defender = passive[defIdx];
 
@@ -140,7 +145,9 @@ void Battle::doAttack(BattleMinions& active, size_t atkIdx, BattleMinions& passi
     for (auto idx : adjacent) {
         damage(1 - attackPlayer_, passive[idx], idx, attacker.isPoison(), overkill, kill, attacker.attack());
     }
-    damage(attackPlayer_, attacker, atkIdx, defender.isPoison(), overkill, kill, defender.attack());
+    if (defender.attack() > 0) {
+        damage(attackPlayer_, attacker, atkIdx, defender.isPoison(), overkill, kill, defender.attack());
+    }
 
     if (kill) {
         attacker.onKill(this, attackPlayer_);
@@ -207,15 +214,21 @@ bool Battle::done() {
 
 BattleResult Battle::result() {
     // stars > 0 if you win, < 0 if opponent win, 0 if tied
-    int stars = board[0].remainingStars();
+    int stars = board[0].remainingStars() - board[1].remainingStars();
+    int count = 0;
     if (stars > 0) {
-        int count = board[0].remainingMinions();
-        return BattleResult(stars, count);
+        count = board[0].remainingMinions();
+        CHECK_GT(count, 0);
+        CHECK_EQ(board[1].remainingMinions(), 0);
+    } else if (stars < 0) {
+        count = board[1].remainingMinions();
+        CHECK_GT(count, 0);
+        CHECK_EQ(board[0].remainingMinions(), 0);
+    } else {
+        // we can not make sure of following, e.g., 1 MechanoEgg vs 1 MechanoEgg
+        // which would make a even
+        // CHECK_EQ(board[0].remainingMinions(), 0);
+        // CHECK_EQ(board[1].remainingMinions(), 0);
     }
-    stars = board[1].remainingStars();
-    if (stars > 0) {
-        int count = board[1].remainingMinions();
-        return BattleResult(-stars, count);
-    }
-    return BattleResult(0, 0);
+    return BattleResult(stars, count, turn_);
 }
