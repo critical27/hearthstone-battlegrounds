@@ -42,24 +42,34 @@ std::ostream& operator<<(std::ostream& os, const Battle& battle) {
     return os;
 }
 
-void Battle::prepare() {
-    // todo: reset both board if necessary
+void Battle::flipCoin() {
+    size_t m = board[0].size(), n = board[1].size();
+    if (m < n) {
+        yourTurn_ = false;
+        return;
+    } else if (m > n) {
+        yourTurn_ = true;
+        return;
+    }
 
     // decide which player attacks first, 0 is you, 1 is opponent
     if (!rand(0, 1)) {
-        coin_ = true;
         yourTurn_ = true;
     } else {
-        coin_ = false;
         yourTurn_ = false;
     }
+}
 
+void Battle::prepare() {
     // todo: hero_power
     // todo: aurus
 }
 
 BattleResult Battle::run() {
+    CHECK_EQ(2, board.size());
+    flipCoin();
     prepare();
+
     VLOG(1) << "Battle after " << turn_ << " turns:";
     VLOG(1) << "\n" << toPrettyString();
     while (!done() && turn_ < MAX_TURN) {

@@ -50,7 +50,7 @@ void Battle::deathRattle(size_t player, const Minion& deadMinion, MinionIter& it
             break;
         case MinionType::SpawnOfNZoth: {
             int amount = deadMinion.doubleIfGolden(1);
-            board[player].buffAll(amount, amount);
+            board[player].forEachMinion([amount] (Minion& m) { m.buff(amount, amount); });
             break;
         }
         // Tier 3
@@ -137,9 +137,10 @@ void Battle::summon(int count, Minion minion, size_t player, MinionIter& iter) {
     auto& battleMinions = board[player].battleMinions();
     for (int i = 0; i < count && board[player].hasEmptySlot(); ++i) {
         size_t pos = iter - board[player].battleMinions().begin();
-        VLOG(3) << "Board " << player << " insert " << minion << " at pos " << pos;
-        iter = battleMinions.insert(iter, minion);
-        onAllySummon(player, minion);
+        Minion summoned = minion;
+        VLOG(3) << "Board " << player << " insert " << summoned << " at pos " << pos;
+        iter = battleMinions.insert(iter, summoned);
+        onAllySummon(player, *iter);
     }
 }
 
@@ -159,23 +160,33 @@ void Battle::summon(int count, Minion minion, size_t player) {
     CHECK(minion.minionType() != MinionType::None);
     auto& battleMinions = board[player].battleMinions();
     for (int i = 0; i < count && board[player].hasEmptySlot(); ++i) {
+        VLOG(3) << "Board " << player << " add " << minion << " at last";
         battleMinions.emplace_back(minion);
         onAllySummon(player, minion);
     }
 }
 
 void Battle::onAllySummon(size_t player, Minion &summoned, bool played) {
-    board[player].forEachMinion([&] (Minion& m) { m.onAllySummon(this, player, summoned, played); });
+    board[player].forEachMinion([&] (Minion& m) {
+        m.onAllySummon(this, player, summoned, played);
+    });
+    VLOG(4) << "onAllySummon " << summoned;
 }
 
 void Battle::onAllyBreakDivineShield(size_t player) {
-    board[player].forEachMinion([player, this] (Minion& m) { m.onAllyBreakDivineShield(this, player); });
+    board[player].forEachMinion([player, this] (Minion& m) {
+        m.onAllyBreakDivineShield(this, player);
+    });
 }
 
 void Battle::onAllyAttack(size_t player) {
-    board[player].forEachMinion([player, this] (Minion& m) { m.onAllyAttack(this, player); });
+    board[player].forEachMinion([player, this] (Minion& m) {
+        m.onAllyAttack(this, player);
+    });
 }
 
 void Battle::onAllyDeath(size_t player, const Minion& deadMinion) {
-    board[player].forEachMinion([&] (Minion& m) { m.onAllyDeath(this, player, deadMinion); });
+    board[player].forEachMinion([&] (Minion& m) {
+        m.onAllyDeath(this, player, deadMinion);
+    });
 }

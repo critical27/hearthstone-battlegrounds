@@ -106,8 +106,6 @@ public:
 
     void takeDamageRandom(int amount);
 
-    void buffAll(int attack, int health);
-
     void buffRandomMinion(int attack, int health);
 
     void forEachMinion(MinionAction func,

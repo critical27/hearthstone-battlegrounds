@@ -15,7 +15,6 @@ std::string BattleMinions::toString() const {
     return ss.str();
 }
 
-// todo: when do we forward nextAttacker_
 size_t BattleMinions::nextAttackerIndex() {
     // return -1 if has no valid attacker, else index of attacker
     if (battleMinions_.empty()) {
@@ -116,13 +115,6 @@ void BattleMinions::takeDamageRandom(int amount) {
     }
 }
 
-void BattleMinions::buffAll(int attack, int health) {
-    // doodle: we buff all now, do we need to exclude dead ones
-    for (auto& minion : battleMinions_) {
-        minion.buff(attack, health);
-    }
-}
-
 void BattleMinions::buffRandomMinion(int attack, int health) {
     auto indexResult = livingMinions();
     if (!indexResult.empty()) {
@@ -133,8 +125,7 @@ void BattleMinions::buffRandomMinion(int attack, int health) {
 
 void BattleMinions::forEachMinion(MinionAction func, MinionBoolCondition pred) {
     for (auto& minion : battleMinions_) {
-        // doodle: isAlive?
-        if (pred(minion)) {
+        if (minion.isAlive() && pred(minion)) {
             func(minion);
         }
     }

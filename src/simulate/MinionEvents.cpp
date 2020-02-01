@@ -3,7 +3,12 @@
 #define TWICE_IF_GOLDEN for (int i = 0; i < (deadMinion.isGolden() ? 2 : 1); ++i)
 
 void Minion::onAllySummon(Battle* battle, size_t player, Minion& summoned, bool played) {
+    CHECK_NOTNULL(battle);
+    if (!isAlive()) {
+        return;
+    }
     switch (minionType_) {
+        // Tier 1
         case MinionType::MurlocTidecaller:
             if (summoned.isTribe(Tribe::Murloc)) {
                 buff(doubleIfGolden(1), 0);
@@ -17,6 +22,7 @@ void Minion::onAllySummon(Battle* battle, size_t player, Minion& summoned, bool 
                 }
             }
             break;
+        // Tier 3
         case MinionType::CobaltGuardian:
             if (summoned.isTribe(Tribe::Mech)) {
                 setDivineShield(true);
@@ -34,14 +40,10 @@ void Minion::onAllySummon(Battle* battle, size_t player, Minion& summoned, bool 
                 summoned.buff(doubleIfGolden(3), 0);
             }
             break;
+        // Tier 6:
         case MinionType::MamaBear:
             if (summoned.isTribe(Tribe::Beast)) {
                 summoned.buff(doubleIfGolden(4), doubleIfGolden(4));
-            }
-            break;
-        case MinionType::PreNerfMamaBear:
-            if (summoned.isTribe(Tribe::Beast)) {
-                summoned.buff(doubleIfGolden(5), doubleIfGolden(5));
             }
             break;
         default:
@@ -51,6 +53,10 @@ void Minion::onAllySummon(Battle* battle, size_t player, Minion& summoned, bool 
 
 void Minion::onAllyAttack(Battle* battle, size_t player) {
     CHECK_NOTNULL(battle);
+    if (!isAlive()) {
+        return;
+    }
+    // doodle: also add attack after FesterootHulk attacked
     switch (minionType_) {
         case MinionType::FesterootHulk:
             buff(doubleIfGolden(1), 0);
@@ -62,6 +68,9 @@ void Minion::onAllyAttack(Battle* battle, size_t player) {
 
 void Minion::onAllyBreakDivineShield(Battle* battle, size_t player) {
     CHECK_NOTNULL(battle);
+    if (!isAlive()) {
+        return;
+    }
     switch (minionType_) {
         case MinionType::BolvarFireblood:
             buff(doubleIfGolden(2), 0);
@@ -72,6 +81,10 @@ void Minion::onAllyBreakDivineShield(Battle* battle, size_t player) {
 }
 
 void Minion::onAllyDeath(Battle *battle, size_t player, const Minion& deadMinion) {
+    CHECK_NOTNULL(battle);
+    if (!isAlive()) {
+        return;
+    }
     switch (minionType_) {
         case MinionType::ScavengingHyena:
             if (deadMinion.isTribe(Tribe::Beast)) {
@@ -97,13 +110,15 @@ void Minion::onAllyDeath(Battle *battle, size_t player, const Minion& deadMinion
 
 void Minion::onDamaged(Battle* battle, size_t player, size_t pos) {
     CHECK_NOTNULL(battle);
+    // we don't need to check whether isAlive or not
+    // 1. summon to the right.
+    // 2. then check for death
     switch (minionType_) {
         case MinionType::ImpGangBoss:
-            // Note: summons to the right
-            battle->summon(1, Minion(MinionType::Imp, golden_), player, pos+1);
+            battle->summon(1, Minion(MinionType::Imp, golden_), player, pos + 1);
             break;
         case MinionType::SecurityRover:
-            battle->summon(1, Minion(MinionType::GuardBot, golden_), player, pos+1);
+            battle->summon(1, Minion(MinionType::GuardBot, golden_), player, pos + 1);
             break;
         default:
             break;
@@ -112,6 +127,9 @@ void Minion::onDamaged(Battle* battle, size_t player, size_t pos) {
 
 void Minion::onKill(Battle* battle, size_t player) {
     CHECK_NOTNULL(battle);
+    if (!isAlive()) {
+        return;
+    }
     switch (minionType_) {
         case MinionType::TheBoogeymonster:
             buff(doubleIfGolden(2), doubleIfGolden(2));

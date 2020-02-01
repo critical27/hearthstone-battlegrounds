@@ -63,6 +63,7 @@ public:
     BattleResult run();
 
 private:
+    void flipCoin();
     void prepare();
 
     void attack();
@@ -90,6 +91,9 @@ private:
     // death rattle
     void deathRattle(size_t player, const Minion& deadMinion, MinionIter& iter);
 
+    // todo
+    void doAuras();
+
     Board you_;
     Board opponent_;
 
@@ -116,8 +120,6 @@ private:
     size_t attackPlayer_{0};
     // who attack in this turn
     bool yourTurn_{true};
-    // coin means who attack first, true four you, false for opponent
-    bool coin_{true};
 
     int turn_{0};
 };

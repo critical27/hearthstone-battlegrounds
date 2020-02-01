@@ -11,8 +11,6 @@
 // Board state (for a single player)
 // -----------------------------------------------------------------------------
 
-const int BOARD_SIZE = 7;
-
 // Board state
 class Board {
 public:

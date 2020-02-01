@@ -135,8 +135,6 @@ enum class MinionType : unsigned char {
     VaultSafe,
     // Tokens
     NightmareAmalgam,
-    // Custom
-    PreNerfMamaBear,
 };
 
 const int MINIONTYPE_COUNT = 107;

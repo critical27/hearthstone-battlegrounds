@@ -3,6 +3,8 @@
 #include "utils/MinionInfo.h"
 #include "utils/HsDataUtils.h"
 
+const int BOARD_SIZE = 7;
+
 class Battle;
 
 // -----------------------------------------------------------------------------
@@ -138,6 +140,24 @@ public:
         this->health_ += health;
     }
 
+    // buff by the magnetic minion
+    void buffByMagnetic(Minion m) {
+        this->attack_ += m.attack_;
+        this->health_ += m.health_;
+        this->taunt_ |= m.taunt_;
+        this->divineShield_ |= m.divineShield_;
+        this->poison_ |= m.poison_;
+        this->windfury_ |= m.windfury_;
+        this->cleave_ |= m.cleave_;
+        this->reborn_ |= m.reborn_;
+        this->attackAura_ += m.attackAura_;
+        this->healthAura_ += m.healthAura_;
+        this->deathrattle_murlocs_ = std::max(this->deathrattle_murlocs_, m.deathrattle_murlocs_);
+        this->addDeathrattleMicrobots(m.deathrattle_microbots_);
+        this->addDeathrattleGoldenMicrobots(m.deathrattle_golden_microbots_);
+        this->addDeathrattlePlants(m.deathrattle_plants_);
+    }
+
     Minion newCopy() const {
         return Minion(minionType_, golden_);
     }
@@ -150,23 +170,6 @@ public:
 
     // For later tavern operation
     /*
-    void buff(Minion const &b) {
-        // buff by the stats of the reference minion (want b.type == None)
-        this->attack_ += b.attack_;
-        this->health_ += b.health_;
-        this->taunt_ |= b.taunt_;
-        this->divineShield_ |= b.divineShield_;
-        this->poison_ |= b.poison_;
-        this->windfury_ |= b.windfury_;
-        this->reborn_ |= b.reborn_;
-        this->attackAura_ += b.attackAura_;
-        this->healthAura_ += b.healthAura_;
-        this->deathrattle_murlocs_ = max(this->deathrattle_murlocs_, b.deathrattle_murlocs_);
-        this->add_deathrattle_microbots(b.deathrattle_microbots_);
-        this->add_deathrattle_golden_microbots(b.deathrattle_golden_microbots_);
-        this->add_deathrattle_plants(b.deathrattle_plants_);
-    }
-
     void aura_buff(int attack, int health) {
         this->attack_ += attack;
         this->health_ += health;
@@ -180,39 +183,21 @@ public:
         this->attackAura_ = 0;
         this->healthAura_ = 0;
     }
-
-    void add_deathrattle_microbots(int n = 3) {
-        this->deathrattle_microbots_ = std::min(this->deathrattle_microbots_ + n, 7);
-    }
-
-    void add_deathrattle_golden_microbots(int n = 3) {
-        this->deathrattle_golden_microbots_ = std::min(this->deathrattle_golden_microbots_ + n, 7);
-    }
-
-    void add_deathrattle_plants(int n = 2) {
-        this->deathrattle_plants_ = std::min(this->deathrattle_plants_ + n, 7);
-    }
      */
 
-    // qwer
-    // void on_summoned(Minion& summoned, int player);
-    // void on_after_friendly_attack(Minion const& attacker, int player);
-    // void on_break_divine_shield(int player);
+    void addDeathrattleMicrobots(int n = 3) {
+        this->deathrattle_microbots_ = std::min(this->deathrattle_microbots_ + n, BOARD_SIZE);
+    }
 
-    // Minion specific events
-    // void do_deathrattle(Minion const& m, int player, int pos);
-    // void do_base_deathrattle(Minion const& m, int player, int pos);
-    // void on_damaged(Minion const& m, int player, int pos);
-    // void on_after_friendly_attack(Minion& m, Minion const& attacker);
-    // void on_friendly_death(Minion& m, Minion const& dead_minion, int player);
-    // void on_friendly_summon(Minion& m, Minion& summoned, int player);
-    // void on_attack_and_kill(Minion& m, int player, int pos, bool overkill);
-    // void on_break_friendly_divine_shield(Minion& m, int player); // for Bolvar
+    void addDeathrattleGoldenMicrobots(int n = 3) {
+        this->deathrattle_golden_microbots_ = std::min(this->deathrattle_golden_microbots_ + n, BOARD_SIZE);
+    }
+
+    void addDeathrattlePlants(int n = 2) {
+        this->deathrattle_plants_ = std::min(this->deathrattle_plants_ + n, BOARD_SIZE);
+    }
 
     // bool recompute_aura_from(Board& board, int pos, Board const* enemy_board = nullptr);
-    // void do_battlecry(Board& board, int pos);
-    // void do_deathrattle(Battle& battle, int player, int pos) const;
-    // void on_friendly_summon(Board& board, Minion& summoned, bool played);
     void onAllySummon(Battle* battle, size_t player, Minion& summoned, bool played);
     void onAllyAttack(Battle* battle, size_t player);
     void onAllyBreakDivineShield(Battle* battle, size_t player);

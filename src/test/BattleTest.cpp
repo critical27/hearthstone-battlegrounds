@@ -441,10 +441,435 @@ TEST(BattleTest, RandomTest) {
     }
 }
 
+TEST(BattleTest, onAllySummonTest) {
+    {
+        DRAW_LINE;
+        // 1 Mecharoo [taunt], 1 CobaltGuardian
+        // vs
+        // 1 Mecharoo [taunt], 1 CobaltGuardian
+        std::vector<Minion> minions;
+        Minion tauntMecharoo(MinionType::Mecharoo);
+        tauntMecharoo.setTaunt(true);
+        minions.emplace_back(tauntMecharoo);
+        minions.emplace_back(Minion(MinionType::CobaltGuardian));
+        Board you(minions, HeroType::None, false, 1, 40);
+        Board opponent(minions, HeroType::None, false, 1, 40);
+        Battle battle(you, opponent);
+        auto result = battle.run();
+        ASSERT_EQ(0, result.stars());
+        ASSERT_EQ(0, result.count());
+        ASSERT_EQ(4, result.turn());
+    }
+    {
+        DRAW_LINE;
+        // 1 4/4 RatPack [taunt], 1 PackLeader
+        // vs
+        // 1 4/4 RatPack [taunt], 1 PackLeader
+        std::vector<Minion> minions;
+        Minion tauntRatPack(MinionType::RatPack);
+        tauntRatPack.buff(2, 2);
+        tauntRatPack.setTaunt(true);
+        minions.emplace_back(tauntRatPack);
+        minions.emplace_back(Minion(MinionType::PackLeader));
+        Board you(minions, HeroType::None, false, 1, 40);
+        Board opponent(minions, HeroType::None, false, 1, 40);
+        Battle battle(you, opponent);
+        auto result = battle.run();
+        ASSERT_EQ(0, result.stars());
+        ASSERT_EQ(0, result.count());
+        ASSERT_EQ(6, result.turn());
+    }
+    {
+        DRAW_LINE;
+        // 1 4/4 RatPack [taunt], 2 PackLeader
+        // vs
+        // 1 4/4 RatPack [taunt], 2 PackLeader
+        std::vector<Minion> minions;
+        Minion tauntRatPack(MinionType::RatPack);
+        tauntRatPack.buff(2, 2);
+        tauntRatPack.setTaunt(true);
+        minions.emplace_back(tauntRatPack);
+        minions.emplace_back(Minion(MinionType::PackLeader));
+        minions.emplace_back(Minion(MinionType::PackLeader));
+        Board you(minions, HeroType::None, false, 1, 40);
+        Board opponent(minions, HeroType::None, false, 1, 40);
+        Battle battle(you, opponent);
+        auto result = battle.run();
+        ASSERT_EQ(0, result.stars());
+        ASSERT_EQ(0, result.count());
+        ASSERT_EQ(7, result.turn());
+    }
+    {
+        DRAW_LINE;
+        // 1 4/4 RatPack [taunt], 1 MamaBear
+        // vs
+        // 1 4/4 RatPack [taunt], 1 MamaBear
+        std::vector<Minion> minions;
+        Minion tauntRatPack(MinionType::RatPack);
+        tauntRatPack.buff(2, 2);
+        tauntRatPack.setTaunt(true);
+        minions.emplace_back(tauntRatPack);
+        minions.emplace_back(Minion(MinionType::MamaBear));
+        Board you(minions, HeroType::None, false, 1, 40);
+        Board opponent(minions, HeroType::None, false, 1, 40);
+        Battle battle(you, opponent);
+        auto result = battle.run();
+        ASSERT_EQ(6, result.turn());
+    }
+    {
+        DRAW_LINE;
+        // 1 4/4 RatPack [taunt], 1 5/5 MamaBear
+        // vs
+        // 1 4/4 RatPack [taunt], 1 5/5 MamaBear
+        std::vector<Minion> minions;
+        Minion tauntRatPack(MinionType::RatPack);
+        tauntRatPack.buff(2, 2);
+        tauntRatPack.setTaunt(true);
+        minions.emplace_back(tauntRatPack);
+        Minion mamaBear(MinionType::MamaBear);
+        mamaBear.buff(1, 1);
+        minions.emplace_back(mamaBear);
+        Board you(minions, HeroType::None, false, 1, 40);
+        Board opponent(minions, HeroType::None, false, 1, 40);
+        Battle battle(you, opponent);
+        auto result = battle.run();
+        ASSERT_EQ(0, result.stars());
+        ASSERT_EQ(0, result.count());
+        ASSERT_EQ(6, result.turn());
+    }
+    {
+        DRAW_LINE;
+        // 1 4/4 RatPack [taunt], 2 MamaBear
+        // vs
+        // 1 4/4 RatPack [taunt], 2 MamaBear
+        std::vector<Minion> minions;
+        Minion tauntRatPack(MinionType::RatPack);
+        tauntRatPack.buff(2, 2);
+        tauntRatPack.setTaunt(true);
+        minions.emplace_back(tauntRatPack);
+        minions.emplace_back(Minion(MinionType::MamaBear));
+        minions.emplace_back(Minion(MinionType::MamaBear));
+        Board you(minions, HeroType::None, false, 1, 40);
+        Board opponent(minions, HeroType::None, false, 1, 40);
+        Battle battle(you, opponent);
+        auto result = battle.run();
+        ASSERT_EQ(7, result.turn());
+    }
+}
+
+TEST(BattleTest, onAllyAttackTest) {
+    {
+        DRAW_LINE;
+        // 1 AnnoyOTron, 1 FesterootHulk
+        // vs
+        // 1 AnnoyOTron, 1 FesterootHulk
+        std::vector<Minion> minions;
+        minions.emplace_back(Minion(MinionType::AnnoyOTron));
+        minions.emplace_back(Minion(MinionType::FesterootHulk));
+        Board you(minions, HeroType::None, false, 1, 40);
+        Board opponent(minions, HeroType::None, false, 1, 40);
+        Battle battle(you, opponent);
+        auto result = battle.run();
+        ASSERT_EQ(0, result.stars());
+        ASSERT_EQ(0, result.count());
+        ASSERT_EQ(6, result.turn());
+    }
+    {
+        DRAW_LINE;
+        // 1 Alleycat, 1 FesterootHulk
+        // vs
+        // 1 Alleycat, 1 FesterootHulk
+        std::vector<Minion> minions;
+        minions.emplace_back(Minion(MinionType::Alleycat));
+        minions.emplace_back(Minion(MinionType::FesterootHulk));
+        Board you(minions, HeroType::None, false, 1, 40);
+        Board opponent(minions, HeroType::None, false, 1, 40);
+        Battle battle(you, opponent);
+        auto result = battle.run();
+        ASSERT_EQ(0, result.stars());
+        ASSERT_EQ(0, result.count());
+        ASSERT_EQ(4, result.turn());
+    }
+}
+
+TEST(BattleTest, onAllyBreakDivineShieldTest) {
+    {
+        DRAW_LINE;
+        // 1 RighteousProtector, 1 BolvarFireblood
+        // vs
+        // 1 RighteousProtector, 1 BolvarFireblood
+        std::vector<Minion> minions;
+        minions.emplace_back(Minion(MinionType::RighteousProtector));
+        minions.emplace_back(Minion(MinionType::BolvarFireblood));
+        Board you(minions, HeroType::None, false, 1, 40);
+        Board opponent(minions, HeroType::None, false, 1, 40);
+        Battle battle(you, opponent);
+        auto result = battle.run();
+        ASSERT_EQ(0, result.stars());
+        ASSERT_EQ(0, result.count());
+        ASSERT_EQ(5, result.turn());
+    }
+    {
+        DRAW_LINE;
+        // 2 RighteousProtector, 1 BolvarFireblood
+        // vs
+        // 2 RighteousProtector, 1 BolvarFireblood
+        std::vector<Minion> minions;
+        minions.emplace_back(Minion(MinionType::RighteousProtector));
+        minions.emplace_back(Minion(MinionType::RighteousProtector));
+        minions.emplace_back(Minion(MinionType::BolvarFireblood));
+        Board you(minions, HeroType::None, false, 1, 40);
+        Board opponent(minions, HeroType::None, false, 1, 40);
+        Battle battle(you, opponent);
+        auto result = battle.run();
+        ASSERT_EQ(0, result.stars());
+        ASSERT_EQ(0, result.count());
+        ASSERT_EQ(6, result.turn());
+    }
+}
+
+TEST(BattleTest, onAllyDeathTest) {
+    {
+        DRAW_LINE;
+        // 1 Alleycat, 1 ScavengingHyena
+        // vs
+        // 1 Alleycat, 1 ScavengingHyena
+        std::vector<Minion> minions;
+        minions.emplace_back(Minion(MinionType::Alleycat));
+        minions.emplace_back(Minion(MinionType::ScavengingHyena));
+        Board you(minions, HeroType::None, false, 1, 40);
+        Board opponent(minions, HeroType::None, false, 1, 40);
+        Battle battle(you, opponent);
+        auto result = battle.run();
+        ASSERT_EQ(0, result.stars());
+        ASSERT_EQ(0, result.count());
+    }
+    {
+        DRAW_LINE;
+        // 7 ScavengingHyena
+        // vs
+        // 7 ScavengingHyena
+        std::vector<Minion> minions;
+        for (int i = 0; i < 7; i++) {
+            minions.emplace_back(Minion(MinionType::ScavengingHyena));
+        }
+        Board you(minions, HeroType::None, false, 1, 40);
+        Board opponent(minions, HeroType::None, false, 1, 40);
+        Battle battle(you, opponent);
+        auto result = battle.run();
+        ASSERT_EQ(0, result.stars());
+        ASSERT_EQ(0, result.count());
+        ASSERT_EQ(7, result.turn());
+    }
+    {
+        DRAW_LINE;
+        // 6 Alleycat vs 3 Imp [taunt], 1 SoulJuggler
+        std::vector<Minion> p1, p2;
+        for (int i = 0; i < 6; i++) {
+            p1.emplace_back(Minion(MinionType::Alleycat));
+        }
+        for (int i = 0; i < 3; i++) {
+            Minion imp(MinionType::Imp);
+            imp.setTaunt(true);
+            p2.emplace_back(imp);
+        }
+        p2.emplace_back(Minion(MinionType::SoulJuggler));
+        Board you(p1, HeroType::None, false, 1, 40);
+        Board opponent(p2, HeroType::None, false, 1, 40);
+        Battle battle(you, opponent);
+        auto result = battle.run();
+        ASSERT_EQ(-3, result.stars());
+        ASSERT_EQ(1, result.count());
+        ASSERT_EQ(3, result.turn());
+    }
+    {
+        DRAW_LINE;
+        // 3 Mecharoo vs 3 Imp [taunt], 1 SoulJuggler
+        std::vector<Minion> p1, p2;
+        for (int i = 0; i < 3; i++) {
+            p1.emplace_back(Minion(MinionType::Mecharoo));
+        }
+        for (int i = 0; i < 3; i++) {
+            Minion imp(MinionType::Imp);
+            imp.setTaunt(true);
+            p2.emplace_back(imp);
+        }
+        p2.emplace_back(Minion(MinionType::SoulJuggler));
+        Board you(p1, HeroType::None, false, 1, 40);
+        Board opponent(p2, HeroType::None, false, 1, 40);
+        Battle battle(you, opponent);
+        auto result = battle.run();
+        ASSERT_EQ(-3, result.stars());
+        ASSERT_EQ(1, result.count());
+        ASSERT_EQ(3, result.turn());
+    }
+    {
+        DRAW_LINE;
+        // 1 Mecharoo, 1 Junkbot
+        // vs
+        // 1 Mecharoo, 1 Junkbot
+        std::vector<Minion> minions;
+        minions.emplace_back(Minion(MinionType::Mecharoo));
+        minions.emplace_back(Minion(MinionType::Junkbot));
+        Board you(minions, HeroType::None, false, 1, 40);
+        Board opponent(minions, HeroType::None, false, 1, 40);
+        Battle battle(you, opponent);
+        auto result = battle.run();
+        ASSERT_EQ(0, result.stars());
+        ASSERT_EQ(0, result.count());
+    }
+}
+
+TEST(BattleTest, onDamagedTest) {
+    {
+        DRAW_LINE;
+        // 7 Alleycat vs 1 ImpGangBoss
+        std::vector<Minion> p1, p2;
+        for (int i = 0; i < 7; i++) {
+            p1.emplace_back(Minion(MinionType::Alleycat));
+        }
+        p2.emplace_back(Minion(MinionType::ImpGangBoss));
+        Board you(p1, HeroType::None, false, 1, 40);
+        Board opponent(p2, HeroType::None, false, 1, 40);
+        Battle battle(you, opponent);
+        auto result = battle.run();
+        ASSERT_EQ(-1, result.stars());
+        ASSERT_EQ(1, result.count());
+        ASSERT_EQ(7, result.turn());
+    }
+    {
+        DRAW_LINE;
+        // 1 Alleycat vs 7 ImpGangBoss
+        // because we have no empty slot, so there would be 7 ImpGangBoss alive in the end
+        std::vector<Minion> p1, p2;
+        p1.emplace_back(Minion(MinionType::Alleycat));
+        for (int i = 0; i < 7; i++) {
+            p2.emplace_back(Minion(MinionType::ImpGangBoss));
+        }
+        Board you(p1, HeroType::None, false, 1, 40);
+        Board opponent(p2, HeroType::None, false, 1, 40);
+        Battle battle(you, opponent);
+        auto result = battle.run();
+        ASSERT_EQ(-21, result.stars());
+        ASSERT_EQ(7, result.count());
+        ASSERT_EQ(1, result.turn());
+    }
+    {
+        DRAW_LINE;
+        // 1 Alleycat vs 7 2/1 ImpGangBoss
+        // because we have no empty slot, no imp is summoned even if the ImpGangBoss is dying,
+        // so there would be 6 ImpGangBoss alive in the end
+        std::vector<Minion> p1, p2;
+        p1.emplace_back(Minion(MinionType::Alleycat));
+        for (int i = 0; i < 7; i++) {
+            Minion impGangBoss(MinionType::ImpGangBoss);
+            impGangBoss.setHealth(1);
+            p2.emplace_back(impGangBoss);
+        }
+        Board you(p1, HeroType::None, false, 1, 40);
+        Board opponent(p2, HeroType::None, false, 1, 40);
+        Battle battle(you, opponent);
+        auto result = battle.run();
+        ASSERT_EQ(-18, result.stars());
+        ASSERT_EQ(6, result.count());
+        ASSERT_EQ(1, result.turn());
+    }
+    {
+        DRAW_LINE;
+        // 1 SecurityRover
+        // vs
+        // 1 SecurityRover
+        std::vector<Minion> minions;
+        minions.emplace_back(Minion(MinionType::SecurityRover));
+        Board you(minions, HeroType::None, false, 1, 40);
+        Board opponent(minions, HeroType::None, false, 1, 40);
+        Battle battle(you, opponent);
+        auto result = battle.run();
+        ASSERT_EQ(0, result.stars());
+        ASSERT_EQ(0, result.count());
+        ASSERT_EQ(9, result.turn());
+    }
+}
+
+TEST(BattleTest, onKillTest) {
+    {
+        DRAW_LINE;
+        // 7 Alleycat vs 1 TheBoogeymonster
+        std::vector<Minion> p1, p2;
+        for (int i = 0; i < 7; i++) {
+            p1.emplace_back(Minion(MinionType::Alleycat));
+        }
+        p2.emplace_back(Minion(MinionType::TheBoogeymonster));
+        Board you(p1, HeroType::None, false, 1, 40);
+        Board opponent(p2, HeroType::None, false, 1, 40);
+        Battle battle(you, opponent);
+        auto result = battle.run();
+        ASSERT_EQ(-4, result.stars());
+        ASSERT_EQ(1, result.count());
+        ASSERT_EQ(7, result.turn());
+    }
+}
+
+TEST(BattleTest, onOverKillTest) {
+    {
+        DRAW_LINE;
+        // 1 Alleycat vs 2 IronhideDirehorn
+        std::vector<Minion> p1, p2;
+        p1.emplace_back(Minion(MinionType::Alleycat));
+        for (int i = 0; i < 2; i++) {
+            p2.emplace_back(Minion(MinionType::IronhideDirehorn));
+        }
+        Board you(p1, HeroType::None, false, 1, 40);
+        Board opponent(p2, HeroType::None, false, 1, 40);
+        Battle battle(you, opponent);
+        auto result = battle.run();
+        ASSERT_EQ(-11, result.stars());
+        ASSERT_EQ(3, result.count());
+        ASSERT_EQ(1, result.turn());
+    }
+    {
+        DRAW_LINE;
+        // 1 7/7 Alleycat vs 2 IronhideDirehorn
+        std::vector<Minion> p1, p2;
+        Minion alleycat(MinionType::Alleycat);
+        alleycat.buff(6, 6);
+        p1.emplace_back(alleycat);
+        for (int i = 0; i < 2; i++) {
+            p2.emplace_back(Minion(MinionType::IronhideDirehorn));
+        }
+        Board you(p1, HeroType::None, false, 1, 40);
+        Board opponent(p2, HeroType::None, false, 1, 40);
+        Battle battle(you, opponent);
+        auto result = battle.run();
+        ASSERT_EQ(-5, result.stars());
+        ASSERT_EQ(1, result.count());
+        ASSERT_EQ(1, result.turn());
+    }
+    {
+        DRAW_LINE;
+        // 1 Alleycat vs 7 IronhideDirehorn
+        std::vector<Minion> p1, p2;
+        p1.emplace_back(Minion(MinionType::Alleycat));
+        for (int i = 0; i < 7; i++) {
+            p2.emplace_back(Minion(MinionType::IronhideDirehorn));
+        }
+        Board you(p1, HeroType::None, false, 1, 40);
+        Board opponent(p2, HeroType::None, false, 1, 40);
+        Battle battle(you, opponent);
+        auto result = battle.run();
+        ASSERT_EQ(-35, result.stars());
+        ASSERT_EQ(7, result.count());
+        ASSERT_EQ(1, result.turn());
+    }
+}
+
+TEST(BattleTest, Test) {
+}
+
 int main(int argc, char** argv) {
     google::InitGoogleLogging(argv[0]);
     testing::InitGoogleTest(&argc, argv);
     FLAGS_logtostderr = true;
-    FLAGS_v = 1;
+    FLAGS_v = 2;
     return RUN_ALL_TESTS();
 }
