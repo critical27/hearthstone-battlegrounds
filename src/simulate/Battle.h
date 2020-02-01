@@ -67,9 +67,9 @@ private:
     void prepare();
 
     void attack();
-    void singleAttack(BattleMinions& active, BattleMinions& passive, size_t atkIdx);
-    void doAttack(BattleMinions& active, size_t atkIdx, BattleMinions& passive, size_t defIdx);
-    void doCleaveAttack(BattleMinions& active, size_t atkIdx, BattleMinions& passive, size_t defIdx, std::vector<size_t> adjacent);
+    bool singleAttack(BattleMinions& active, BattleMinions& passive, size_t atkIdx);
+    bool doAttack(BattleMinions& active, size_t atkIdx, BattleMinions& passive, size_t defIdx);
+    bool doCleaveAttack(BattleMinions& active, size_t atkIdx, BattleMinions& passive, size_t defIdx, std::vector<size_t> adjacent);
     void damage(size_t playerIdx, Minion& defender, size_t defIdx, bool poison, int& overkill, int& kill, int amount);
 
     void checkForDeath();

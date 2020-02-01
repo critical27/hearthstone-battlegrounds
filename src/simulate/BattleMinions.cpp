@@ -44,6 +44,7 @@ size_t BattleMinions::nextAttackerIndex() {
 
 
 size_t BattleMinions::nextDefenderIndex() {
+    // todo: to fix, windfury attack, only 1 minion remains
     CHECK(!battleMinions_.empty());
     IndexResult tauntIdx;
     for (size_t i = 0; i < battleMinions_.size(); i++) {
@@ -59,6 +60,7 @@ size_t BattleMinions::nextDefenderIndex() {
 }
 
 size_t BattleMinions::minionWithLowestAttack() {
+    // todo: to fix, windfury attack, only 1 minion remains
     CHECK(!battleMinions_.empty());
     size_t ret = 0;
     for (size_t i = 1; i < battleMinions_.size(); i++) {

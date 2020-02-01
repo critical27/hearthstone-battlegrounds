@@ -474,7 +474,7 @@ TEST(BattleTest, TierSixDeathRattleTest) {
 }
 
 TEST(BattleTest, RandomTest) {
-    for (int i = 0; i < 100; i++) {
+    for (int i = 0; i < 1000; i++) {
         DRAW_LINE;
         // 1 MountedRaptor, 1 PilotedShredder, 1 PilotedSkyGolem, 1 Ghastcoiler, 1 SneedsOldShredder
         // vs
@@ -879,7 +879,117 @@ TEST(BattleTest, onOverKillTest) {
     }
 }
 
+TEST(BattleTest, WindfuryTest) {
+    {
+        DRAW_LINE;
+        // 2 Alleycat vs 1 MurlocWarleader [windfury]
+        std::vector<Minion> p1, p2;
+        for (int i = 0; i < 2; i++) {
+            p1.emplace_back(Minion(MinionType::Alleycat));
+        }
+        Minion murlocWarleader(MinionType::MurlocWarleader);
+        murlocWarleader.setWindfury(true);
+        p2.emplace_back(murlocWarleader);
+        Board you(p1, HeroType::None, false, 1, 40);
+        Board opponent(p2, HeroType::None, false, 1, 40);
+        Battle battle(you, opponent);
+        auto result = battle.run();
+        ASSERT_EQ(-2, result.stars());
+        ASSERT_EQ(1, result.count());
+        ASSERT_EQ(2, result.turn());
+    }
+    {
+        DRAW_LINE;
+        // 3 Alleycat vs 1 MurlocWarleader [windfury]
+        std::vector<Minion> p1, p2;
+        for (int i = 0; i < 3; i++) {
+            p1.emplace_back(Minion(MinionType::Alleycat));
+        }
+        Minion murlocWarleader(MinionType::MurlocWarleader);
+        murlocWarleader.setWindfury(true);
+        p2.emplace_back(murlocWarleader);
+        Board you(p1, HeroType::None, false, 1, 40);
+        Board opponent(p2, HeroType::None, false, 1, 40);
+        Battle battle(you, opponent);
+        auto result = battle.run();
+        ASSERT_EQ(0, result.stars());
+        ASSERT_EQ(0, result.count());
+        ASSERT_EQ(2, result.turn());
+    }
+    {
+        DRAW_LINE;
+        // 2 Alleycat vs 1 ZappSlywick
+        std::vector<Minion> p1, p2;
+        for (int i = 0; i < 2; i++) {
+            p1.emplace_back(Minion(MinionType::Alleycat));
+        }
+        p2.emplace_back(Minion(MinionType::ZappSlywick));
+        Board you(p1, HeroType::None, false, 1, 40);
+        Board opponent(p2, HeroType::None, false, 1, 40);
+        Battle battle(you, opponent);
+        auto result = battle.run();
+        ASSERT_EQ(-6, result.stars());
+        ASSERT_EQ(1, result.count());
+        ASSERT_EQ(2, result.turn());
+    }
+    {
+        DRAW_LINE;
+        // 3 Alleycat vs 1 ZappSlywick
+        std::vector<Minion> p1, p2;
+        for (int i = 0; i < 3; i++) {
+            p1.emplace_back(Minion(MinionType::Alleycat));
+        }
+        p2.emplace_back(Minion(MinionType::ZappSlywick));
+        Board you(p1, HeroType::None, false, 1, 40);
+        Board opponent(p2, HeroType::None, false, 1, 40);
+        Battle battle(you, opponent);
+        auto result = battle.run();
+        ASSERT_EQ(-6, result.stars());
+        ASSERT_EQ(1, result.count());
+        ASSERT_EQ(2, result.turn());
+    }
+    {
+        DRAW_LINE;
+        // 6 Alleycat vs 2 ZappSlywick
+        std::vector<Minion> p1, p2;
+        for (int i = 0; i < 6; i++) {
+            p1.emplace_back(Minion(MinionType::Alleycat));
+        }
+        for (int i = 0; i < 2; i++) {
+            p2.emplace_back(Minion(MinionType::ZappSlywick));
+        }
+        Board you(p1, HeroType::None, false, 1, 40);
+        Board opponent(p2, HeroType::None, false, 1, 40);
+        Battle battle(you, opponent);
+        auto result = battle.run();
+        ASSERT_EQ(-12, result.stars());
+        ASSERT_EQ(2, result.count());
+        ASSERT_EQ(4, result.turn());
+    }
+    {
+        DRAW_LINE;
+        // 5 Alleycat vs 1 golden ZappSlywick
+        std::vector<Minion> p1, p2;
+        for (int i = 0; i < 5; i++) {
+            p1.emplace_back(Minion(MinionType::Alleycat));
+        }
+        p2.emplace_back(Minion(MinionType::ZappSlywick, true));
+        Board you(p1, HeroType::None, false, 1, 40);
+        Board opponent(p2, HeroType::None, false, 1, 40);
+        Battle battle(you, opponent);
+        auto result = battle.run();
+        ASSERT_EQ(-6, result.stars());
+        ASSERT_EQ(1, result.count());
+        ASSERT_EQ(2, result.turn());
+    }
+}
+
+TEST(BattleTest, CleaveTest) {
+
+}
+
 TEST(BattleTest, Test) {
+
 }
 
 int main(int argc, char** argv) {

@@ -91,43 +91,52 @@ void Battle::attack() {
         Minion& attacker = active[atkIdx];
         int attackTimes = attacker.attackTimes();
         CHECK(attacker.isAlive());
-        for (int i = 0; i < attackTimes && attacker.isAlive(); i++) {
-            singleAttack(active, passive, atkIdx);
+        CHECK_GT(attacker.attack(), 0);
+        bool attackerAlive = true;
+        for (; attackTimes > 0; attackTimes--) {
+            if (!passive.hasAliveMinion()) {
+                break;
+            }
+            attackerAlive = singleAttack(active, passive, atkIdx);
             onAllyAttack(attackPlayer_);
+            checkForDeath();
+            if (!attackerAlive) {
+                break;
+            }
         }
-        if (attacker.isAlive()) {
+        if (attackerAlive) {
             active.forwardAttackerIndex();
         }
-        checkForDeath();
     }
 }
 
-void Battle::singleAttack(BattleMinions& active, BattleMinions& passive, size_t atkIdx) {
+// return true for attacker alive, otherwise dead
+bool Battle::singleAttack(BattleMinions& active, BattleMinions& passive, size_t atkIdx) {
     Minion& attacker = active[atkIdx];
     if (attacker.minionType() != MinionType::ZappSlywick) {
         size_t defIdx = passive.nextDefenderIndex();
         if (attacker.isCleave()) {
             auto adjacent = passive.getAdajacent(defIdx);
-            doCleaveAttack(active, atkIdx, passive, defIdx, adjacent);
             VLOG(2) << "Board " << attackPlayer_ << " minion " << atkIdx << " " << active[atkIdx].toSimpleString() << " [Cleave]"
                     << " **attack** "
                     << "Board " << 1 - attackPlayer_ << " minion " << defIdx << " " << passive[defIdx].toSimpleString();
+            return doCleaveAttack(active, atkIdx, passive, defIdx, adjacent);
         } else {
             VLOG(2) << "Board " << attackPlayer_ << " minion " << atkIdx << " " << active[atkIdx].toSimpleString()
                     << " **attack** "
                     << "Board " << 1 - attackPlayer_ << " minion " << defIdx << " " << passive[defIdx].toSimpleString();
-            doAttack(active, atkIdx, passive, defIdx);
+            return doAttack(active, atkIdx, passive, defIdx);
         }
     } else {
         size_t defIdx = passive.minionWithLowestAttack();
         VLOG(2) << "Board " << attackPlayer_ << " minion " << atkIdx << " " << active[atkIdx].toSimpleString()
                 << " **attack** "
                 << "Board " << 1 - attackPlayer_ << " minion " << defIdx << " " << passive[defIdx].toSimpleString();
-        doAttack(active, atkIdx, passive, defIdx);
+        return doAttack(active, atkIdx, passive, defIdx);
     }
 }
 
-void Battle::doAttack(BattleMinions& active, size_t atkIdx, BattleMinions& passive, size_t defIdx) {
+bool Battle::doAttack(BattleMinions& active, size_t atkIdx, BattleMinions& passive, size_t defIdx) {
     Minion& attacker = active[atkIdx];
     Minion& defender = passive[defIdx];
 
@@ -143,9 +152,10 @@ void Battle::doAttack(BattleMinions& active, size_t atkIdx, BattleMinions& passi
     if (overkill) {
         attacker.onOverKill(this, attackPlayer_, atkIdx);
     }
+    return attacker.isAlive();
 }
 
-void Battle::doCleaveAttack(BattleMinions& active, size_t atkIdx, BattleMinions& passive, size_t defIdx, std::vector<size_t> adjacent) {
+bool Battle::doCleaveAttack(BattleMinions& active, size_t atkIdx, BattleMinions& passive, size_t defIdx, std::vector<size_t> adjacent) {
     Minion& attacker = active[atkIdx];
     Minion& defender = passive[defIdx];
 
@@ -164,6 +174,7 @@ void Battle::doCleaveAttack(BattleMinions& active, size_t atkIdx, BattleMinions&
     if (overkill) {
         attacker.onOverKill(this, attackPlayer_, atkIdx);
     }
+    return attacker.isAlive();
 }
 
 // deal amount damage to defender minion of player idx

@@ -21,7 +21,7 @@ public:
           deathrattle_murlocs_(0), deathrattle_microbots_(0), deathrattle_golden_microbots_(0),
           deathrattle_plants_(0),
           attackAura_(0), healthAura_(0) {
-        if (windfury_ && golden) {
+        if (minionType_ == MinionType::ZappSlywick && golden) {
             megaWindFury_ = true;
         }
     }
@@ -140,6 +140,10 @@ public:
 
     bool isMegaWindfury() const {
         return megaWindFury_;
+    }
+
+    void setWindfury(bool value) {
+        windfury_ = value;
     }
 
     bool isCleave() const {

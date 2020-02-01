@@ -37,7 +37,9 @@ public:
     size_t nextDefenderIndex();
 
     void forwardAttackerIndex() {
-        nextAttacker_ = (nextAttacker_ + 1) % battleMinions_.size();
+        if (!battleMinions_.empty()) {
+            nextAttacker_ = (nextAttacker_ + 1) % battleMinions_.size();
+        }
     }
 
     size_t size() const {
