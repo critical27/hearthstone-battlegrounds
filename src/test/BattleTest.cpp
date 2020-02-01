@@ -474,7 +474,7 @@ TEST(BattleTest, TierSixDeathRattleTest) {
 }
 
 TEST(BattleTest, RandomTest) {
-    for (int i = 0; i < 1000; i++) {
+    for (int i = 0; i < 100; i++) {
         DRAW_LINE;
         // 1 MountedRaptor, 1 PilotedShredder, 1 PilotedSkyGolem, 1 Ghastcoiler, 1 SneedsOldShredder
         // vs
@@ -985,11 +985,178 @@ TEST(BattleTest, WindfuryTest) {
 }
 
 TEST(BattleTest, CleaveTest) {
-
+    {
+        DRAW_LINE;
+        // 3 Alleycat vs 1 CaveHydra
+        std::vector<Minion> p1, p2;
+        for (int i = 0; i < 3; i++) {
+            p1.emplace_back(Minion(MinionType::Alleycat));
+        }
+        p2.emplace_back(Minion(MinionType::CaveHydra));
+        Board you(p1, HeroType::None, false, 1, 40);
+        Board opponent(p2, HeroType::None, false, 1, 40);
+        Battle battle(you, opponent);
+        auto result = battle.run();
+        ASSERT_EQ(-4, result.stars());
+        ASSERT_EQ(1, result.count());
+        ASSERT_EQ(2, result.turn());
+    }
+    {
+        DRAW_LINE;
+        // taunt at first
+        // 1 2/2 RatPack [taunt], 2 2/2 RatPack
+        // vs
+        // 1 CaveHydra, 4 Aleycat
+        std::vector<Minion> p1, p2;
+        for (int i = 0; i < 3; i++) {
+            p1.emplace_back(Minion(MinionType::RatPack));
+            if (i == 0) {
+                p1.back().setTaunt(true);
+            }
+        }
+        p2.emplace_back(Minion(MinionType::CaveHydra));
+        for (int i = 0; i < 4; i++) {
+            p2.emplace_back(Minion(MinionType::Alleycat));
+        }
+        Board you(p1, HeroType::None, false, 1, 40);
+        Board opponent(p2, HeroType::None, false, 1, 40);
+        Battle battle(you, opponent);
+        auto result = battle.run();
+    }
+    {
+        DRAW_LINE;
+        // taunt at middle
+        // 1 2/2 RatPack, 1 2/2 RatPack [taunt], 1 2/2 RatPack
+        // vs
+        // 1 CaveHydra, 4 Aleycat
+        std::vector<Minion> p1, p2;
+        for (int i = 0; i < 3; i++) {
+            p1.emplace_back(Minion(MinionType::RatPack));
+            if (i == 1) {
+                p1.back().setTaunt(true);
+            }
+        }
+        p2.emplace_back(Minion(MinionType::CaveHydra));
+        for (int i = 0; i < 4; i++) {
+            p2.emplace_back(Minion(MinionType::Alleycat));
+        }
+        Board you(p1, HeroType::None, false, 1, 40);
+        Board opponent(p2, HeroType::None, false, 1, 40);
+        Battle battle(you, opponent);
+        auto result = battle.run();
+        ASSERT_EQ(0, result.stars());
+        ASSERT_EQ(0, result.count());
+        ASSERT_EQ(7, result.turn());
+    }
+    {
+        DRAW_LINE;
+        // taunt at last
+        // 2 2/2 RatPack, 1 2/2 RatPack [taunt]
+        // vs
+        // 1 CaveHydra, 4 Alleycat
+        std::vector<Minion> p1, p2;
+        for (int i = 0; i < 3; i++) {
+            p1.emplace_back(Minion(MinionType::RatPack));
+            if (i == 2) {
+                p1.back().setTaunt(true);
+            }
+        }
+        p2.emplace_back(Minion(MinionType::CaveHydra));
+        for (int i = 0; i < 4; i++) {
+            p2.emplace_back(Minion(MinionType::Alleycat));
+        }
+        Board you(p1, HeroType::None, false, 1, 40);
+        Board opponent(p2, HeroType::None, false, 1, 40);
+        Battle battle(you, opponent);
+        auto result = battle.run();
+    }
+    {
+        DRAW_LINE;
+        // 1 Alleycat, 1 2/2 RatPack, 1 4/8 golden VulgarHomunculus [taunt], 1 2/4 ImpGangBoss
+        // vs
+        // 1 CaveHydra
+        std::vector<Minion> p1, p2;
+        p1.emplace_back(Minion(MinionType::Alleycat));
+        p1.emplace_back(Minion(MinionType::RatPack));
+        p1.emplace_back(Minion(MinionType::VulgarHomunculus, true));
+        p1.emplace_back(Minion(MinionType::ImpGangBoss));
+        p2.emplace_back(Minion(MinionType::CaveHydra));
+        Board you(p1, HeroType::None, false, 1, 40);
+        Board opponent(p2, HeroType::None, false, 1, 40);
+        Battle battle(you, opponent);
+        auto result = battle.run();
+        ASSERT_EQ(7, result.stars());
+        ASSERT_EQ(5, result.count());
+        ASSERT_EQ(2, result.turn());
+    }
+    {
+        DRAW_LINE;
+        // 4 Alleycat, 1 2/2 RatPack, 1 4/8 golden VulgarHomunculus [taunt], 1 2/4 ImpGangBoss
+        // vs
+        // 1 CaveHydra
+        std::vector<Minion> p1, p2;
+        for (int i = 0; i < 4; i++) {
+            p1.emplace_back(Minion(MinionType::Alleycat));
+        }
+        p1.emplace_back(Minion(MinionType::RatPack));
+        p1.emplace_back(Minion(MinionType::VulgarHomunculus, true));
+        p1.emplace_back(Minion(MinionType::ImpGangBoss));
+        p2.emplace_back(Minion(MinionType::CaveHydra));
+        Board you(p1, HeroType::None, false, 1, 40);
+        Board opponent(p2, HeroType::None, false, 1, 40);
+        Battle battle(you, opponent);
+        auto result = battle.run();
+        ASSERT_EQ(9, result.stars());
+        ASSERT_EQ(7, result.count());
+        ASSERT_EQ(2, result.turn());
+    }
+    {
+        DRAW_LINE;
+        // 4 Alleycat, 1 2/2 RatPack, 1 4/8 golden VulgarHomunculus [taunt], 1 2/2 RatPack
+        // vs
+        // 1 CaveHydra
+        std::vector<Minion> p1, p2;
+        for (int i = 0; i < 4; i++) {
+            p1.emplace_back(Minion(MinionType::Alleycat));
+        }
+        p1.emplace_back(Minion(MinionType::RatPack));
+        p1.emplace_back(Minion(MinionType::VulgarHomunculus, true));
+        p1.emplace_back(Minion(MinionType::RatPack));
+        p2.emplace_back(Minion(MinionType::CaveHydra));
+        Board you(p1, HeroType::None, false, 1, 40);
+        Board opponent(p2, HeroType::None, false, 1, 40);
+        Battle battle(you, opponent);
+        auto result = battle.run();
+        ASSERT_EQ(7, result.stars());
+        ASSERT_EQ(7, result.count());
+        ASSERT_EQ(2, result.turn());
+    }
+    {
+        DRAW_LINE;
+        // 4 Alleycat, 1 golden RatPack, 1 4/8 golden VulgarHomunculus [taunt], 1 2/2 RatPack
+        // vs
+        // 1 4/4 golden CaveHydra
+        std::vector<Minion> p1, p2;
+        for (int i = 0; i < 4; i++) {
+            p1.emplace_back(Minion(MinionType::Alleycat));
+        }
+        p1.emplace_back(Minion(MinionType::RatPack, true));
+        p1.emplace_back(Minion(MinionType::VulgarHomunculus, true));
+        p1.emplace_back(Minion(MinionType::RatPack));
+        Minion caveHydra(MinionType::CaveHydra, true);
+        caveHydra.setHealth(4);
+        p2.emplace_back(caveHydra);
+        Board you(p1, HeroType::None, false, 1, 40);
+        Board opponent(p2, HeroType::None, false, 1, 40);
+        Battle battle(you, opponent);
+        auto result = battle.run();
+        ASSERT_EQ(7, result.stars());
+        ASSERT_EQ(7, result.count());
+        ASSERT_EQ(2, result.turn());
+    }
 }
 
 TEST(BattleTest, Test) {
-
 }
 
 int main(int argc, char** argv) {

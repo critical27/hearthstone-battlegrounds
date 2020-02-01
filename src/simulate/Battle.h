@@ -41,11 +41,8 @@ private:
 };
 
 class Battle {
-    FRIEND_TEST(BattleTest, AlleycatTest);
-    FRIEND_TEST(BattleTest, MultiMecharooTest);
-    FRIEND_TEST(BattleTest, TierOneDeathRattleTest);
-    FRIEND_TEST(BattleTest, TierTwoDeathRattleTest);
-    FRIEND_TEST(BattleTest, RandomTest);
+    FRIEND_TEST(BattleTest, CleaveTest);
+    FRIEND_TEST(BattleTest, Test);
 public:
     Battle(const Board& you, const Board& opponent)
         : you_(you), opponent_(opponent) {

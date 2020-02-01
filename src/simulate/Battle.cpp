@@ -117,7 +117,7 @@ bool Battle::singleAttack(BattleMinions& active, BattleMinions& passive, size_t 
         size_t defIdx = passive.nextDefenderIndex();
         if (attacker.isCleave()) {
             auto adjacent = passive.getAdajacent(defIdx);
-            VLOG(2) << "Board " << attackPlayer_ << " minion " << atkIdx << " " << active[atkIdx].toSimpleString() << " [Cleave]"
+            VLOG(2) << "Board " << attackPlayer_ << " minion " << atkIdx << " " << active[atkIdx].toSimpleString()
                     << " **attack** "
                     << "Board " << 1 - attackPlayer_ << " minion " << defIdx << " " << passive[defIdx].toSimpleString();
             return doCleaveAttack(active, atkIdx, passive, defIdx, adjacent);
