@@ -89,10 +89,9 @@ void Battle::attack() {
     size_t atkIdx = active.nextAttackerIndex();
     if (atkIdx != -1) {
         Minion& attacker = active[atkIdx];
-        singleAttack(active, passive, atkIdx);
-        onAllyAttack(attackPlayer_);
-        // wind fury
-        if (attacker.isAlive() && attacker.isWindfury()) {
+        int attackTimes = attacker.attackTimes();
+        CHECK(attacker.isAlive());
+        for (int i = 0; i < attackTimes && attacker.isAlive(); i++) {
             singleAttack(active, passive, atkIdx);
             onAllyAttack(attackPlayer_);
         }

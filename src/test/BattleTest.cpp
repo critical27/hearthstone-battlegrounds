@@ -14,11 +14,12 @@ TEST(BattleTest, AlleycatTest) {
     auto result = battle.run();
     ASSERT_EQ(0, result.stars());
     ASSERT_EQ(0, result.count());
+    ASSERT_EQ(1, result.turn());
 }
 
 TEST(BattleTest, MultiMecharooTest) {
     std::vector<Minion> minions;
-    for (int i = 0; i < BOARD_SIZE; i++) {
+    for (int i = 1; i <= BOARD_SIZE; i++) {
         DRAW_LINE;
         minions.emplace_back(Minion(MinionType::Mecharoo));
         Board you(minions, HeroType::None, false, 1, 40);
@@ -27,6 +28,7 @@ TEST(BattleTest, MultiMecharooTest) {
         auto result = battle.run();
         ASSERT_EQ(0, result.stars());
         ASSERT_EQ(0, result.count());
+        ASSERT_EQ(2 * i, result.turn());
     }
 }
 
@@ -42,10 +44,11 @@ TEST(BattleTest, TierOneDeathRattleTest) {
         auto result = battle.run();
         ASSERT_EQ(0, result.stars());
         ASSERT_EQ(0, result.count());
+        ASSERT_EQ(2, result.turn());
     }
     {
         DRAW_LINE;
-        // 1 golden Mecharoo vs 1 Mecharoo
+        // 1 golden Mecharoo vs 2 Mecharoo
         std::vector<Minion> p1, p2;
         p1.emplace_back(Minion(MinionType::Mecharoo, true));
         p2.emplace_back(Minion(MinionType::Mecharoo));
@@ -56,6 +59,7 @@ TEST(BattleTest, TierOneDeathRattleTest) {
         auto result = battle.run();
         ASSERT_EQ(0, result.stars());
         ASSERT_EQ(0, result.count());
+        ASSERT_EQ(4, result.turn());
     }
     {
         DRAW_LINE;
@@ -71,6 +75,7 @@ TEST(BattleTest, TierOneDeathRattleTest) {
         auto result = battle.run();
         ASSERT_EQ(0, result.stars());
         ASSERT_EQ(0, result.count());
+        ASSERT_EQ(4, result.turn());
     }
     {
         DRAW_LINE;
@@ -89,6 +94,22 @@ TEST(BattleTest, TierOneDeathRattleTest) {
         ASSERT_LE(abs(result.stars()), 1);
         ASSERT_LE(result.count(), 1);
     }
+    {
+        DRAW_LINE;
+        // 2 FiendishServant
+        // vs
+        // 2 FiendishServant
+        std::vector<Minion> minions;
+        minions.emplace_back(Minion(MinionType::FiendishServant));
+        minions.emplace_back(Minion(MinionType::FiendishServant));
+        Board you(minions, HeroType::None, false, 1, 40);
+        Board opponent(minions, HeroType::None, false, 1, 40);
+        Battle battle(you, opponent);
+        auto result = battle.run();
+        ASSERT_EQ(0, result.stars());
+        ASSERT_EQ(0, result.count());
+        ASSERT_EQ(2, result.turn());
+    }
 }
 
 TEST(BattleTest, TierTwoDeathRattleTest) {
@@ -103,6 +124,7 @@ TEST(BattleTest, TierTwoDeathRattleTest) {
         auto result = battle.run();
         ASSERT_EQ(0, result.stars());
         ASSERT_EQ(0, result.count());
+        ASSERT_EQ(3, result.turn());
     }
     {
         DRAW_LINE;
@@ -116,6 +138,7 @@ TEST(BattleTest, TierTwoDeathRattleTest) {
         auto result = battle.run();
         ASSERT_EQ(0, result.stars());
         ASSERT_EQ(0, result.count());
+        ASSERT_EQ(1, result.turn());
     }
     {
         DRAW_LINE;
@@ -182,6 +205,7 @@ TEST(BattleTest, TierThreeDeathRattleTest) {
         auto result = battle.run();
         ASSERT_EQ(0, result.stars());
         ASSERT_EQ(0, result.count());
+        ASSERT_EQ(3, result.turn());
     }
     {
         DRAW_LINE;
@@ -194,6 +218,7 @@ TEST(BattleTest, TierThreeDeathRattleTest) {
         auto result = battle.run();
         ASSERT_EQ(0, result.stars());
         ASSERT_EQ(0, result.count());
+        ASSERT_EQ(3, result.turn());
     }
     {
         DRAW_LINE;
@@ -217,6 +242,7 @@ TEST(BattleTest, TierThreeDeathRattleTest) {
         auto result = battle.run();
         ASSERT_EQ(0, result.stars());
         ASSERT_EQ(0, result.count());
+        ASSERT_EQ(4, result.turn());
     }
     {
         DRAW_LINE;
@@ -229,6 +255,7 @@ TEST(BattleTest, TierThreeDeathRattleTest) {
         auto result = battle.run();
         ASSERT_EQ(0, result.stars());
         ASSERT_EQ(0, result.count());
+        ASSERT_EQ(3, result.turn());
     }
     {
         DRAW_LINE;
@@ -241,6 +268,7 @@ TEST(BattleTest, TierThreeDeathRattleTest) {
         auto result = battle.run();
         ASSERT_EQ(0, result.stars());
         ASSERT_EQ(0, result.count());
+        ASSERT_EQ(2, result.turn());
     }
     {
         DRAW_LINE;
@@ -255,6 +283,20 @@ TEST(BattleTest, TierThreeDeathRattleTest) {
         auto result = battle.run();
         ASSERT_EQ(-2, result.stars());
         ASSERT_EQ(2, result.count());
+        ASSERT_EQ(3, result.turn());
+    }
+    {
+        DRAW_LINE;
+        // 1 Imprisoner vs 1 Imprisoner
+        std::vector<Minion> minions;
+        minions.emplace_back(Minion(MinionType::Imprisoner));
+        Board you(minions, HeroType::None, false, 1, 40);
+        Board opponent(minions, HeroType::None, false, 1, 40);
+        Battle battle(you, opponent);
+        auto result = battle.run();
+        ASSERT_EQ(0, result.stars());
+        ASSERT_EQ(0, result.count());
+        ASSERT_EQ(2, result.turn());
     }
 }
 
@@ -297,6 +339,7 @@ TEST(BattleTest, TierFourDeathRattleTest) {
         auto result = battle.run();
         ASSERT_EQ(0, result.stars());
         ASSERT_EQ(0, result.count());
+        ASSERT_EQ(10, result.turn());
     }
 }
 
@@ -317,6 +360,7 @@ TEST(BattleTest, TierFiveDeathRattleTest) {
         auto result = battle.run();
         ASSERT_EQ(0, result.stars());
         ASSERT_EQ(0, result.count());
+        ASSERT_EQ(8, result.turn());
     }
     {
         DRAW_LINE;
@@ -334,6 +378,7 @@ TEST(BattleTest, TierFiveDeathRattleTest) {
         auto result = battle.run();
         ASSERT_EQ(0, result.stars());
         ASSERT_EQ(0, result.count());
+        ASSERT_EQ(3, result.turn());
     }
     {
         DRAW_LINE;
@@ -346,6 +391,7 @@ TEST(BattleTest, TierFiveDeathRattleTest) {
         auto result = battle.run();
         ASSERT_EQ(0, result.stars());
         ASSERT_EQ(0, result.count());
+        ASSERT_EQ(5, result.turn());
     }
     {
         DRAW_LINE;
@@ -358,6 +404,7 @@ TEST(BattleTest, TierFiveDeathRattleTest) {
         auto result = battle.run();
         ASSERT_EQ(0, result.stars());
         ASSERT_EQ(0, result.count());
+        ASSERT_EQ(3, result.turn());
     }
     {
         DRAW_LINE;
@@ -370,6 +417,7 @@ TEST(BattleTest, TierFiveDeathRattleTest) {
         auto result = battle.run();
         ASSERT_EQ(0, result.stars());
         ASSERT_EQ(0, result.count());
+        ASSERT_EQ(12, result.turn());
     }
 }
 
@@ -395,10 +443,13 @@ TEST(BattleTest, TierSixDeathRattleTest) {
         auto result = battle.run();
         ASSERT_EQ(0, result.stars());
         ASSERT_EQ(0, result.count());
+        ASSERT_EQ(2, result.turn());
     }
     {
         DRAW_LINE;
-        // 1 KangorsApprentice vs 1 KangorsApprentice
+        // 2 AnnoyOModule 1 KangorsApprentice
+        // vs
+        // 2 AnnoyOModule 1 KangorsApprentice
         std::vector<Minion> minions;
         minions.emplace_back(Minion(MinionType::AnnoyOModule));
         minions.emplace_back(Minion(MinionType::AnnoyOModule));
@@ -501,23 +552,6 @@ TEST(BattleTest, onAllySummonTest) {
     }
     {
         DRAW_LINE;
-        // 1 4/4 RatPack [taunt], 1 MamaBear
-        // vs
-        // 1 4/4 RatPack [taunt], 1 MamaBear
-        std::vector<Minion> minions;
-        Minion tauntRatPack(MinionType::RatPack);
-        tauntRatPack.buff(2, 2);
-        tauntRatPack.setTaunt(true);
-        minions.emplace_back(tauntRatPack);
-        minions.emplace_back(Minion(MinionType::MamaBear));
-        Board you(minions, HeroType::None, false, 1, 40);
-        Board opponent(minions, HeroType::None, false, 1, 40);
-        Battle battle(you, opponent);
-        auto result = battle.run();
-        ASSERT_EQ(6, result.turn());
-    }
-    {
-        DRAW_LINE;
         // 1 4/4 RatPack [taunt], 1 5/5 MamaBear
         // vs
         // 1 4/4 RatPack [taunt], 1 5/5 MamaBear
@@ -536,24 +570,6 @@ TEST(BattleTest, onAllySummonTest) {
         ASSERT_EQ(0, result.stars());
         ASSERT_EQ(0, result.count());
         ASSERT_EQ(6, result.turn());
-    }
-    {
-        DRAW_LINE;
-        // 1 4/4 RatPack [taunt], 2 MamaBear
-        // vs
-        // 1 4/4 RatPack [taunt], 2 MamaBear
-        std::vector<Minion> minions;
-        Minion tauntRatPack(MinionType::RatPack);
-        tauntRatPack.buff(2, 2);
-        tauntRatPack.setTaunt(true);
-        minions.emplace_back(tauntRatPack);
-        minions.emplace_back(Minion(MinionType::MamaBear));
-        minions.emplace_back(Minion(MinionType::MamaBear));
-        Board you(minions, HeroType::None, false, 1, 40);
-        Board opponent(minions, HeroType::None, false, 1, 40);
-        Battle battle(you, opponent);
-        auto result = battle.run();
-        ASSERT_EQ(7, result.turn());
     }
 }
 

@@ -28,6 +28,11 @@ void Battle::deathRattle(size_t player, const Minion& deadMinion, MinionIter& it
                 board[player].giveRandomMinionDivineShield();
             }
             break;
+        case MinionType::FiendishServant:
+            TWICE_IF_GOLDEN {
+                board[player].buffRandomMinion(deadMinion.attack(), 0);
+            }
+            break;
         // Tier 2
         case MinionType::HarvestGolem:
             summon(1, Minion(MinionType::DamagedGolem, deadMinion.isGolden()), player, iter);
@@ -72,6 +77,9 @@ void Battle::deathRattle(size_t player, const Minion& deadMinion, MinionIter& it
         }
         case MinionType::TheBeast:
             summon(1, MinionType::FinkleEinhorn, 1 - player);
+            break;
+        case MinionType::Imprisoner:
+            summon(1, Minion(MinionType::Imp, deadMinion.isGolden()), player, iter);
             break;
         // Tier 4:
         case MinionType::PilotedSkyGolem:

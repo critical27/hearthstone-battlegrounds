@@ -20,7 +20,11 @@ public:
           windfury_(minionInfo_.windfury_), cleave_(minionInfo_.cleave_),reborn_(false),
           deathrattle_murlocs_(0), deathrattle_microbots_(0), deathrattle_golden_microbots_(0),
           deathrattle_plants_(0),
-          attackAura_(0), healthAura_(0) {}
+          attackAura_(0), healthAura_(0) {
+        if (windfury_ && golden) {
+            megaWindFury_ = true;
+        }
+    }
 
 private:
     // Minion static info
@@ -35,6 +39,7 @@ private:
     bool divineShield_{false};
     bool poison_{false};
     bool windfury_{false};
+    bool megaWindFury_{false};
     bool cleave_{false};
     bool reborn_{false};                        // for lich king
 
@@ -95,6 +100,16 @@ public:
         return health_ > 0;
     }
 
+    int attackTimes() const {
+        if (isMegaWindfury()) {
+            return 4;
+        } else if (isWindfury()) {
+            return 2;
+        } else {
+            return 1;
+        }
+    }
+
     bool isTaunt() const {
         return taunt_;
     }
@@ -121,6 +136,10 @@ public:
 
     bool isWindfury() const {
         return windfury_;
+    }
+
+    bool isMegaWindfury() const {
+        return megaWindFury_;
     }
 
     bool isCleave() const {
