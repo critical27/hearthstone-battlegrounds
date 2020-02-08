@@ -19,24 +19,33 @@ const std::string BLANK(OUTPUT_WIDTH, ' ');
 
 class BattleResult {
 public:
-    BattleResult(int stars, int count, int turn)
-        :stars_(stars), count_(count), turn_(turn) {}
+    // damage = level + stars
+    BattleResult(int damage, int stars, int count, int turn)
+        : damage_(damage), stars_(stars), count_(count), turn_(turn) {}
 
-    int stars() {
+    BattleResult(int turn)
+            : turn_(turn) {}
+
+    int stars() const {
         return stars_;
     }
 
-    int count() {
+    int damage() const {
+        return damage_;
+    }
+
+    int count() const {
         return count_;
     }
 
-    int turn() {
+    int turn() const {
         return turn_;
     }
 
 private:
-    int stars_;
-    int count_;
+    int damage_{0};
+    int stars_{0};
+    int count_{0};
     int turn_;
 };
 
@@ -78,15 +87,15 @@ private:
     void onAllyAttack(size_t player);
     void onAllyBreakDivineShield(size_t player);
     void onAllyDeath(size_t player, const Minion& deadMinion);
-    void onDeath(size_t player, const Minion& deadMinion, MinionIter& iter);
+    int onDeath(size_t player, const Minion& deadMinion, size_t idx);
 
-    // summon count minion for player before iter
-    void summon(int count, Minion minion, size_t player, MinionIter& iter);
-    void summon(int count, Minion minion, size_t player, size_t pos);
+    // summon count minion for player before pos
+    // return value is actual the summoned count
+    int summon(int count, Minion minion, size_t player, size_t pos);
     // summon count minion for player at the end
-    void summon(int count, Minion minion, size_t player);
+    int summon(int count, Minion minion, size_t player);
     // death rattle
-    void deathRattle(size_t player, const Minion& deadMinion, MinionIter& iter);
+    int deathRattle(size_t player, const Minion& deadMinion, size_t idx);
 
     // todo
     void doAuras();

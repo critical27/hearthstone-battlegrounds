@@ -199,12 +199,18 @@ void Battle::damage(size_t idx, Minion& defender, size_t defIdx, bool poison, in
 }
 
 void Battle::checkForDeath() {
+    // dooodle: we need to first remove all dead minion, and then trigger onDeath one by one.
+    // Otherwise, if more than one minion died during this round, the dead minion could affect other dead minion,
+    // i.e. empty slot
     int deadCount = 0;
     do {
         deadCount = 0;
+        // doodle: check random player at first, this do affect the battle result,
         for (size_t player = 0; player < board.size(); player++) {
-            // always
+            std::vector<std::pair<Minion, size_t>> deadMinions;
             auto& minions = board[player].battleMinions();
+            int aliveMinionsCount = 0;
+            // iterate through the battle minions
             for (auto iter = minions.begin(); iter != minions.end(); ) {
                 if (!iter->isAlive()) {
                     VLOG(3) << "Board " << player << " " << iter->toSimpleString() << " is dead";
@@ -212,16 +218,24 @@ void Battle::checkForDeath() {
                     // 1. remove the dead minion, so there would be at least a empty slot
                     auto deadMinion = *iter;
                     iter = minions.erase(iter);
-                    // 2. death trigger, pre/post condition: iter points to next attack minion
-                    onDeath(player, deadMinion, iter);
-                    board[player].addDeadMech(deadMinion);
-                    // get next element
-                    if (iter != minions.end()) {
-                        iter++;
+                    // 2. save the aliveMinionsCount, which is the position to trigger onDeath
+                    deadMinions.emplace_back(deadMinion, aliveMinionsCount);
+                    if (deadMinion.isTribe(Tribe::Mech)) {
+                        board[player].addDeadMech(deadMinion);
                     }
                 } else {
+                    // 3. if minion is alive, move to next
+                    aliveMinionsCount++;
                     iter++;
                 }
+            }
+            int offset = 0;
+            for (auto& pair : deadMinions) {
+                // 4. death trigger, onDeath return the summoned count, which need to apply to all pos in deadMinions
+                // for example: 3 RatPack died, the pos in deadMinions is [0, 0, 0],
+                // after first onDeath, we summon 2 rat, so the remaining pos should count offset, which would be [0, 2, 2],
+                // after second onDeath, we summon another 2 rat, which would be [0, 2, 4],
+                offset += onDeath(player, pair.first, pair.second + offset);
             }
         }
     } while (deadCount);
@@ -234,21 +248,20 @@ bool Battle::done() {
 
 BattleResult Battle::result() {
     // stars > 0 if you win, < 0 if opponent win, 0 if tied
-    int stars = board[0].remainingStars() - board[1].remainingStars();
-    int count = 0;
+    int yourStars = board[0].remainingStars(), opponentStars = board[1].remainingStars();
+    int yourCount = board[0].remainingMinions(), opponentCount = board[1].remainingMinions();
+    int stars = yourStars - opponentStars;
     if (stars > 0) {
-        count = board[0].remainingMinions();
-        CHECK_GT(count, 0);
-        CHECK_EQ(board[1].remainingMinions(), 0);
+        CHECK_GT(yourCount, 0);
+        CHECK_EQ(opponentCount, 0);
+        return BattleResult(you_.level() + yourStars, yourStars, yourCount, turn_);
     } else if (stars < 0) {
-        count = board[1].remainingMinions();
-        CHECK_GT(count, 0);
-        CHECK_EQ(board[0].remainingMinions(), 0);
+        CHECK_GT(opponentCount, 0);
+        CHECK_EQ(yourCount, 0);
+        return BattleResult(-(opponent_.level() + opponentStars), -opponentStars, opponentCount, turn_);
     } else {
         // we can not make sure of following, e.g., 1 MechanoEgg vs 1 MechanoEgg
         // which would make a even
-        // CHECK_EQ(board[0].remainingMinions(), 0);
-        // CHECK_EQ(board[1].remainingMinions(), 0);
+        return BattleResult(turn_);
     }
-    return BattleResult(stars, count, turn_);
 }

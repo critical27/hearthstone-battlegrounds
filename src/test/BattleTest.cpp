@@ -1154,9 +1154,56 @@ TEST(BattleTest, CleaveTest) {
         ASSERT_EQ(7, result.count());
         ASSERT_EQ(2, result.turn());
     }
+    {
+        DRAW_LINE;
+        // 4 Alleycat, 1 golden RatPack, 1 4/4 KaboomBot [taunt], 1 2/2 RatPack
+        // vs
+        // 1 4/4 golden CaveHydra
+        std::vector<Minion> p1, p2;
+        for (int i = 0; i < 4; i++) {
+            p1.emplace_back(Minion(MinionType::Alleycat));
+        }
+        p1.emplace_back(Minion(MinionType::RatPack, true));
+        p1.emplace_back(Minion(MinionType::KaboomBot));
+        p1.back().setTaunt(true);
+        p1.emplace_back(Minion(MinionType::RatPack));
+        Minion caveHydra(MinionType::CaveHydra, true);
+        caveHydra.setHealth(4);
+        p2.emplace_back(caveHydra);
+        Board you(p1, HeroType::None, false, 1, 40);
+        Board opponent(p2, HeroType::None, false, 1, 40);
+        Battle battle(you, opponent);
+        auto result = battle.run();
+        ASSERT_EQ(7, result.stars());
+        ASSERT_EQ(7, result.count());
+        ASSERT_EQ(2, result.turn());
+    }
+    {
+        DRAW_LINE;
+        // 1 Alleycat, 1 ReplicatingMenace, 1 golden RatPack [taunt], 1 2/2 RatPack
+        // vs
+        // 1 4/4 golden CaveHydra
+        std::vector<Minion> p1, p2;
+        p1.emplace_back(Minion(MinionType::Alleycat));
+        p1.emplace_back(Minion(MinionType::ReplicatingMenace));
+        p1.emplace_back(Minion(MinionType::RatPack, true));
+        p1.back().setTaunt(true);
+        p1.emplace_back(Minion(MinionType::RatPack));
+        Minion caveHydra(MinionType::CaveHydra, true);
+        caveHydra.setHealth(4);
+        p2.emplace_back(caveHydra);
+        Board you(p1, HeroType::None, false, 1, 40);
+        Board opponent(p2, HeroType::None, false, 1, 40);
+        Battle battle(you, opponent);
+        auto result = battle.run();
+        ASSERT_EQ(7, result.stars());
+        ASSERT_EQ(7, result.count());
+        ASSERT_EQ(2, result.turn());
+    }
 }
 
 TEST(BattleTest, Test) {
+
 }
 
 int main(int argc, char** argv) {

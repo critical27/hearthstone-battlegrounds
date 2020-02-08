@@ -26,6 +26,10 @@ public:
 
     std::string toString() const;
 
+    int level() const {
+        return level_;
+    }
+
 private:
     std::vector<Minion> minions_;
 
