@@ -3,7 +3,6 @@
 #include <gtest/gtest.h>
 #include "simulate/Battle.h"
 
-#define DRAW_LINE LOG(INFO) << "---------------------------------------------"
 
 TEST(BattleTest, AlleycatTest) {
     std::vector<Minion> minions;
@@ -20,7 +19,6 @@ TEST(BattleTest, AlleycatTest) {
 TEST(BattleTest, MultiMecharooTest) {
     std::vector<Minion> minions;
     for (int i = 1; i <= BOARD_SIZE; i++) {
-        DRAW_LINE;
         minions.emplace_back(Minion(MinionType::Mecharoo));
         Board you(minions, HeroType::None, false, 1, 40);
         Board opponent(minions, HeroType::None, false, 1, 40);
@@ -34,7 +32,6 @@ TEST(BattleTest, MultiMecharooTest) {
 
 TEST(BattleTest, TierOneDeathRattleTest) {
     {
-        DRAW_LINE;
         // 1 Mecharoo vs 1 Mecharoo
         std::vector<Minion> minions;
         minions.emplace_back(Minion(MinionType::Mecharoo));
@@ -47,7 +44,6 @@ TEST(BattleTest, TierOneDeathRattleTest) {
         ASSERT_EQ(2, result.turn());
     }
     {
-        DRAW_LINE;
         // 1 golden Mecharoo vs 2 Mecharoo
         std::vector<Minion> p1, p2;
         p1.emplace_back(Minion(MinionType::Mecharoo, true));
@@ -62,7 +58,6 @@ TEST(BattleTest, TierOneDeathRattleTest) {
         ASSERT_EQ(4, result.turn());
     }
     {
-        DRAW_LINE;
         // 1 SelflessHero 1 Mecharoo
         // vs
         // 1 SelflessHero 1 Mecharoo
@@ -78,7 +73,6 @@ TEST(BattleTest, TierOneDeathRattleTest) {
         ASSERT_EQ(4, result.turn());
     }
     {
-        DRAW_LINE;
         // 1 SelflessHero 1 Mecharoo
         // vs
         // 1 Mecharoo 1 SelflessHero
@@ -95,7 +89,6 @@ TEST(BattleTest, TierOneDeathRattleTest) {
         ASSERT_LE(result.count(), 1);
     }
     {
-        DRAW_LINE;
         // 2 FiendishServant
         // vs
         // 2 FiendishServant
@@ -114,7 +107,6 @@ TEST(BattleTest, TierOneDeathRattleTest) {
 
 TEST(BattleTest, TierTwoDeathRattleTest) {
     {
-        DRAW_LINE;
         // 1 HarvestGolem vs 1 HarvestGolem
         std::vector<Minion> minions;
         minions.emplace_back(Minion(MinionType::HarvestGolem));
@@ -127,7 +119,6 @@ TEST(BattleTest, TierTwoDeathRattleTest) {
         ASSERT_EQ(3, result.turn());
     }
     {
-        DRAW_LINE;
         // 2 KaboomBot vs 2 KaboomBot
         std::vector<Minion> minions;
         minions.emplace_back(Minion(MinionType::KaboomBot));
@@ -141,7 +132,6 @@ TEST(BattleTest, TierTwoDeathRattleTest) {
         ASSERT_EQ(1, result.turn());
     }
     {
-        DRAW_LINE;
         // 2 KindlyGrandmother vs 2 KindlyGrandmother
         std::vector<Minion> minions;
         minions.emplace_back(Minion(MinionType::KindlyGrandmother));
@@ -154,7 +144,6 @@ TEST(BattleTest, TierTwoDeathRattleTest) {
         ASSERT_EQ(0, result.count());
     }
     {
-        DRAW_LINE;
         // 1 MountedRaptor vs 1 MountedRaptor
         std::vector<Minion> minions;
         minions.emplace_back(Minion(MinionType::MountedRaptor));
@@ -165,7 +154,6 @@ TEST(BattleTest, TierTwoDeathRattleTest) {
         ASSERT_LE(abs(result.count()), 1);
     }
     {
-        DRAW_LINE;
         // 2 RatPack vs 2 RatPack
         std::vector<Minion> minions;
         minions.emplace_back(Minion(MinionType::RatPack));
@@ -177,7 +165,6 @@ TEST(BattleTest, TierTwoDeathRattleTest) {
         ASSERT_LE(abs(result.count()), 1);
     }
     {
-        DRAW_LINE;
         // 1 SpawnOfNZoth 1 HarvestGolem
         // vs
         // 1 SpawnOfNZoth 1 HarvestGolem
@@ -195,7 +182,6 @@ TEST(BattleTest, TierTwoDeathRattleTest) {
 
 TEST(BattleTest, TierThreeDeathRattleTest) {
     {
-        DRAW_LINE;
         // 1 InfestedWolf vs 1 InfestedWolf
         std::vector<Minion> minions;
         minions.emplace_back(Minion(MinionType::InfestedWolf));
@@ -208,7 +194,6 @@ TEST(BattleTest, TierThreeDeathRattleTest) {
         ASSERT_EQ(3, result.turn());
     }
     {
-        DRAW_LINE;
         // 1 golden InfestedWolf vs 1 golden InfestedWolf
         std::vector<Minion> minions;
         minions.emplace_back(Minion(MinionType::InfestedWolf, true));
@@ -221,7 +206,6 @@ TEST(BattleTest, TierThreeDeathRattleTest) {
         ASSERT_EQ(3, result.turn());
     }
     {
-        DRAW_LINE;
         // 1 PilotedShredder vs 1 PilotedShredder
         std::vector<Minion> minions;
         minions.emplace_back(Minion(MinionType::PilotedShredder));
@@ -232,7 +216,6 @@ TEST(BattleTest, TierThreeDeathRattleTest) {
         ASSERT_LE(abs(result.count()), 1);
     }
     {
-        DRAW_LINE;
         // 1 ReplicatingMenace vs 1 ReplicatingMenace
         std::vector<Minion> minions;
         minions.emplace_back(Minion(MinionType::ReplicatingMenace));
@@ -245,7 +228,6 @@ TEST(BattleTest, TierThreeDeathRattleTest) {
         ASSERT_EQ(4, result.turn());
     }
     {
-        DRAW_LINE;
         // 1 TortollanShellraiser vs 1 TortollanShellraiser
         std::vector<Minion> minions;
         minions.emplace_back(Minion(MinionType::TortollanShellraiser));
@@ -258,7 +240,6 @@ TEST(BattleTest, TierThreeDeathRattleTest) {
         ASSERT_EQ(3, result.turn());
     }
     {
-        DRAW_LINE;
         // 1 TheBeast vs 1 TheBeast
         std::vector<Minion> minions;
         minions.emplace_back(Minion(MinionType::TheBeast));
@@ -271,7 +252,6 @@ TEST(BattleTest, TierThreeDeathRattleTest) {
         ASSERT_EQ(2, result.turn());
     }
     {
-        DRAW_LINE;
         // 1 TheBeast vs 1 TortollanShellraiser 1 InfestedWolf
         std::vector<Minion> p1, p2;
         p1.emplace_back(Minion(MinionType::TheBeast));
@@ -286,7 +266,6 @@ TEST(BattleTest, TierThreeDeathRattleTest) {
         ASSERT_EQ(3, result.turn());
     }
     {
-        DRAW_LINE;
         // 1 Imprisoner vs 1 Imprisoner
         std::vector<Minion> minions;
         minions.emplace_back(Minion(MinionType::Imprisoner));
@@ -302,7 +281,6 @@ TEST(BattleTest, TierThreeDeathRattleTest) {
 
 TEST(BattleTest, TierFourDeathRattleTest) {
     {
-        DRAW_LINE;
         // 1 PilotedSkyGolem vs 1 PilotedSkyGolem
         std::vector<Minion> minions;
         minions.emplace_back(Minion(MinionType::PilotedSkyGolem));
@@ -314,7 +292,6 @@ TEST(BattleTest, TierFourDeathRattleTest) {
         // 1/7 Baron Rivendare VS 3/3 Infested Wolf
     }
     {
-        DRAW_LINE;
         // 1 MechanoEgg vs 1 MechanoEgg
         // no one could attack
         std::vector<Minion> minions;
@@ -325,10 +302,9 @@ TEST(BattleTest, TierFourDeathRattleTest) {
         auto result = battle.run();
         ASSERT_EQ(0, result.stars());
         ASSERT_EQ(0, result.count());
-        ASSERT_EQ(MAX_TURN, result.turn());
+        ASSERT_EQ(0, result.turn());
     }
     {
-        DRAW_LINE;
         // 1 TortollanShellraiser 1 MechanoEgg vs 1 TortollanShellraiser 1 MechanoEgg
         std::vector<Minion> minions;
         minions.emplace_back(Minion(MinionType::TortollanShellraiser));
@@ -345,7 +321,6 @@ TEST(BattleTest, TierFourDeathRattleTest) {
 
 TEST(BattleTest, TierFiveDeathRattleTest) {
     {
-        DRAW_LINE;
         // 1 GoldrinnTheGreatWolf [taunt], 1 RatPack
         // vs
         // 1 GoldrinnTheGreatWolf [taunt], 1 RatPack
@@ -363,7 +338,6 @@ TEST(BattleTest, TierFiveDeathRattleTest) {
         ASSERT_EQ(8, result.turn());
     }
     {
-        DRAW_LINE;
         // 1 KingBagurgle [taunt], 1 OldMurkEye
         // vs
         // 1 KingBagurgle [taunt], 1 OldMurkEye
@@ -381,7 +355,6 @@ TEST(BattleTest, TierFiveDeathRattleTest) {
         ASSERT_EQ(3, result.turn());
     }
     {
-        DRAW_LINE;
         // 1 SatedThreshadon vs 1 SatedThreshadon
         std::vector<Minion> minions;
         minions.emplace_back(Minion(MinionType::SatedThreshadon));
@@ -394,7 +367,6 @@ TEST(BattleTest, TierFiveDeathRattleTest) {
         ASSERT_EQ(5, result.turn());
     }
     {
-        DRAW_LINE;
         // 1 SavannahHighmane vs 1 SavannahHighmane
         std::vector<Minion> minions;
         minions.emplace_back(Minion(MinionType::SavannahHighmane));
@@ -407,7 +379,6 @@ TEST(BattleTest, TierFiveDeathRattleTest) {
         ASSERT_EQ(3, result.turn());
     }
     {
-        DRAW_LINE;
         // 1 Voidlord vs 1 Voidlord
         std::vector<Minion> minions;
         minions.emplace_back(Minion(MinionType::Voidlord));
@@ -423,7 +394,6 @@ TEST(BattleTest, TierFiveDeathRattleTest) {
 
 TEST(BattleTest, TierSixDeathRattleTest) {
     {
-        DRAW_LINE;
         // 1 Ghastcoiler vs 1 Ghastcoiler
         std::vector<Minion> minions;
         minions.emplace_back(Minion(MinionType::Ghastcoiler));
@@ -433,7 +403,6 @@ TEST(BattleTest, TierSixDeathRattleTest) {
         auto result = battle.run();
     }
     {
-        DRAW_LINE;
         // 1 KangorsApprentice vs 1 KangorsApprentice
         std::vector<Minion> minions;
         minions.emplace_back(Minion(MinionType::KangorsApprentice));
@@ -446,7 +415,6 @@ TEST(BattleTest, TierSixDeathRattleTest) {
         ASSERT_EQ(2, result.turn());
     }
     {
-        DRAW_LINE;
         // 2 AnnoyOModule 1 KangorsApprentice
         // vs
         // 2 AnnoyOModule 1 KangorsApprentice
@@ -462,7 +430,6 @@ TEST(BattleTest, TierSixDeathRattleTest) {
         ASSERT_EQ(0, result.count());
     }
     {
-        DRAW_LINE;
         // 1 SneedsOldShredder vs 1 SneedsOldShredder
         std::vector<Minion> minions;
         minions.emplace_back(Minion(MinionType::SneedsOldShredder));
@@ -475,7 +442,6 @@ TEST(BattleTest, TierSixDeathRattleTest) {
 
 TEST(BattleTest, RandomTest) {
     for (int i = 0; i < 100; i++) {
-        DRAW_LINE;
         // 1 MountedRaptor, 1 PilotedShredder, 1 PilotedSkyGolem, 1 Ghastcoiler, 1 SneedsOldShredder
         // vs
         // 1 MountedRaptor, 1 PilotedShredder, 1 PilotedSkyGolem, 1 Ghastcoiler, 1 SneedsOldShredder
@@ -494,7 +460,6 @@ TEST(BattleTest, RandomTest) {
 
 TEST(BattleTest, onAllySummonTest) {
     {
-        DRAW_LINE;
         // 1 Mecharoo [taunt], 1 CobaltGuardian
         // vs
         // 1 Mecharoo [taunt], 1 CobaltGuardian
@@ -512,7 +477,6 @@ TEST(BattleTest, onAllySummonTest) {
         ASSERT_EQ(4, result.turn());
     }
     {
-        DRAW_LINE;
         // 1 4/4 RatPack [taunt], 1 PackLeader
         // vs
         // 1 4/4 RatPack [taunt], 1 PackLeader
@@ -531,7 +495,6 @@ TEST(BattleTest, onAllySummonTest) {
         ASSERT_EQ(6, result.turn());
     }
     {
-        DRAW_LINE;
         // 1 4/4 RatPack [taunt], 2 PackLeader
         // vs
         // 1 4/4 RatPack [taunt], 2 PackLeader
@@ -551,7 +514,6 @@ TEST(BattleTest, onAllySummonTest) {
         ASSERT_EQ(7, result.turn());
     }
     {
-        DRAW_LINE;
         // 1 4/4 RatPack [taunt], 1 5/5 MamaBear
         // vs
         // 1 4/4 RatPack [taunt], 1 5/5 MamaBear
@@ -575,7 +537,6 @@ TEST(BattleTest, onAllySummonTest) {
 
 TEST(BattleTest, onAllyAttackTest) {
     {
-        DRAW_LINE;
         // 1 AnnoyOTron, 1 FesterootHulk
         // vs
         // 1 AnnoyOTron, 1 FesterootHulk
@@ -591,7 +552,6 @@ TEST(BattleTest, onAllyAttackTest) {
         ASSERT_EQ(6, result.turn());
     }
     {
-        DRAW_LINE;
         // 1 Alleycat, 1 FesterootHulk
         // vs
         // 1 Alleycat, 1 FesterootHulk
@@ -610,7 +570,6 @@ TEST(BattleTest, onAllyAttackTest) {
 
 TEST(BattleTest, onAllyBreakDivineShieldTest) {
     {
-        DRAW_LINE;
         // 1 RighteousProtector, 1 BolvarFireblood
         // vs
         // 1 RighteousProtector, 1 BolvarFireblood
@@ -626,7 +585,6 @@ TEST(BattleTest, onAllyBreakDivineShieldTest) {
         ASSERT_EQ(5, result.turn());
     }
     {
-        DRAW_LINE;
         // 2 RighteousProtector, 1 BolvarFireblood
         // vs
         // 2 RighteousProtector, 1 BolvarFireblood
@@ -646,7 +604,6 @@ TEST(BattleTest, onAllyBreakDivineShieldTest) {
 
 TEST(BattleTest, onAllyDeathTest) {
     {
-        DRAW_LINE;
         // 1 Alleycat, 1 ScavengingHyena
         // vs
         // 1 Alleycat, 1 ScavengingHyena
@@ -661,7 +618,6 @@ TEST(BattleTest, onAllyDeathTest) {
         ASSERT_EQ(0, result.count());
     }
     {
-        DRAW_LINE;
         // 7 ScavengingHyena
         // vs
         // 7 ScavengingHyena
@@ -678,7 +634,6 @@ TEST(BattleTest, onAllyDeathTest) {
         ASSERT_EQ(7, result.turn());
     }
     {
-        DRAW_LINE;
         // 6 Alleycat vs 3 Imp [taunt], 1 SoulJuggler
         std::vector<Minion> p1, p2;
         for (int i = 0; i < 6; i++) {
@@ -699,7 +654,6 @@ TEST(BattleTest, onAllyDeathTest) {
         ASSERT_EQ(3, result.turn());
     }
     {
-        DRAW_LINE;
         // 3 Mecharoo vs 3 Imp [taunt], 1 SoulJuggler
         std::vector<Minion> p1, p2;
         for (int i = 0; i < 3; i++) {
@@ -720,7 +674,6 @@ TEST(BattleTest, onAllyDeathTest) {
         ASSERT_EQ(3, result.turn());
     }
     {
-        DRAW_LINE;
         // 1 Mecharoo, 1 Junkbot
         // vs
         // 1 Mecharoo, 1 Junkbot
@@ -738,7 +691,6 @@ TEST(BattleTest, onAllyDeathTest) {
 
 TEST(BattleTest, onDamagedTest) {
     {
-        DRAW_LINE;
         // 7 Alleycat vs 1 ImpGangBoss
         std::vector<Minion> p1, p2;
         for (int i = 0; i < 7; i++) {
@@ -754,7 +706,6 @@ TEST(BattleTest, onDamagedTest) {
         ASSERT_EQ(7, result.turn());
     }
     {
-        DRAW_LINE;
         // 1 Alleycat vs 7 ImpGangBoss
         // because we have no empty slot, so there would be 7 ImpGangBoss alive in the end
         std::vector<Minion> p1, p2;
@@ -771,7 +722,6 @@ TEST(BattleTest, onDamagedTest) {
         ASSERT_EQ(1, result.turn());
     }
     {
-        DRAW_LINE;
         // 1 Alleycat vs 7 2/1 ImpGangBoss
         // because we have no empty slot, no imp is summoned even if the ImpGangBoss is dying,
         // so there would be 6 ImpGangBoss alive in the end
@@ -791,7 +741,6 @@ TEST(BattleTest, onDamagedTest) {
         ASSERT_EQ(1, result.turn());
     }
     {
-        DRAW_LINE;
         // 1 SecurityRover
         // vs
         // 1 SecurityRover
@@ -809,7 +758,6 @@ TEST(BattleTest, onDamagedTest) {
 
 TEST(BattleTest, onKillTest) {
     {
-        DRAW_LINE;
         // 7 Alleycat vs 1 TheBoogeymonster
         std::vector<Minion> p1, p2;
         for (int i = 0; i < 7; i++) {
@@ -828,7 +776,6 @@ TEST(BattleTest, onKillTest) {
 
 TEST(BattleTest, onOverKillTest) {
     {
-        DRAW_LINE;
         // 1 Alleycat vs 2 IronhideDirehorn
         std::vector<Minion> p1, p2;
         p1.emplace_back(Minion(MinionType::Alleycat));
@@ -844,7 +791,6 @@ TEST(BattleTest, onOverKillTest) {
         ASSERT_EQ(1, result.turn());
     }
     {
-        DRAW_LINE;
         // 1 7/7 Alleycat vs 2 IronhideDirehorn
         std::vector<Minion> p1, p2;
         Minion alleycat(MinionType::Alleycat);
@@ -862,7 +808,6 @@ TEST(BattleTest, onOverKillTest) {
         ASSERT_EQ(1, result.turn());
     }
     {
-        DRAW_LINE;
         // 1 Alleycat vs 7 IronhideDirehorn
         std::vector<Minion> p1, p2;
         p1.emplace_back(Minion(MinionType::Alleycat));
@@ -881,7 +826,6 @@ TEST(BattleTest, onOverKillTest) {
 
 TEST(BattleTest, WindfuryTest) {
     {
-        DRAW_LINE;
         // 2 Alleycat vs 1 MurlocWarleader [windfury]
         std::vector<Minion> p1, p2;
         for (int i = 0; i < 2; i++) {
@@ -899,7 +843,6 @@ TEST(BattleTest, WindfuryTest) {
         ASSERT_EQ(2, result.turn());
     }
     {
-        DRAW_LINE;
         // 3 Alleycat vs 1 MurlocWarleader [windfury]
         std::vector<Minion> p1, p2;
         for (int i = 0; i < 3; i++) {
@@ -917,7 +860,6 @@ TEST(BattleTest, WindfuryTest) {
         ASSERT_EQ(2, result.turn());
     }
     {
-        DRAW_LINE;
         // 2 Alleycat vs 1 ZappSlywick
         std::vector<Minion> p1, p2;
         for (int i = 0; i < 2; i++) {
@@ -933,7 +875,6 @@ TEST(BattleTest, WindfuryTest) {
         ASSERT_EQ(2, result.turn());
     }
     {
-        DRAW_LINE;
         // 3 Alleycat vs 1 ZappSlywick
         std::vector<Minion> p1, p2;
         for (int i = 0; i < 3; i++) {
@@ -949,7 +890,6 @@ TEST(BattleTest, WindfuryTest) {
         ASSERT_EQ(2, result.turn());
     }
     {
-        DRAW_LINE;
         // 6 Alleycat vs 2 ZappSlywick
         std::vector<Minion> p1, p2;
         for (int i = 0; i < 6; i++) {
@@ -967,7 +907,6 @@ TEST(BattleTest, WindfuryTest) {
         ASSERT_EQ(4, result.turn());
     }
     {
-        DRAW_LINE;
         // 5 Alleycat vs 1 golden ZappSlywick
         std::vector<Minion> p1, p2;
         for (int i = 0; i < 5; i++) {
@@ -986,7 +925,6 @@ TEST(BattleTest, WindfuryTest) {
 
 TEST(BattleTest, CleaveTest) {
     {
-        DRAW_LINE;
         // 3 Alleycat vs 1 CaveHydra
         std::vector<Minion> p1, p2;
         for (int i = 0; i < 3; i++) {
@@ -1002,7 +940,6 @@ TEST(BattleTest, CleaveTest) {
         ASSERT_EQ(2, result.turn());
     }
     {
-        DRAW_LINE;
         // taunt at first
         // 1 2/2 RatPack [taunt], 2 2/2 RatPack
         // vs
@@ -1024,7 +961,6 @@ TEST(BattleTest, CleaveTest) {
         auto result = battle.run();
     }
     {
-        DRAW_LINE;
         // taunt at middle
         // 1 2/2 RatPack, 1 2/2 RatPack [taunt], 1 2/2 RatPack
         // vs
@@ -1049,7 +985,6 @@ TEST(BattleTest, CleaveTest) {
         ASSERT_EQ(7, result.turn());
     }
     {
-        DRAW_LINE;
         // taunt at last
         // 2 2/2 RatPack, 1 2/2 RatPack [taunt]
         // vs
@@ -1071,7 +1006,6 @@ TEST(BattleTest, CleaveTest) {
         auto result = battle.run();
     }
     {
-        DRAW_LINE;
         // 1 Alleycat, 1 2/2 RatPack, 1 4/8 golden VulgarHomunculus [taunt], 1 2/4 ImpGangBoss
         // vs
         // 1 CaveHydra
@@ -1090,7 +1024,6 @@ TEST(BattleTest, CleaveTest) {
         ASSERT_EQ(2, result.turn());
     }
     {
-        DRAW_LINE;
         // 4 Alleycat, 1 2/2 RatPack, 1 4/8 golden VulgarHomunculus [taunt], 1 2/4 ImpGangBoss
         // vs
         // 1 CaveHydra
@@ -1111,7 +1044,6 @@ TEST(BattleTest, CleaveTest) {
         ASSERT_EQ(2, result.turn());
     }
     {
-        DRAW_LINE;
         // 4 Alleycat, 1 2/2 RatPack, 1 4/8 golden VulgarHomunculus [taunt], 1 2/2 RatPack
         // vs
         // 1 CaveHydra
@@ -1132,7 +1064,6 @@ TEST(BattleTest, CleaveTest) {
         ASSERT_EQ(2, result.turn());
     }
     {
-        DRAW_LINE;
         // 4 Alleycat, 1 golden RatPack, 1 4/8 golden VulgarHomunculus [taunt], 1 2/2 RatPack
         // vs
         // 1 4/4 golden CaveHydra
@@ -1155,7 +1086,6 @@ TEST(BattleTest, CleaveTest) {
         ASSERT_EQ(2, result.turn());
     }
     {
-        DRAW_LINE;
         // 4 Alleycat, 1 golden RatPack, 1 4/4 KaboomBot [taunt], 1 2/2 RatPack
         // vs
         // 1 4/4 golden CaveHydra
@@ -1179,7 +1109,6 @@ TEST(BattleTest, CleaveTest) {
         ASSERT_EQ(2, result.turn());
     }
     {
-        DRAW_LINE;
         // 1 Alleycat, 1 ReplicatingMenace, 1 golden RatPack [taunt], 1 2/2 RatPack
         // vs
         // 1 4/4 golden CaveHydra
@@ -1203,7 +1132,27 @@ TEST(BattleTest, CleaveTest) {
 }
 
 TEST(BattleTest, Test) {
-
+    {
+        // 1 Alleycat, 1 ReplicatingMenace, 1 golden RatPack [taunt], 1 2/2 RatPack
+        // vs
+        // 1 4/4 golden CaveHydra
+        std::vector<Minion> p1, p2;
+        p1.emplace_back(Minion(MinionType::Alleycat));
+        p1.emplace_back(Minion(MinionType::ReplicatingMenace));
+        p1.emplace_back(Minion(MinionType::RatPack, true));
+        p1.back().setTaunt(true);
+        p1.emplace_back(Minion(MinionType::RatPack));
+        Minion caveHydra(MinionType::CaveHydra, true);
+        caveHydra.setHealth(4);
+        p2.emplace_back(caveHydra);
+        Board you(p1, HeroType::None, false, 1, 40);
+        Board opponent(p2, HeroType::None, false, 1, 40);
+        Battle battle(you, opponent);
+        auto result = battle.run();
+        ASSERT_EQ(7, result.stars());
+        ASSERT_EQ(7, result.count());
+        ASSERT_EQ(2, result.turn());
+    }
 }
 
 int main(int argc, char** argv) {

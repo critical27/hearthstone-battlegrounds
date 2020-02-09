@@ -42,6 +42,12 @@ public:
         return turn_;
     }
 
+    friend std::ostream& operator<<(std::ostream& os, const Battle& BattleResult);
+
+    std::string toString() const {
+        return "Damage: " + std::to_string(damage_) + ", stars: " + std::to_string(stars());
+    }
+
 private:
     int damage_{0};
     int stars_{0};
@@ -54,16 +60,14 @@ class Battle {
     FRIEND_TEST(BattleTest, Test);
 public:
     Battle(const Board& you, const Board& opponent)
-        : you_(you), opponent_(opponent) {
-        board.emplace_back(you_.minions());
-        board.emplace_back(opponent_.minions());
-    }
+        : you_(you), opponent_(opponent) {}
 
     friend std::ostream& operator<<(std::ostream& os, const Battle& battle);
 
     friend class Minion;
 
-    std::string toString();
+    std::string toString() const;
+    // todo: make it const
     std::string toPrettyString();
 
     BattleResult run();
@@ -80,7 +84,8 @@ private:
 
     void checkForDeath();
     bool done();
-    BattleResult result();
+    bool hasValidAttacker();
+    BattleResult result(bool tied = false);
 
     // Events during battle
     void onAllySummon(size_t player, Minion &summoned, bool played = false);

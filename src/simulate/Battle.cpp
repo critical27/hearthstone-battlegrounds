@@ -3,7 +3,12 @@
 #include "utils/Enums.h"
 #include "utils/Random.h"
 
-std::string Battle::toString() {
+std::ostream& operator<<(std::ostream& os, const BattleResult& result) {
+    os << result.toString();
+    return os;
+}
+
+std::string Battle::toString() const {
     std::stringstream ss;
     ss << board.front().toString();
     ss << "VS" << "\n";
@@ -36,9 +41,7 @@ std::string Battle::toPrettyString() {
     return ss.str();
 }
 std::ostream& operator<<(std::ostream& os, const Battle& battle) {
-    os << battle.board[0];
-    os << "VS" << std::endl;
-    os << battle.board[1];
+    os << battle.toString();
     return os;
 }
 
@@ -62,17 +65,24 @@ void Battle::flipCoin() {
 
 void Battle::prepare() {
     // todo: hero_power
-    // todo: aurus
+    // reset the board
+    LOG(INFO) << "---------------------------------------------";
+    board.clear();
+    board.emplace_back(you_.minions());
+    board.emplace_back(opponent_.minions());
+    CHECK_EQ(2, board.size());
 }
 
 BattleResult Battle::run() {
-    CHECK_EQ(2, board.size());
-    flipCoin();
     prepare();
+    flipCoin();
 
     VLOG(1) << "Battle after " << turn_ << " turns:";
     VLOG(1) << "\n" << toPrettyString();
-    while (!done() && turn_ < MAX_TURN) {
+    while (!done()) {
+        if (!hasValidAttacker()) {
+            return result(true);
+        }
         attack();
         nextTurn();
         VLOG(1) << "Battle after " << turn_ << " turns:";
@@ -246,7 +256,15 @@ bool Battle::done() {
     return !board[0].hasAliveMinion() || !board[1].hasAliveMinion();
 }
 
-BattleResult Battle::result() {
+bool Battle::hasValidAttacker() {
+    return board[0].hasMinionWhichCanAttack() || board[1].hasMinionWhichCanAttack();
+}
+
+BattleResult Battle::result(bool tied) {
+    CHECK(turn_ < MAX_TURN);
+    if (tied) {
+        return BattleResult(turn_);
+    }
     // stars > 0 if you win, < 0 if opponent win, 0 if tied
     int yourStars = board[0].remainingStars(), opponentStars = board[1].remainingStars();
     int yourCount = board[0].remainingMinions(), opponentCount = board[1].remainingMinions();
@@ -260,8 +278,6 @@ BattleResult Battle::result() {
         CHECK_EQ(yourCount, 0);
         return BattleResult(-(opponent_.level() + opponentStars), -opponentStars, opponentCount, turn_);
     } else {
-        // we can not make sure of following, e.g., 1 MechanoEgg vs 1 MechanoEgg
-        // which would make a even
         return BattleResult(turn_);
     }
 }

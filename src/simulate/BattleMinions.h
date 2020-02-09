@@ -51,13 +51,15 @@ public:
     }
 
     bool hasAliveMinion() const {
+        return !battleMinions_.empty();
+    }
+
+    bool hasMinionWhichCanAttack() const {
         if (!battleMinions_.empty()) {
-            bool ret = std::any_of(battleMinions_.begin(), battleMinions_.end(),
-                                   [] (const Minion& minion) {
-                                       return minion.isAlive();
-                                   });
-            CHECK(ret);
-            return ret;
+            return std::any_of(battleMinions_.begin(), battleMinions_.end(),
+                               [] (const Minion& minion) {
+                                   return minion.attack() > 0;
+                               });
         } else {
             return false;
         }

@@ -2,7 +2,7 @@
 #include <sstream>
 #include "Minion.h"
 
-std::ostream& operator<<(std::ostream& os, const Minion& minion) {
+std::ostream& operator<<(std::ostream& os, Minion& minion) {
     os << minion.toString();
     return os;
 }

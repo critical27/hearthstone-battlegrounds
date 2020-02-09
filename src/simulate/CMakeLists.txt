@@ -7,7 +7,8 @@ add_library(
     Board.cpp
     Battle.cpp
     BattleMinions.cpp
-    BattleEvents.cpp)
+    BattleEvents.cpp
+    Simulation.cpp)
 
 target_link_libraries(
     simulate

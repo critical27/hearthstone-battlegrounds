@@ -17,16 +17,26 @@ public:
         : minionType_(type), minionInfo_(HsDataUtils::minionInfo(type)), golden_(golden),
           attack_(minionInfo_.attack(golden)), health_(minionInfo_.health(golden)),
           taunt_(minionInfo_.taunt_), divineShield_(minionInfo_.divineShield_), poison_(minionInfo_.poison_),
-          windfury_(minionInfo_.windfury_), cleave_(minionInfo_.cleave_),reborn_(false),
+          windfury_(minionInfo_.windfury_), cleave_(minionInfo_.cleave_), reborn_(false),
           deathrattle_murlocs_(0), deathrattle_microbots_(0), deathrattle_golden_microbots_(0),
           deathrattle_plants_(0),
           attackAura_(0), healthAura_(0) {
-        if (minionType_ == MinionType::ZappSlywick && golden) {
+        init();
+    }
+
+    Minion(MinionType type, bool golden, int attack, int health)
+        : Minion(type, golden) {
+        setAttack(attack);
+        setHealth(health);
+    }
+
+private:
+    void init() {
+        if (minionType_ == MinionType::ZappSlywick && golden_) {
             megaWindFury_ = true;
         }
     }
 
-private:
     // Minion static info
     MinionType minionType_{MinionType::None};
     MinionInfo minionInfo_;
@@ -55,7 +65,7 @@ private:
 
 public:
 
-    friend std::ostream& operator<<(std::ostream& os, const Minion& minion);
+    friend std::ostream& operator<<(std::ostream& os, Minion& minion);
 
     std::string toString() const;
     std::string toSimpleString() const;
@@ -80,16 +90,18 @@ public:
         return attack_;
     }
 
-    void setAttack(int value) {
+    Minion& setAttack(int value) {
         attack_ = value;
+        return *this;
     }
 
     int health() const {
         return health_;
     }
 
-    void setHealth(int value) {
+    Minion& setHealth(int value) {
         health_ = value;
+        return *this;
     }
 
     bool isTribe(Tribe t) const {
@@ -114,24 +126,27 @@ public:
         return taunt_;
     }
 
-    void setTaunt(bool value) {
+    Minion& setTaunt(bool value) {
         taunt_ = value;
+        return *this;
     }
 
     bool isDivineShield() const {
         return divineShield_;
     }
 
-    void setDivineShield(bool value) {
+    Minion& setDivineShield(bool value) {
         divineShield_ = value;
+        return *this;
     }
 
     bool isPoison() const {
         return poison_;
     }
 
-    void setPoison(bool value) {
+    Minion& setPoison(bool value) {
         poison_ = value;
+        return *this;
     }
 
     bool isWindfury() const {
@@ -142,8 +157,9 @@ public:
         return megaWindFury_;
     }
 
-    void setWindfury(bool value) {
+    Minion& setWindfury(bool value) {
         windfury_ = value;
+        return *this;
     }
 
     bool isCleave() const {
@@ -158,13 +174,14 @@ public:
         return isGolden() ? 2 * amount : amount;
     }
 
-    void buff(int attack, int health) {
+    Minion& buff(int attack, int health) {
         this->attack_ += attack;
         this->health_ += health;
+        return *this;
     }
 
     // buff by the magnetic minion
-    void buffByMagnetic(Minion m) {
+    Minion& buffByMagnetic(Minion m) {
         this->attack_ += m.attack_;
         this->health_ += m.health_;
         this->taunt_ |= m.taunt_;
@@ -179,6 +196,7 @@ public:
         this->addDeathrattleMicrobots(m.deathrattle_microbots_);
         this->addDeathrattleGoldenMicrobots(m.deathrattle_golden_microbots_);
         this->addDeathrattlePlants(m.deathrattle_plants_);
+        return *this;
     }
 
     Minion newCopy() const {
@@ -208,16 +226,19 @@ public:
     }
      */
 
-    void addDeathrattleMicrobots(int n = 3) {
+    Minion& addDeathrattleMicrobots(int n = 3) {
         this->deathrattle_microbots_ = std::min(this->deathrattle_microbots_ + n, BOARD_SIZE);
+        return *this;
     }
 
-    void addDeathrattleGoldenMicrobots(int n = 3) {
+    Minion& addDeathrattleGoldenMicrobots(int n = 3) {
         this->deathrattle_golden_microbots_ = std::min(this->deathrattle_golden_microbots_ + n, BOARD_SIZE);
+        return *this;
     }
 
-    void addDeathrattlePlants(int n = 2) {
+    Minion& addDeathrattlePlants(int n = 2) {
         this->deathrattle_plants_ = std::min(this->deathrattle_plants_ + n, BOARD_SIZE);
+        return *this;
     }
 
     // bool recompute_aura_from(Board& board, int pos, Board const* enemy_board = nullptr);

@@ -25,3 +25,16 @@ target_link_libraries(
     gtest
     glog
 )
+
+add_executable(
+    simulation_test
+    SimulationTest.cpp
+)
+
+target_link_libraries(
+    simulation_test
+    simulate
+    utils
+    gtest
+    glog
+)
