@@ -9,12 +9,13 @@ public:
     Simulation(Board you, Board opponent)
         : you_(you), opponent_(opponent) {}
 
-    void run(int count = DEFAULT_RUNS, bool optimize = false);
+    void simulate(int count = DEFAULT_RUNS, bool optimize = false);
 
     std::string result();
     std::string detail();
 
 private:
+    float run(int count);
     float meanDamage();
 
     Board you_;

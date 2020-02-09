@@ -56,7 +56,7 @@ void Minion::onAllyAttack(Battle* battle, size_t player) {
     if (!isAlive()) {
         return;
     }
-    // doodle: also add attack after FesterootHulk attacked
+    // also add attack after FesterootHulk attacked
     switch (minionType_) {
         case MinionType::FesterootHulk:
             buff(doubleIfGolden(1), 0);

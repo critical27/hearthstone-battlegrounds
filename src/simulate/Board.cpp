@@ -11,18 +11,13 @@ std::ostream& operator<<(std::ostream& os, const Board& board) {
 std::string Board::toString() const {
     std::stringstream ss;
     ss << "\n";
-    if (level_) {
-        ss << "level " << level_ << "\n";
-    }
-    if (health_) {
-        ss << "health " << health_ << "\n";
-    }
+    ss << "level " << level_ << ", health " << health_ << "\n";
     if (useHeroPower_) {
         // doodle: show hero name instead
         ss << "hero power " << static_cast<size_t>(hero_) << "\n";
     }
     for (const auto& minion : minions()) {
-        ss << "* " << minion.toString() << "\n";
+        ss << "* " << minion.toSimpleString() << "\n";
     }
     return ss.str();
 }

@@ -66,7 +66,7 @@ void Battle::flipCoin() {
 void Battle::prepare() {
     // todo: hero_power
     // reset the board
-    LOG(INFO) << "---------------------------------------------";
+    VLOG(1) << "---------------------------------------------";
     board.clear();
     board.emplace_back(you_.minions());
     board.emplace_back(opponent_.minions());

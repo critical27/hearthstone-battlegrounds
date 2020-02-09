@@ -13,7 +13,7 @@
 // -----------------------------------------------------------------------------
 
 using MinionIter = std::vector<Minion>::iterator;
-const int OUTPUT_WIDTH = 40;
+const int OUTPUT_WIDTH = 50;
 const int MAX_TURN = 100;
 const std::string BLANK(OUTPUT_WIDTH, ' ');
 

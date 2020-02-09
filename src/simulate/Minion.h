@@ -7,6 +7,11 @@ const int BOARD_SIZE = 7;
 
 class Battle;
 
+#define COMP(VAR, FIELD) \
+    if (FIELD != VAR.FIELD) { \
+        return FIELD < other.FIELD; \
+    }
+
 // -----------------------------------------------------------------------------
 // Minion instances
 // -----------------------------------------------------------------------------
@@ -66,6 +71,26 @@ private:
 public:
 
     friend std::ostream& operator<<(std::ostream& os, Minion& minion);
+
+    bool operator<(const Minion& other) const {
+        COMP(other, minionType_);
+        COMP(other, golden_);
+        COMP(other, attack_);
+        COMP(other, health_);
+        COMP(other, taunt_);
+        COMP(other, divineShield_);
+        COMP(other, poison_);
+        COMP(other, windfury_);
+        COMP(other, megaWindFury_);
+        COMP(other, cleave_);
+        COMP(other, reborn_);
+        COMP(other, deathrattle_murlocs_);
+        COMP(other, deathrattle_microbots_);
+        COMP(other, deathrattle_golden_microbots_);
+        COMP(other, attackAura_);
+        COMP(other, healthAura_);
+        return 0;
+    }
 
     std::string toString() const;
     std::string toSimpleString() const;

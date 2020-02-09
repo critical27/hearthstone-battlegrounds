@@ -22,6 +22,10 @@ public:
         return minions_;
     }
 
+    void setMinions(std::vector<Minion> minions) {
+        minions_ = minions;
+    }
+
     friend std::ostream& operator<<(std::ostream& os, const Board& board);
 
     std::string toString() const;
