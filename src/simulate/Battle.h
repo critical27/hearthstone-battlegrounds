@@ -56,8 +56,6 @@ private:
 };
 
 class Battle {
-    FRIEND_TEST(BattleTest, CleaveTest);
-    FRIEND_TEST(BattleTest, Test);
 public:
     Battle(const Board& you, const Board& opponent)
         : you_(you), opponent_(opponent) {}
@@ -101,8 +99,10 @@ private:
     // death rattle
     int deathRattle(size_t player, const Minion& deadMinion, size_t idx);
 
-    // todo
-    void doAuras();
+    void computeAurs() {
+        board_[0].computeAuras(&board_[1]);
+        board_[1].computeAuras(&board_[0]);
+    }
 
     Board you_;
     Board opponent_;

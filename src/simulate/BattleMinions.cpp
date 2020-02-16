@@ -70,6 +70,8 @@ size_t BattleMinions::minionWithLowestAttack() {
 }
 
 int BattleMinions::hasMinion(MinionType type) const {
+    // todo: need to check whether a normal and a golden could accumulate
+    // I remember BaronRivendare has been fixed in a patch, only a golden
     int result = 0;
     std::for_each(battleMinions_.begin(), battleMinions_.end(),
                   [type, &result] (const Minion& minion) {
@@ -131,6 +133,16 @@ void BattleMinions::forEachMinion(MinionAction func, MinionBoolCondition pred) {
     }
 }
 
+int BattleMinions::countIf(MinionBoolCondition pred) {
+    int result = 0;
+    for (auto& minion : battleMinions_) {
+        if (minion.isAlive() && pred(minion)) {
+            ++result;
+        }
+    }
+    return result;
+}
+
 // Duplication effects
 int BattleMinions::extraSummonCount() const {
     return hasMinion(MinionType::Khadgar) + 1;
@@ -148,10 +160,29 @@ void BattleMinions::computeAuras(BattleMinions* opponent) {
     if (!hasAuraMinion_) {
         return;
     }
+    hasAuraMinion_ = false;
     forEachMinion([] (Minion& m) {
         m.clearAuraBuff();
     });
-    for (int i = 0; i < battleMinions_.size(); i++) {
-        battleMinions_[i].computeAuras(i, this, opponent);
+    for (size_t i = 0; i < battleMinions_.size(); i++) {
+        if (battleMinions_[i].computeAuras(i, this, opponent)) {
+            hasAuraMinion_ = true;
+        };
+    }
+}
+
+void BattleMinions::auraBuffAdjacent(int attack, int health, size_t pos) {
+    auto adjacent = getAdjacent(pos);
+    for (const auto& adj : adjacent) {
+        battleMinions_[adj].auraBuff(attack, health);
+    }
+}
+
+void BattleMinions::auraBuffOthersIf(int attack, int health, size_t pos, MinionBoolCondition pred) {
+    for (size_t i = 0; i < battleMinions_.size(); i++) {
+        Minion& minion = battleMinions_[i];
+        if (i != pos && pred(minion)) {
+            minion.auraBuff(attack, health);
+        }
     }
 }

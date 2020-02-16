@@ -1131,14 +1131,207 @@ TEST(BattleTest, CleaveTest) {
     }
 }
 
-TEST(BattleTest, Test) {
+TEST(BattleTest, AuraTest) {
+    {
+        // 1 AlleyCat 1 DireWolfAlpha 1 Alleycat
+        std::vector<Minion> p1, p2;
+        p1.emplace_back(Minion(MinionType::Alleycat));
+        p1.emplace_back(Minion(MinionType::DireWolfAlpha));
+        p1.emplace_back(Minion(MinionType::Alleycat));
+        Board you(p1, HeroType::None, false, 1, 40);
+        Board opponent(p2, HeroType::None, false, 1, 40);
+        Battle battle(you, opponent);
+        auto result = battle.run();
+        ASSERT_EQ(3, result.stars());
+        ASSERT_EQ(3, result.count());
+        ASSERT_EQ(0, result.turn());
+    }
+    {
+        // 1 AlleyCat 1 DireWolfAlpha 1 Alleycat 1 Golden DireWolfAlpha 1 DireWolfAlpha
+        std::vector<Minion> p1, p2;
+        p1.emplace_back(Minion(MinionType::Alleycat));
+        p1.emplace_back(Minion(MinionType::DireWolfAlpha));
+        p1.emplace_back(Minion(MinionType::Alleycat));
+        p1.emplace_back(Minion(MinionType::DireWolfAlpha, true));
+        p1.emplace_back(Minion(MinionType::DireWolfAlpha));
+        Board you(p1, HeroType::None, false, 1, 40);
+        Board opponent(p2, HeroType::None, false, 1, 40);
+        Battle battle(you, opponent);
+        auto result = battle.run();
+        ASSERT_EQ(5, result.stars());
+        ASSERT_EQ(5, result.count());
+        ASSERT_EQ(0, result.turn());
+    }
+    {
+        // 2 MurlocWarleader
+        std::vector<Minion> p1, p2;
+        p1.emplace_back(Minion(MinionType::MurlocWarleader));
+        p1.emplace_back(Minion(MinionType::MurlocWarleader));
+        Board you(p1, HeroType::None, false, 1, 40);
+        Board opponent(p2, HeroType::None, false, 1, 40);
+        Battle battle(you, opponent);
+        auto result = battle.run();
+        ASSERT_EQ(4, result.stars());
+        ASSERT_EQ(2, result.count());
+        ASSERT_EQ(0, result.turn());
+    }
+    {
+        // 2 MurlocWarleader, 1 Golden MurlocWarleader
+        std::vector<Minion> p1, p2;
+        p1.emplace_back(Minion(MinionType::MurlocWarleader));
+        p1.emplace_back(Minion(MinionType::MurlocWarleader));
+        p1.emplace_back(Minion(MinionType::MurlocWarleader, true));
+        Board you(p1, HeroType::None, false, 1, 40);
+        Board opponent(p2, HeroType::None, false, 1, 40);
+        Battle battle(you, opponent);
+        auto result = battle.run();
+        ASSERT_EQ(6, result.stars());
+        ASSERT_EQ(3, result.count());
+        ASSERT_EQ(0, result.turn());
+    }
+    {
+        // 1 Voidlord, 1 PhalanxCommander
+        std::vector<Minion> p1, p2;
+        p1.emplace_back(Minion(MinionType::Voidlord));
+        p1.emplace_back(Minion(MinionType::PhalanxCommander));
+        Board you(p1, HeroType::None, false, 1, 40);
+        Board opponent(p2, HeroType::None, false, 1, 40);
+        Battle battle(you, opponent);
+        auto result = battle.run();
+        ASSERT_EQ(8, result.stars());
+        ASSERT_EQ(2, result.count());
+        ASSERT_EQ(0, result.turn());
+    }
+    {
+        // 1 Siegebreaker, 1 ImpGangBoss, 1 Imprisoner, 1 VulgarHomunculus
+        std::vector<Minion> p1, p2;
+        p1.emplace_back(Minion(MinionType::Siegebreaker));
+        p1.emplace_back(Minion(MinionType::ImpGangBoss));
+        p1.emplace_back(Minion(MinionType::Imprisoner));
+        p1.emplace_back(Minion(MinionType::VulgarHomunculus));
+        Board you(p1, HeroType::None, false, 1, 40);
+        Board opponent(p2, HeroType::None, false, 1, 40);
+        Battle battle(you, opponent);
+        auto result = battle.run();
+        ASSERT_EQ(10, result.stars());
+        ASSERT_EQ(4, result.count());
+        ASSERT_EQ(0, result.turn());
+    }
+    {
+        // 1 MalGanis, 1 ImpGangBoss, 1 Imprisoner, 1 VulgarHomunculus
+        std::vector<Minion> p1, p2;
+        p1.emplace_back(Minion(MinionType::MalGanis));
+        p1.emplace_back(Minion(MinionType::ImpGangBoss));
+        p1.emplace_back(Minion(MinionType::Imprisoner));
+        p1.emplace_back(Minion(MinionType::VulgarHomunculus));
+        Board you(p1, HeroType::None, false, 1, 40);
+        Board opponent(p2, HeroType::None, false, 1, 40);
+        Battle battle(you, opponent);
+        auto result = battle.run();
+        ASSERT_EQ(11, result.stars());
+        ASSERT_EQ(4, result.count());
+        ASSERT_EQ(0, result.turn());
+    }
+    {
+        // 1 MalGanis, 1 Siegebreaker, 1 ImpGangBoss, 1 Imprisoner, 1 VulgarHomunculus
+        std::vector<Minion> p1, p2;
+        p1.emplace_back(Minion(MinionType::MalGanis));
+        p1.emplace_back(Minion(MinionType::Siegebreaker));
+        p1.emplace_back(Minion(MinionType::ImpGangBoss));
+        p1.emplace_back(Minion(MinionType::Imprisoner));
+        p1.emplace_back(Minion(MinionType::VulgarHomunculus));
+        Board you(p1, HeroType::None, false, 1, 40);
+        Board opponent(p2, HeroType::None, false, 1, 40);
+        Battle battle(you, opponent);
+        auto result = battle.run();
+        ASSERT_EQ(15, result.stars());
+        ASSERT_EQ(5, result.count());
+        ASSERT_EQ(0, result.turn());
+    }
+    {
+        // 2 Alleycat 1 RighteousProtector 1 DireWolfAlpha 1 Alleycat
+        // vs
+        // 6 Alleycat
+        std::vector<Minion> p1, p2;
+        p1.emplace_back(Minion(MinionType::Alleycat));
+        p1.emplace_back(Minion(MinionType::Alleycat));
+        p1.emplace_back(Minion(MinionType::RighteousProtector));
+        p1.emplace_back(Minion(MinionType::DireWolfAlpha));
+        p1.emplace_back(Minion(MinionType::Alleycat));
+        for (int i = 0; i < 7; i++) {
+            p2.emplace_back(Minion(MinionType::Alleycat));
+        }
+        Board you(p1, HeroType::None, false, 1, 40);
+        Board opponent(p2, HeroType::None, false, 1, 40);
+        Battle battle(you, opponent);
+        auto result = battle.run();
+        ASSERT_EQ(0, result.stars());
+        ASSERT_EQ(0, result.count());
+        ASSERT_EQ(7, result.turn());
+    }
+    {
+        // 2 MurlocWarleader
+        // vs
+        // 2 MurlocWarleader
+        std::vector<Minion> p1, p2;
+        p1.emplace_back(Minion(MinionType::MurlocWarleader));
+        p1.emplace_back(Minion(MinionType::MurlocWarleader));
+        p2.emplace_back(Minion(MinionType::MurlocWarleader));
+        p2.emplace_back(Minion(MinionType::MurlocWarleader));
+        Board you(p1, HeroType::None, false, 1, 40);
+        Board opponent(p2, HeroType::None, false, 1, 40);
+        Battle battle(you, opponent);
+        auto result = battle.run();
+        ASSERT_EQ(0, result.stars());
+        ASSERT_EQ(0, result.count());
+        ASSERT_EQ(2, result.turn());
+    }
+    {
+        // 2 OldMurkEye
+        // vs
+        // 2 OldMurkEye
+        std::vector<Minion> p1, p2;
+        p1.emplace_back(Minion(MinionType::OldMurkEye));
+        p1.emplace_back(Minion(MinionType::OldMurkEye));
+        p2.emplace_back(Minion(MinionType::OldMurkEye));
+        p2.emplace_back(Minion(MinionType::OldMurkEye));
+        Board you(p1, HeroType::None, false, 1, 40);
+        Board opponent(p2, HeroType::None, false, 1, 40);
+        Battle battle(you, opponent);
+        auto result = battle.run();
+        ASSERT_EQ(0, result.stars());
+        ASSERT_EQ(0, result.count());
+        ASSERT_EQ(3, result.turn());
+    }
+    {
+        // Minion won't die because of aura buff cleared
+        // 1 Alleycat 1 MalGanis 1 Imprisoner
+        // vs
+        // 2 7/7 Alleycat
+        std::vector<Minion> p1, p2;
+        p1.emplace_back(Minion(MinionType::Alleycat));
+        p1.emplace_back(Minion(MinionType::MalGanis));
+        p1.emplace_back(Minion(MinionType::Imprisoner, true));
+        p2.emplace_back(Minion(MinionType::Alleycat, false, 7, 7));
+        p2.emplace_back(Minion(MinionType::Alleycat, false, 7, 7));
+        Board you(p1, HeroType::None, false, 1, 40);
+        Board opponent(p2, HeroType::None, false, 1, 40);
+        Battle battle(you, opponent);
+        auto result = battle.run();
+        ASSERT_EQ(2, result.stars());
+        ASSERT_EQ(1, result.count());
+        ASSERT_EQ(3, result.turn());
+    }
 }
 
+TEST(BattleTest, Test) {
+}
 
 int main(int argc, char** argv) {
     google::InitGoogleLogging(argv[0]);
     testing::InitGoogleTest(&argc, argv);
     FLAGS_logtostderr = true;
     FLAGS_v = 2;
+    sleep(1);
     return RUN_ALL_TESTS();
 }

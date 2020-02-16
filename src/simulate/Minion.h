@@ -1,5 +1,6 @@
 #pragma once
 
+#include <glog/logging.h>
 #include "utils/MinionInfo.h"
 #include "utils/HsDataUtils.h"
 
@@ -258,13 +259,19 @@ public:
     }
 
     void clearAuraBuff() {
-        this->attack_ -= this->attackAura_;
-        this->health_ -= this->healthAura_;
+        if (attack_ > attackAura_) {
+            attack_ -= attackAura_;
+        }
+        // aura buff won't kill a minion
+        // todo: what if health_ <= healthAura_
+        if (health_ > healthAura_) {
+            health_ -= this->healthAura_;
+        }
         this->attackAura_ = 0;
         this->healthAura_ = 0;
     }
 
-    bool computeAuras(size_t idx, BattleMinions* you, BattleMinions* opponent);
+    bool computeAuras(size_t pos, BattleMinions* you, BattleMinions* opponent);
 
     // bool recompute_aura_from(Board& board, int pos, Board const* enemy_board = nullptr);
     void onAllySummon(Battle* battle, size_t player, Minion& summoned, bool played);

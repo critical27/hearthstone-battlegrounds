@@ -72,6 +72,7 @@ void Battle::prepare() {
     board_.emplace_back(you_.minions());
     board_.emplace_back(opponent_.minions());
     CHECK_EQ(2, board_.size());
+    computeAurs();
 }
 
 BattleResult Battle::run() {
@@ -127,7 +128,7 @@ bool Battle::singleAttack(BattleMinions& active, BattleMinions& passive, size_t 
     if (attacker.minionType() != MinionType::ZappSlywick) {
         size_t defIdx = passive.nextDefenderIndex();
         if (attacker.isCleave()) {
-            auto adjacent = passive.getAdajacent(defIdx);
+            auto adjacent = passive.getAdjacent(defIdx);
             VLOG(2) << "Board " << attackPlayer_ << " minion " << atkIdx << " " << active[atkIdx].toSimpleString()
                     << " **attack** "
                     << "Board " << 1 - attackPlayer_ << " minion " << defIdx << " " << passive[defIdx].toSimpleString();
@@ -248,6 +249,7 @@ void Battle::checkForDeath() {
                 // after second onDeath, we summon another 2 rat, which would be [0, 2, 4],
                 offset += onDeath(player, pair.first, pair.second + offset);
             }
+            computeAurs();
         }
     } while (deadCount);
 }
@@ -259,9 +261,6 @@ bool Battle::done() {
 
 bool Battle::hasValidAttacker() {
     return board_[0].hasMinionWhichCanAttack() || board_[1].hasMinionWhichCanAttack();
-}
-
-void doAuras() {
 }
 
 BattleResult Battle::result(bool tied) {

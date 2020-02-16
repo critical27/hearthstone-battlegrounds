@@ -97,13 +97,13 @@ int Battle::deathRattle(size_t player, const Minion& deadMinion, size_t idx) {
         case MinionType::GoldrinnTheGreatWolf: {
             int amount = deadMinion.doubleIfGolden(4);
             board_[player].forEachMinion([amount] (Minion& m) { m.buff(amount, amount); },
-                                        [] (Minion& m) -> bool { return m.isTribe(Tribe::Beast); });
+                                        [] (const Minion& m) -> bool { return m.isTribe(Tribe::Beast); });
             break;
         }
         case MinionType::KingBagurgle: {
             int amount = deadMinion.doubleIfGolden(2);
             board_[player].forEachMinion([amount] (Minion& m) { m.buff(amount, amount); },
-                                        [] (Minion& m) -> bool { return m.isTribe(Tribe::Murloc); });
+                                        [] (const Minion& m) -> bool { return m.isTribe(Tribe::Murloc); });
             break;
         }
         case MinionType::SatedThreshadon:
@@ -155,6 +155,7 @@ int Battle::summon(int count, Minion minion, size_t player, size_t pos) {
         auto iter = battleMinions.insert(battleMinions.begin() + pos, summoned);
         onAllySummon(player, *iter);
     }
+    computeAurs();
     return result;
 }
 
@@ -171,6 +172,7 @@ int Battle::summon(int count, Minion minion, size_t player) {
         battleMinions.emplace_back(summoned);
         onAllySummon(player, battleMinions.back());
     }
+    computeAurs();
     return result;
 }
 

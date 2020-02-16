@@ -151,7 +151,37 @@ void Minion::onOverKill(Battle* battle, size_t player, size_t pos) {
     }
 }
 
-bool Minion::computeAuras(size_t idx, BattleMinions* you, BattleMinions* opponent) {
+bool Minion::computeAuras(size_t pos, BattleMinions* you, BattleMinions* opponent) {
+    switch (minionType_) {
+        case MinionType::DireWolfAlpha:
+            you->auraBuffAdjacent(doubleIfGolden(1), 0, pos);
+            return true;
+        case MinionType::MurlocWarleader:
+            you->auraBuffOthersIf(doubleIfGolden(2), 0, pos, [] (Minion const& m) { return m.isTribe(Tribe::Murloc); });
+            return true;
+        case MinionType::OldMurkEye: {
+            // count murlocs for both players, exclude itself
+            int count = -1;
+            count += you->countIf([] (const Minion& m) { return m.isTribe(Tribe::Murloc); });
+            count += opponent->countIf([] (const Minion& m) { return m.isTribe(Tribe::Murloc); });
+            if (count > 0) {
+                auraBuff(doubleIfGolden(count), 0);
+            }
+            return true;
+        }
+        case MinionType::PhalanxCommander:
+            you->auraBuffOthersIf(doubleIfGolden(2), 0, pos, [](Minion const& m) { return m.isTaunt(); });
+            return true;
+        case MinionType::Siegebreaker:
+            you->auraBuffOthersIf(doubleIfGolden(1), 0, pos, [](Minion const& m) { return m.isTribe(Tribe::Demon); });
+            return true;
+        case MinionType::MalGanis:
+            you->auraBuffOthersIf(doubleIfGolden(2), doubleIfGolden(2), pos,
+                                  [] (Minion const& m) { return m.isTribe(Tribe::Demon); });
+            return true;
+        default:
+            return false;
+    }
     return false;
 }
 

@@ -6,7 +6,7 @@
 
 const size_t MAX_MECHS_THAT_DIED = 4;
 using IndexResult = std::vector<size_t>;
-using MinionBoolCondition = std::function<bool (Minion& minion)>;
+using MinionBoolCondition = std::function<bool (const Minion& minion)>;
 using MinionAction = std::function<void (Minion& minion)>;
 
 class BattleMinions {
@@ -15,7 +15,7 @@ public:
     BattleMinions() = default;
 
     BattleMinions(const std::vector<Minion> minions)
-            : battleMinions_(minions), nextAttacker_(0) {}
+            : battleMinions_(minions), nextAttacker_(0), hasAuraMinion_{true} {}
 
     std::vector<Minion>& battleMinions() {
         return battleMinions_;
@@ -89,7 +89,7 @@ public:
         return count;
     }
 
-    std::vector<size_t> getAdajacent(size_t idx) {
+    std::vector<size_t> getAdjacent(size_t idx) {
         std::vector<size_t> ret;
         if (idx > 0) {
             ret.emplace_back(idx - 1);
@@ -100,6 +100,7 @@ public:
         return ret;
     }
 
+    // return the idx of minion with lowest attack
     size_t minionWithLowestAttack();
 
     // Duplication effects
@@ -120,7 +121,9 @@ public:
     void buffRandomMinion(int attack, int health);
 
     void forEachMinion(MinionAction func,
-                       MinionBoolCondition pred = [] (Minion& minion) { return true; });
+                       MinionBoolCondition pred = [] (const Minion& minion) { return true; });
+
+    int countIf(MinionBoolCondition pred);
 
     void addDeadMech(Minion& minion) {
         if (deadMechs_.size() < MAX_MECHS_THAT_DIED) {
@@ -133,6 +136,8 @@ public:
     }
 
     void computeAuras(BattleMinions* opponent);
+    void auraBuffAdjacent(int attack, int health, size_t pos);
+    void auraBuffOthersIf(int attack, int health, size_t pos, MinionBoolCondition pred);
 
 private:
     std::vector<Minion> battleMinions_;
@@ -141,5 +146,5 @@ private:
     // Next attacker index
     int nextAttacker_{0};
 
-    bool hasAuraMinion_{false};
+    bool hasAuraMinion_{true};
 };
