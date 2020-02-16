@@ -62,12 +62,11 @@ public:
     Battle(const Board& you, const Board& opponent)
         : you_(you), opponent_(opponent) {}
 
-    friend std::ostream& operator<<(std::ostream& os, const Battle& battle);
+    friend std::ostream& operator<<(std::ostream& os, Battle& battle);
 
     friend class Minion;
 
-    std::string toString() const;
-    // todo: make it const
+    std::string toString();
     std::string toPrettyString();
 
     BattleResult run();
@@ -109,15 +108,15 @@ private:
     Board opponent_;
 
     BattleMinions& attacker() {
-        return yourTurn_ ? board[0] : board[1];
+        return yourTurn_ ? board_[0] : board_[1];
     }
 
     BattleMinions& defender() {
-        return yourTurn_ ? board[1] : board[0];
+        return yourTurn_ ? board_[1] : board_[0];
     }
 
     BattleMinions& player(size_t idx) {
-        return board[idx];
+        return board_[idx];
     }
 
     void nextTurn() {
@@ -126,7 +125,8 @@ private:
     }
 
     // build BattleMinions with board, board[0] is you, board[1] is opponent
-    std::vector<BattleMinions> board;
+    // BattleMinions is the actual minions on battle ground, which would compute auras
+    std::vector<BattleMinions> board_;
 
     size_t attackPlayer_{0};
     // who attack in this turn

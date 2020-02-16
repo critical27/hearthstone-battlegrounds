@@ -27,6 +27,12 @@ public:
         return battleMinions_[idx];
     }
 
+    const Minion& at(size_t idx) {
+        CHECK_LE(0, idx);
+        CHECK_LT(idx, battleMinions_.size());
+        return battleMinions_.at(idx);
+    }
+
     friend std::ostream& operator<<(std::ostream& os, const BattleMinions& battleMinions);
 
     std::string toString() const;
@@ -97,6 +103,7 @@ public:
     size_t minionWithLowestAttack();
 
     // Duplication effects
+    // todo: Khadgar
     int extraSummonCount() const;
     int extraDeathrattleCount() const;
     int extraBattlecryCount() const;
@@ -125,10 +132,14 @@ public:
         return deadMechs_;
     }
 
+    void computeAuras(BattleMinions* opponent);
+
 private:
     std::vector<Minion> battleMinions_;
     std::vector<Minion> deadMechs_;
 
     // Next attacker index
     int nextAttacker_{0};
+
+    bool hasAuraMinion_{false};
 };

@@ -144,3 +144,14 @@ int BattleMinions::extraBattlecryCount() const {
     return hasMinion(MinionType::BrannBronzebeard) + 1;
 }
 
+void BattleMinions::computeAuras(BattleMinions* opponent) {
+    if (!hasAuraMinion_) {
+        return;
+    }
+    forEachMinion([] (Minion& m) {
+        m.clearAuraBuff();
+    });
+    for (int i = 0; i < battleMinions_.size(); i++) {
+        battleMinions_[i].computeAuras(i, this, opponent);
+    }
+}

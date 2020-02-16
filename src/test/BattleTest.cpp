@@ -1132,28 +1132,8 @@ TEST(BattleTest, CleaveTest) {
 }
 
 TEST(BattleTest, Test) {
-    {
-        // 1 Alleycat, 1 ReplicatingMenace, 1 golden RatPack [taunt], 1 2/2 RatPack
-        // vs
-        // 1 4/4 golden CaveHydra
-        std::vector<Minion> p1, p2;
-        p1.emplace_back(Minion(MinionType::Alleycat));
-        p1.emplace_back(Minion(MinionType::ReplicatingMenace));
-        p1.emplace_back(Minion(MinionType::RatPack, true));
-        p1.back().setTaunt(true);
-        p1.emplace_back(Minion(MinionType::RatPack));
-        Minion caveHydra(MinionType::CaveHydra, true);
-        caveHydra.setHealth(4);
-        p2.emplace_back(caveHydra);
-        Board you(p1, HeroType::None, false, 1, 40);
-        Board opponent(p2, HeroType::None, false, 1, 40);
-        Battle battle(you, opponent);
-        auto result = battle.run();
-        ASSERT_EQ(7, result.stars());
-        ASSERT_EQ(7, result.count());
-        ASSERT_EQ(2, result.turn());
-    }
 }
+
 
 int main(int argc, char** argv) {
     google::InitGoogleLogging(argv[0]);

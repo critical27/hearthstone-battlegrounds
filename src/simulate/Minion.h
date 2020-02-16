@@ -6,6 +6,7 @@
 const int BOARD_SIZE = 7;
 
 class Battle;
+class BattleMinions;
 
 #define COMP(VAR, FIELD) \
     if (FIELD != VAR.FIELD) { \
@@ -234,23 +235,6 @@ public:
         return copy;
     }
 
-    // For later tavern operation
-    /*
-    void aura_buff(int attack, int health) {
-        this->attack_ += attack;
-        this->health_ += health;
-        this->attackAura_ += attack;
-        this->healthAura_ += health;
-    }
-
-    void clear_aura_buff() {
-        this->attack_ -= this->attackAura_;
-        this->health_ -= this->healthAura_;
-        this->attackAura_ = 0;
-        this->healthAura_ = 0;
-    }
-     */
-
     Minion& addDeathrattleMicrobots(int n = 3) {
         this->deathrattle_microbots_ = std::min(this->deathrattle_microbots_ + n, BOARD_SIZE);
         return *this;
@@ -265,6 +249,22 @@ public:
         this->deathrattle_plants_ = std::min(this->deathrattle_plants_ + n, BOARD_SIZE);
         return *this;
     }
+
+    void auraBuff(int attack, int health) {
+        this->attack_ += attack;
+        this->health_ += health;
+        this->attackAura_ += attack;
+        this->healthAura_ += health;
+    }
+
+    void clearAuraBuff() {
+        this->attack_ -= this->attackAura_;
+        this->health_ -= this->healthAura_;
+        this->attackAura_ = 0;
+        this->healthAura_ = 0;
+    }
+
+    bool computeAuras(size_t idx, BattleMinions* you, BattleMinions* opponent);
 
     // bool recompute_aura_from(Board& board, int pos, Board const* enemy_board = nullptr);
     void onAllySummon(Battle* battle, size_t player, Minion& summoned, bool played);

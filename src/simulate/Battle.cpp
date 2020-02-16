@@ -8,21 +8,21 @@ std::ostream& operator<<(std::ostream& os, const BattleResult& result) {
     return os;
 }
 
-std::string Battle::toString() const {
+std::string Battle::toString() {
     std::stringstream ss;
-    ss << board.front().toString();
+    ss << board_.front().toString();
     ss << "VS" << "\n";
-    ss << board.back().toString();
+    ss << board_.back().toString();
     return ss.str();
 }
 
 std::string Battle::toPrettyString() {
-    size_t m = board.front().size(), n = board.back().size();
+    size_t m = board_.front().size(), n = board_.back().size();
     size_t vs = std::max(m, n) / 2;
     std::stringstream ss;
     for (size_t i = 0; i < std::max(m, n); i++) {
         if (i < m) {
-            ss << std::left << std::setfill(' ') << std::setw(OUTPUT_WIDTH) << board[0][i].toString();
+            ss << std::left << std::setfill(' ') << std::setw(OUTPUT_WIDTH) << board_[0][i].toString();
         } else {
             ss << BLANK;
         }
@@ -32,7 +32,7 @@ std::string Battle::toPrettyString() {
             ss << "    ";
         }
         if (i < n) {
-            ss << std::right << std::setfill(' ') << std::setw(OUTPUT_WIDTH) << board[1][i].toString();
+            ss << std::right << std::setfill(' ') << std::setw(OUTPUT_WIDTH) << board_[1][i].toString();
         } else {
             ss << BLANK;
         }
@@ -40,13 +40,14 @@ std::string Battle::toPrettyString() {
     }
     return ss.str();
 }
-std::ostream& operator<<(std::ostream& os, const Battle& battle) {
+
+std::ostream& operator<<(std::ostream& os, Battle& battle) {
     os << battle.toString();
     return os;
 }
 
 void Battle::flipCoin() {
-    size_t m = board[0].size(), n = board[1].size();
+    size_t m = board_[0].size(), n = board_[1].size();
     if (m < n) {
         yourTurn_ = false;
         return;
@@ -67,10 +68,10 @@ void Battle::prepare() {
     // todo: hero_power
     // reset the board
     VLOG(1) << "---------------------------------------------";
-    board.clear();
-    board.emplace_back(you_.minions());
-    board.emplace_back(opponent_.minions());
-    CHECK_EQ(2, board.size());
+    board_.clear();
+    board_.emplace_back(you_.minions());
+    board_.emplace_back(opponent_.minions());
+    CHECK_EQ(2, board_.size());
 }
 
 BattleResult Battle::run() {
@@ -216,9 +217,9 @@ void Battle::checkForDeath() {
     do {
         deadCount = 0;
         // doodle: check random player at first, this do affect the battle result,
-        for (size_t player = 0; player < board.size(); player++) {
+        for (size_t player = 0; player < board_.size(); player++) {
             std::vector<std::pair<Minion, size_t>> deadMinions;
-            auto& minions = board[player].battleMinions();
+            auto& minions = board_[player].battleMinions();
             int aliveMinionsCount = 0;
             // iterate through the battle minions
             for (auto iter = minions.begin(); iter != minions.end(); ) {
@@ -231,7 +232,7 @@ void Battle::checkForDeath() {
                     // 2. save the aliveMinionsCount, which is the position to trigger onDeath
                     deadMinions.emplace_back(deadMinion, aliveMinionsCount);
                     if (deadMinion.isTribe(Tribe::Mech)) {
-                        board[player].addDeadMech(deadMinion);
+                        board_[player].addDeadMech(deadMinion);
                     }
                 } else {
                     // 3. if minion is alive, move to next
@@ -253,11 +254,14 @@ void Battle::checkForDeath() {
 
 bool Battle::done() {
     // return true when one of BattleMinions is empty
-    return !board[0].hasAliveMinion() || !board[1].hasAliveMinion();
+    return !board_[0].hasAliveMinion() || !board_[1].hasAliveMinion();
 }
 
 bool Battle::hasValidAttacker() {
-    return board[0].hasMinionWhichCanAttack() || board[1].hasMinionWhichCanAttack();
+    return board_[0].hasMinionWhichCanAttack() || board_[1].hasMinionWhichCanAttack();
+}
+
+void doAuras() {
 }
 
 BattleResult Battle::result(bool tied) {
@@ -266,8 +270,8 @@ BattleResult Battle::result(bool tied) {
         return BattleResult(turn_);
     }
     // stars > 0 if you win, < 0 if opponent win, 0 if tied
-    int yourStars = board[0].remainingStars(), opponentStars = board[1].remainingStars();
-    int yourCount = board[0].remainingMinions(), opponentCount = board[1].remainingMinions();
+    int yourStars = board_[0].remainingStars(), opponentStars = board_[1].remainingStars();
+    int yourCount = board_[0].remainingMinions(), opponentCount = board_[1].remainingMinions();
     int stars = yourStars - opponentStars;
     if (stars > 0) {
         CHECK_GT(yourCount, 0);

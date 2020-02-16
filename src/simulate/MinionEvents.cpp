@@ -151,3 +151,7 @@ void Minion::onOverKill(Battle* battle, size_t player, size_t pos) {
     }
 }
 
+bool Minion::computeAuras(size_t idx, BattleMinions* you, BattleMinions* opponent) {
+    return false;
+}
+

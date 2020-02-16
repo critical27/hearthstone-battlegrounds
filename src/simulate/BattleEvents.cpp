@@ -9,7 +9,7 @@ int Battle::onDeath(size_t player, const Minion& deadMinion, size_t idx) {
         result += summon(1, deadMinion.rebornCopy(), player, idx);
     }
     // deathrattle
-    int count = board[player].extraDeathrattleCount();
+    int count = board_[player].extraDeathrattleCount();
     for (int i = 0; i < count; i++) {
         result += deathRattle(player, deadMinion, idx);
     }
@@ -28,12 +28,12 @@ int Battle::deathRattle(size_t player, const Minion& deadMinion, size_t idx) {
             break;
         case MinionType::SelflessHero:
             TWICE_IF_GOLDEN {
-                board[player].giveRandomMinionDivineShield();
+                board_[player].giveRandomMinionDivineShield();
             }
             break;
         case MinionType::FiendishServant:
             TWICE_IF_GOLDEN {
-                board[player].buffRandomMinion(deadMinion.attack(), 0);
+                board_[player].buffRandomMinion(deadMinion.attack(), 0);
             }
             break;
         // Tier 2
@@ -42,7 +42,7 @@ int Battle::deathRattle(size_t player, const Minion& deadMinion, size_t idx) {
             break;
         case MinionType::KaboomBot:
             TWICE_IF_GOLDEN {
-                board[1 - player].takeDamageRandom(4);
+                board_[1 - player].takeDamageRandom(4);
             }
             break;
         case MinionType::KindlyGrandmother:
@@ -58,7 +58,7 @@ int Battle::deathRattle(size_t player, const Minion& deadMinion, size_t idx) {
             break;
         case MinionType::SpawnOfNZoth: {
             int amount = deadMinion.doubleIfGolden(1);
-            board[player].forEachMinion([amount] (Minion& m) { m.buff(amount, amount); });
+            board_[player].forEachMinion([amount] (Minion& m) { m.buff(amount, amount); });
             break;
         }
         // Tier 3
@@ -75,7 +75,7 @@ int Battle::deathRattle(size_t player, const Minion& deadMinion, size_t idx) {
             break;
         case MinionType::TortollanShellraiser: {
             int amount = deadMinion.doubleIfGolden(1);
-            board[player].buffRandomMinion(amount, amount);
+            board_[player].buffRandomMinion(amount, amount);
             break;
         }
         case MinionType::TheBeast:
@@ -96,13 +96,13 @@ int Battle::deathRattle(size_t player, const Minion& deadMinion, size_t idx) {
         // Tier 5
         case MinionType::GoldrinnTheGreatWolf: {
             int amount = deadMinion.doubleIfGolden(4);
-            board[player].forEachMinion([amount] (Minion& m) { m.buff(amount, amount); },
+            board_[player].forEachMinion([amount] (Minion& m) { m.buff(amount, amount); },
                                         [] (Minion& m) -> bool { return m.isTribe(Tribe::Beast); });
             break;
         }
         case MinionType::KingBagurgle: {
             int amount = deadMinion.doubleIfGolden(2);
-            board[player].forEachMinion([amount] (Minion& m) { m.buff(amount, amount); },
+            board_[player].forEachMinion([amount] (Minion& m) { m.buff(amount, amount); },
                                         [] (Minion& m) -> bool { return m.isTribe(Tribe::Murloc); });
             break;
         }
@@ -125,7 +125,7 @@ int Battle::deathRattle(size_t player, const Minion& deadMinion, size_t idx) {
             }
             break;
         case MinionType::KangorsApprentice: {
-            auto deadMechs = board[player].deadMechs();
+            auto deadMechs = board_[player].deadMechs();
             for (int i = 0; i < deadMinion.doubleIfGolden(2) && i < deadMechs.size(); ++i) {
                 result += summon(1, deadMechs[i], player, idx);
             }
@@ -146,8 +146,8 @@ int Battle::summon(int count, Minion minion, size_t player, size_t pos) {
     // return value is actual the summoned count
     int result = 0;
     CHECK(minion.minionType() != MinionType::None);
-    auto& battleMinions = board[player].battleMinions();
-    for (; result < count && board[player].hasEmptySlot(); ++result) {
+    auto& battleMinions = board_[player].battleMinions();
+    for (; result < count && board_[player].hasEmptySlot(); ++result) {
         // need to copy the value, otherwise, it could be affected by onAllySummon
         Minion summoned = minion;
         VLOG(3) << "Board " << player << " insert " << minion << " at pos " << pos;
@@ -163,8 +163,8 @@ int Battle::summon(int count, Minion minion, size_t player) {
     // return value is actual the summoned count
     int result = 0;
     CHECK(minion.minionType() != MinionType::None);
-    auto& battleMinions = board[player].battleMinions();
-    for (; result < count && board[player].hasEmptySlot(); ++result) {
+    auto& battleMinions = board_[player].battleMinions();
+    for (; result < count && board_[player].hasEmptySlot(); ++result) {
         // need to copy the value, otherwise, it could be affected by onAllySummon
         Minion summoned = minion;
         VLOG(3) << "Board " << player << " add " << minion << " at last";
@@ -175,26 +175,26 @@ int Battle::summon(int count, Minion minion, size_t player) {
 }
 
 void Battle::onAllySummon(size_t player, Minion &summoned, bool played) {
-    board[player].forEachMinion([&] (Minion& m) {
+    board_[player].forEachMinion([&] (Minion& m) {
         m.onAllySummon(this, player, summoned, played);
     });
     VLOG(4) << "onAllySummon " << summoned;
 }
 
 void Battle::onAllyBreakDivineShield(size_t player) {
-    board[player].forEachMinion([player, this] (Minion& m) {
+    board_[player].forEachMinion([player, this] (Minion& m) {
         m.onAllyBreakDivineShield(this, player);
     });
 }
 
 void Battle::onAllyAttack(size_t player) {
-    board[player].forEachMinion([player, this] (Minion& m) {
+    board_[player].forEachMinion([player, this] (Minion& m) {
         m.onAllyAttack(this, player);
     });
 }
 
 void Battle::onAllyDeath(size_t player, const Minion& deadMinion) {
-    board[player].forEachMinion([&] (Minion& m) {
+    board_[player].forEachMinion([&] (Minion& m) {
         m.onAllyDeath(this, player, deadMinion);
     });
 }
