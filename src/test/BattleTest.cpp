@@ -1324,6 +1324,85 @@ TEST(BattleTest, AuraTest) {
     }
 }
 
+TEST(BattleTest, KhadgarTest) {
+    {
+        // 1 RatPack 1 PackLeader 1 Khadgar
+        // vs
+        // 4 ShieldedMinibot
+        std::vector<Minion> p1, p2;
+        p1.emplace_back(Minion(MinionType::RatPack));
+        p1.back().setTaunt(true);
+        p1.emplace_back(Minion(MinionType::PackLeader));
+        p1.emplace_back(Minion(MinionType::Khadgar));
+        for (int i = 0; i < 4; i++) {
+            p2.emplace_back(Minion(MinionType::ShieldedMinibot));
+        }
+        Board you(p1, HeroType::None, false, 1, 40);
+        Board opponent(p2, HeroType::None, false, 1, 40);
+        Battle battle(you, opponent);
+        auto result = battle.run();
+        ASSERT_EQ(0, result.stars());
+        ASSERT_EQ(0, result.count());
+        ASSERT_EQ(8, result.turn());
+    }
+    {
+        // 1 RatPack 1 Golden PackLeader 1 Khadgar
+        // vs
+        // 4 ShieldedMinibot
+        std::vector<Minion> p1, p2;
+        p1.emplace_back(Minion(MinionType::RatPack));
+        p1.back().setTaunt(true);
+        p1.emplace_back(Minion(MinionType::PackLeader, true));
+        p1.emplace_back(Minion(MinionType::Khadgar));
+        for (int i = 0; i < 5; i++) {
+            p2.emplace_back(Minion(MinionType::ShieldedMinibot));
+        }
+        Board you(p1, HeroType::None, false, 1, 40);
+        Board opponent(p2, HeroType::None, false, 1, 40);
+        Battle battle(you, opponent);
+        auto result = battle.run();
+        ASSERT_EQ(-2, result.stars());
+        ASSERT_EQ(1, result.count());
+        ASSERT_EQ(9, result.turn());
+    }
+    {
+        // 1 RatPack 1 PackLeader 1 Golden Khadgar
+        // vs
+        // 5 ShieldedMinibot
+        std::vector<Minion> p1, p2;
+        p1.emplace_back(Minion(MinionType::RatPack));
+        p1.back().setTaunt(true);
+        p1.emplace_back(Minion(MinionType::PackLeader));
+        p1.emplace_back(Minion(MinionType::Khadgar, true));
+        for (int i = 0; i < 5; i++) {
+            p2.emplace_back(Minion(MinionType::ShieldedMinibot));
+        }
+        Board you(p1, HeroType::None, false, 1, 40);
+        Board opponent(p2, HeroType::None, false, 1, 40);
+        Battle battle(you, opponent);
+        auto result = battle.run();
+        ASSERT_EQ(0, result.stars());
+        ASSERT_EQ(0, result.count());
+        ASSERT_EQ(10, result.turn());
+    }
+    {
+        // 1 SecurityRover 1 Khadgar
+        // vs
+        // 1 SecurityRover 1 Khadgar
+        std::vector<Minion> p1, p2;
+        p1.emplace_back(Minion(MinionType::SecurityRover));
+        p1.back().setTaunt(true);
+        p1.emplace_back(Minion(MinionType::Khadgar));
+        p2.emplace_back(Minion(MinionType::SecurityRover));
+        p2.back().setTaunt(true);
+        p2.emplace_back(Minion(MinionType::Khadgar));
+        Board you(p1, HeroType::None, false, 1, 40);
+        Board opponent(p2, HeroType::None, false, 1, 40);
+        Battle battle(you, opponent);
+        auto result = battle.run();
+    }
+}
+
 TEST(BattleTest, Test) {
 }
 

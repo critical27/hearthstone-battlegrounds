@@ -147,13 +147,27 @@ int Battle::summon(int count, Minion minion, size_t player, size_t pos) {
     int result = 0;
     CHECK(minion.minionType() != MinionType::None);
     auto& battleMinions = board_[player].battleMinions();
-    for (; result < count && board_[player].hasEmptySlot(); ++result) {
+    int extra = board_[player].extraSummonCount();
+    while (count && board_[player].hasEmptySlot()) {
         // need to copy the value, otherwise, it could be affected by onAllySummon
         Minion summoned = minion;
         VLOG(3) << "Board " << player << " insert " << minion << " at pos " << pos;
         CHECK(battleMinions.begin() + pos <= battleMinions.end());
         auto iter = battleMinions.insert(battleMinions.begin() + pos, summoned);
         onAllySummon(player, *iter);
+        ++pos;
+        ++result;
+        --count;
+
+        // trigger Khadgar after it has called onAllySummon
+        int khadgar = extra;
+        while (khadgar > 1 && board_[player].hasEmptySlot()) {
+            iter = battleMinions.insert(battleMinions.begin() + pos, *iter);
+            onAllySummon(player, *iter);
+            ++pos;
+            ++result;
+            --khadgar;
+        }
     }
     computeAurs();
     return result;
@@ -161,19 +175,8 @@ int Battle::summon(int count, Minion minion, size_t player, size_t pos) {
 
 // for TheBeast, always insert at opponent's last empty slot
 int Battle::summon(int count, Minion minion, size_t player) {
-    // return value is actual the summoned count
-    int result = 0;
-    CHECK(minion.minionType() != MinionType::None);
-    auto& battleMinions = board_[player].battleMinions();
-    for (; result < count && board_[player].hasEmptySlot(); ++result) {
-        // need to copy the value, otherwise, it could be affected by onAllySummon
-        Minion summoned = minion;
-        VLOG(3) << "Board " << player << " add " << minion << " at last";
-        battleMinions.emplace_back(summoned);
-        onAllySummon(player, battleMinions.back());
-    }
-    computeAurs();
-    return result;
+    size_t pos = board_[player].size();
+    return summon(count, minion, player, pos);
 }
 
 void Battle::onAllySummon(size_t player, Minion &summoned, bool played) {

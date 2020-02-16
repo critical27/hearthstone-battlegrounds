@@ -116,6 +116,10 @@ void Battle::attack() {
                 break;
             }
         }
+        // todo: this has bug? say we have 4 minions: m0, m1, m2, m3
+        // 1. m0 attack and survived, m1 should be next one (nextAttacker_ = 1)
+        // 2. However m0 was killed when opponent attacks, which remains [m1, m2, m3] (nextAttacker_ = 1)
+        // 3. Here comes the bug, m2 attack instead
         if (attackerAlive) {
             active.forwardAttackerIndex();
         }
