@@ -263,7 +263,6 @@ public:
             attack_ -= attackAura_;
         }
         // aura buff won't kill a minion
-        // todo: what if health_ <= healthAura_
         if (health_ > healthAura_) {
             health_ -= this->healthAura_;
         }

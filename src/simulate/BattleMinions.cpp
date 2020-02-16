@@ -15,7 +15,11 @@ std::string BattleMinions::toString() const {
     return ss.str();
 }
 
-size_t BattleMinions::nextAttackerIndex() {
+size_t BattleMinions::nextAttackerIndex(bool isActive) {
+    if (!isActive) {
+        return nextAttacker_;
+    }
+
     // return -1 if has no valid attacker, else index of attacker
     if (battleMinions_.empty()) {
         return -1;

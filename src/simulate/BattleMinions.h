@@ -38,13 +38,19 @@ public:
     std::string toString() const;
 
     // return -1 if has no valid attacker, else index of attacker
-    size_t nextAttackerIndex();
+    size_t nextAttackerIndex(bool isActive = false);
 
     size_t nextDefenderIndex();
 
     void forwardAttackerIndex() {
         if (!battleMinions_.empty()) {
             nextAttacker_ = (nextAttacker_ + 1) % battleMinions_.size();
+        }
+    }
+
+    void backwardAttackerIndex() {
+        if (nextAttacker_ > 0) {
+            --nextAttacker_;
         }
     }
 
@@ -104,7 +110,6 @@ public:
     size_t minionWithLowestAttack();
 
     // Duplication effects
-    // todo: Khadgar
     int extraSummonCount() const;
     int extraDeathrattleCount() const;
     int extraBattlecryCount() const;

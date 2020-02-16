@@ -1403,6 +1403,172 @@ TEST(BattleTest, KhadgarTest) {
     }
 }
 
+TEST(BattleTest, NextAttackerTest) {
+    sleep(1);
+    {
+        std::vector<Minion> p1, p2;
+        p1.emplace_back(Minion(MinionType::VulgarHomunculus));
+        p1.emplace_back(Minion(MinionType::ShieldedMinibot));
+        p1.emplace_back(Minion(MinionType::RatPack));
+        p2.emplace_back(Minion(MinionType::ShieldedMinibot));
+        p2.emplace_back(Minion(MinionType::ShieldedMinibot));
+        p2.emplace_back(Minion(MinionType::ShieldedMinibot));
+        Board you(p1, HeroType::None, false, 1, 40);
+        Board opponent(p2, HeroType::None, false, 1, 40);
+        Battle battle(you, opponent);
+        auto result = battle.run();
+        ASSERT_EQ(0, result.stars());
+        ASSERT_EQ(0, result.count());
+        ASSERT_EQ(7, result.turn());
+    }
+    for (int tauntIdx = 0; tauntIdx < 3; tauntIdx++) {
+        // 3 ShieldedMinibot
+        // vs
+        // 1 CaveHydra 1 RighteousProtector
+        std::vector<Minion> p1, p2;
+        for (int i = 0; i < 3; i++) {
+            p1.emplace_back(Minion(MinionType::ShieldedMinibot));
+            if (i == tauntIdx) {
+                p1.back().setTaunt(true);
+            }
+        }
+        p2.emplace_back(Minion(MinionType::CaveHydra));
+        p2.emplace_back(Minion(MinionType::RighteousProtector));
+        Board you(p1, HeroType::None, false, 1, 40);
+        Board opponent(p2, HeroType::None, false, 1, 40);
+        Battle battle(you, opponent);
+        auto result = battle.run();
+        if (tauntIdx == 1) {
+            ASSERT_EQ(0, result.stars());
+            ASSERT_EQ(0, result.count());
+        } else {
+            ASSERT_EQ(2, result.stars());
+            ASSERT_EQ(1, result.count());
+        }
+        ASSERT_EQ(4, result.turn());
+    }
+    for (int tauntIdx = 0; tauntIdx < 3; tauntIdx++) {
+        // 3 RatPack
+        // vs
+        // 1 CaveHydra 1 RighteousProtector
+        std::vector<Minion> p1, p2;
+        for (int i = 0; i < 3; i++) {
+            p1.emplace_back(Minion(MinionType::RatPack));
+            if (i == tauntIdx) {
+                p1.back().setTaunt(true);
+            }
+        }
+        p2.emplace_back(Minion(MinionType::CaveHydra));
+        p2.emplace_back(Minion(MinionType::RighteousProtector));
+        Board you(p1, HeroType::None, false, 1, 40);
+        Board opponent(p2, HeroType::None, false, 1, 40);
+        Battle battle(you, opponent);
+        auto result = battle.run();
+    }
+    {
+        std::vector<Minion> p1, p2;
+        p1.emplace_back(Minion(MinionType::RatPack, true));
+        p1.back().setTaunt(true);
+        p1.emplace_back(Minion(MinionType::Alleycat));
+        p1.emplace_back(Minion(MinionType::Mecharoo));
+        p2.emplace_back(Minion(MinionType::CaveHydra));
+        p2.emplace_back(Minion(MinionType::RighteousProtector));
+        Board you(p1, HeroType::None, false, 1, 40);
+        Board opponent(p2, HeroType::None, false, 1, 40);
+        Battle battle(you, opponent);
+        auto result = battle.run();
+        ASSERT_EQ(3, result.stars());
+        ASSERT_EQ(2, result.count());
+        ASSERT_EQ(3, result.turn());
+    }
+    {
+        std::vector<Minion> p1, p2;
+        p1.emplace_back(Minion(MinionType::RatPack, true));
+        p1.emplace_back(Minion(MinionType::Alleycat));
+        p1.back().setTaunt(true);
+        p1.emplace_back(Minion(MinionType::Mecharoo));
+        p1.emplace_back(Minion(MinionType::SelflessHero, true));
+        p2.emplace_back(Minion(MinionType::CaveHydra));
+        p2.emplace_back(Minion(MinionType::RighteousProtector));
+        Board you(p1, HeroType::None, false, 1, 40);
+        Board opponent(p2, HeroType::None, false, 1, 40);
+        Battle battle(you, opponent);
+        auto result = battle.run();
+        ASSERT_EQ(4, result.stars());
+        ASSERT_EQ(4, result.count());
+        ASSERT_EQ(4, result.turn());
+    }
+    {
+        std::vector<Minion> p1, p2;
+        p1.emplace_back(Minion(MinionType::RatPack, true));
+        p1.emplace_back(Minion(MinionType::ShieldedMinibot));
+        p1.back().setTaunt(true);
+        p1.emplace_back(Minion(MinionType::Mecharoo));
+        p1.emplace_back(Minion(MinionType::SelflessHero, true));
+        p2.emplace_back(Minion(MinionType::CaveHydra));
+        p2.emplace_back(Minion(MinionType::RighteousProtector));
+        Board you(p1, HeroType::None, false, 1, 40);
+        Board opponent(p2, HeroType::None, false, 1, 40);
+        Battle battle(you, opponent);
+        auto result = battle.run();
+        ASSERT_EQ(5, result.stars());
+        ASSERT_EQ(5, result.count());
+        ASSERT_EQ(4, result.turn());
+    }
+    {
+        std::vector<Minion> p1, p2;
+        p1.emplace_back(Minion(MinionType::RatPack, true));
+        p1.emplace_back(Minion(MinionType::ShieldedMinibot));
+        p1.back().setTaunt(true);
+        p1.emplace_back(Minion(MinionType::Alleycat));
+        p1.emplace_back(Minion(MinionType::SelflessHero, true));
+        p2.emplace_back(Minion(MinionType::CaveHydra));
+        p2.emplace_back(Minion(MinionType::RighteousProtector));
+        Board you(p1, HeroType::None, false, 1, 40);
+        Board opponent(p2, HeroType::None, false, 1, 40);
+        Battle battle(you, opponent);
+        auto result = battle.run();
+        ASSERT_EQ(4, result.stars());
+        ASSERT_EQ(4, result.count());
+        ASSERT_EQ(4, result.turn());
+    }
+    {
+        // todo: Not pretty sure about how the deathrattle order should be,
+        // there sould be two rat with divine shield or not?
+        std::vector<Minion> p1, p2;
+        p1.emplace_back(Minion(MinionType::SelflessHero, true));
+        p1.emplace_back(Minion(MinionType::Alleycat));
+        p1.emplace_back(Minion(MinionType::ShieldedMinibot));
+        p1.back().setTaunt(true);
+        p1.emplace_back(Minion(MinionType::RatPack, true));
+        p2.emplace_back(Minion(MinionType::CaveHydra));
+        p2.emplace_back(Minion(MinionType::RighteousProtector));
+        Board you(p1, HeroType::None, false, 1, 40);
+        Board opponent(p2, HeroType::None, false, 1, 40);
+        Battle battle(you, opponent);
+        auto result = battle.run();
+        ASSERT_EQ(4, result.stars());
+        ASSERT_EQ(4, result.count());
+        ASSERT_EQ(4, result.turn());
+    }
+    {
+        std::vector<Minion> p1, p2;
+        p1.emplace_back(Minion(MinionType::SelflessHero, true));
+        p1.emplace_back(Minion(MinionType::Alleycat));
+        p1.emplace_back(Minion(MinionType::RighteousProtector));
+        p1.emplace_back(Minion(MinionType::RatPack, true));
+        p2.emplace_back(Minion(MinionType::CaveHydra));
+        p2.emplace_back(Minion(MinionType::RighteousProtector));
+        Board you(p1, HeroType::None, false, 1, 40);
+        Board opponent(p2, HeroType::None, false, 1, 40);
+        Battle battle(you, opponent);
+        auto result = battle.run();
+        ASSERT_EQ(4, result.stars());
+        ASSERT_EQ(4, result.count());
+        ASSERT_EQ(4, result.turn());
+    }
+}
+
 TEST(BattleTest, Test) {
 }
 

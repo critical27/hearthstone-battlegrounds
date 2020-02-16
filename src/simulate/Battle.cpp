@@ -98,7 +98,7 @@ void Battle::attack() {
     attackPlayer_ = yourTurn_ ? 0 : 1;
     BattleMinions& active = attacker();
     BattleMinions& passive = defender();
-    size_t atkIdx = active.nextAttackerIndex();
+    size_t atkIdx = active.nextAttackerIndex(true);
     if (atkIdx != -1) {
         Minion& attacker = active[atkIdx];
         int attackTimes = attacker.attackTimes();
@@ -109,17 +109,14 @@ void Battle::attack() {
             if (!passive.hasAliveMinion()) {
                 break;
             }
-            attackerAlive = singleAttack(active, passive, atkIdx);
+            singleAttack(active, passive, atkIdx);
+            attackerAlive = active[atkIdx].isAlive();
             onAllyAttack(attackPlayer_);
             checkForDeath();
             if (!attackerAlive) {
                 break;
             }
         }
-        // todo: this has bug? say we have 4 minions: m0, m1, m2, m3
-        // 1. m0 attack and survived, m1 should be next one (nextAttacker_ = 1)
-        // 2. However m0 was killed when opponent attacks, which remains [m1, m2, m3] (nextAttacker_ = 1)
-        // 3. Here comes the bug, m2 attack instead
         if (attackerAlive) {
             active.forwardAttackerIndex();
         }
@@ -127,97 +124,102 @@ void Battle::attack() {
 }
 
 // return true for attacker alive, otherwise dead
-bool Battle::singleAttack(BattleMinions& active, BattleMinions& passive, size_t atkIdx) {
+void Battle::singleAttack(BattleMinions& active, BattleMinions& passive, size_t atkIdx) {
     Minion& attacker = active[atkIdx];
     if (attacker.minionType() != MinionType::ZappSlywick) {
         size_t defIdx = passive.nextDefenderIndex();
+        Minion& defender = passive[defIdx];
         if (attacker.isCleave()) {
             auto adjacent = passive.getAdjacent(defIdx);
             VLOG(2) << "Board " << attackPlayer_ << " minion " << atkIdx << " " << active[atkIdx].toSimpleString()
                     << " **attack** "
-                    << "Board " << 1 - attackPlayer_ << " minion " << defIdx << " " << passive[defIdx].toSimpleString();
-            return doCleaveAttack(active, atkIdx, passive, defIdx, adjacent);
+                    << "Board " << 1 - attackPlayer_ << " minion " << defIdx << " " << defender.toSimpleString();
+            doCleaveAttack(active, atkIdx, passive, defIdx, adjacent);
         } else {
             VLOG(2) << "Board " << attackPlayer_ << " minion " << atkIdx << " " << active[atkIdx].toSimpleString()
                     << " **attack** "
-                    << "Board " << 1 - attackPlayer_ << " minion " << defIdx << " " << passive[defIdx].toSimpleString();
-            return doAttack(active, atkIdx, passive, defIdx);
+                    << "Board " << 1 - attackPlayer_ << " minion " << defIdx << " " << defender.toSimpleString();
+            doAttack(active, atkIdx, passive, defIdx);
         }
+        doDefense(attackPlayer_, attacker, atkIdx, defender);
     } else {
         size_t defIdx = passive.minionWithLowestAttack();
+        Minion& defender = passive[defIdx];
         VLOG(2) << "Board " << attackPlayer_ << " minion " << atkIdx << " " << active[atkIdx].toSimpleString()
                 << " **attack** "
-                << "Board " << 1 - attackPlayer_ << " minion " << defIdx << " " << passive[defIdx].toSimpleString();
-        return doAttack(active, atkIdx, passive, defIdx);
+                << "Board " << 1 - attackPlayer_ << " minion " << defIdx << " " << defender.toSimpleString();
+        doAttack(active, atkIdx, passive, defIdx);
+        doDefense(attackPlayer_, attacker, atkIdx, defender);
     }
 }
 
-bool Battle::doAttack(BattleMinions& active, size_t atkIdx, BattleMinions& passive, size_t defIdx) {
+void Battle::doAttack(BattleMinions& active, size_t atkIdx, BattleMinions& passive, size_t defIdx) {
     Minion& attacker = active[atkIdx];
     Minion& defender = passive[defIdx];
 
-    int kill = 0, overkill = 0;
-    damage(1 - attackPlayer_, defender, defIdx, attacker.isPoison(), overkill, kill, attacker.attack());
-    if (defender.attack() > 0) {
-        damage(attackPlayer_, attacker, atkIdx, defender.isPoison(), overkill, kill, defender.attack());
-    }
-
-    if (kill) {
+    // only attacker handle kill and overkill
+    auto result = dealDamage(1 - attackPlayer_, defender, defIdx, attacker);
+    if (result.first > 0) {
         attacker.onKill(this, attackPlayer_);
     }
-    if (overkill) {
+    if (result.second > 0) {
         attacker.onOverKill(this, attackPlayer_, atkIdx);
     }
-    return attacker.isAlive();
+
+    // Say passive have 3 minions: m0, m1, m2
+    // 1. m0 attack and survived, m1 should be next one (nextAttacker_ = 1)
+    // 2. m0 was killed when active attacks, which remains [m1, m2] (nextAttacker_ = 1)
+    // 3. m1 should be passive's next attcker
+    // so if defIdx is less than passive's next attacker idx, we need to backward it
+    // todo: this still need to be check carefully
+    if (!defender.isAlive() && defIdx < passive.nextAttackerIndex()) {
+        passive.backwardAttackerIndex();
+    }
 }
 
-bool Battle::doCleaveAttack(BattleMinions& active, size_t atkIdx, BattleMinions& passive, size_t defIdx, std::vector<size_t> adjacent) {
-    Minion& attacker = active[atkIdx];
-    Minion& defender = passive[defIdx];
-
-    int kill = 0, overkill = 0;
-    damage(1 - attackPlayer_, defender, defIdx, attacker.isPoison(), overkill, kill, attacker.attack());
-    for (auto idx : adjacent) {
-        damage(1 - attackPlayer_, passive[idx], idx, attacker.isPoison(), overkill, kill, attacker.attack());
+void Battle::doCleaveAttack(BattleMinions& active, size_t atkIdx, BattleMinions& passive, size_t defIdx, std::vector<size_t> adjacent) {
+    doAttack(active, atkIdx, passive, defIdx);
+    for (const auto& adjIdx : adjacent) {
+        doAttack(active, atkIdx, passive, adjIdx);
     }
+}
+
+void Battle::doDefense(size_t atkPlayerIdx, Minion& attacker, size_t atkIdx, Minion& defender) {
+    // only attacker handle kill and overkill
     if (defender.attack() > 0) {
-        damage(attackPlayer_, attacker, atkIdx, defender.isPoison(), overkill, kill, defender.attack());
+        dealDamage(atkPlayerIdx, attacker, atkIdx, defender);
     }
-
-    if (kill) {
-        attacker.onKill(this, attackPlayer_);
-    }
-    if (overkill) {
-        attacker.onOverKill(this, attackPlayer_, atkIdx);
-    }
-    return attacker.isAlive();
 }
 
-// deal amount damage to defender minion of player idx
-void Battle::damage(size_t idx, Minion& defender, size_t defIdx, bool poison, int& overkill, int& kill, int amount) {
-    CHECK(amount > 0);
+// deal attacker.attack() damage to defender
+std::pair<int, int> Battle::dealDamage(size_t defPlayerIdx, Minion& defender, size_t defIdx, Minion& attacker) {
+    int amount = attacker.attack();
+    int kill = 0, overKill = 0;
+    CHECK_GT(amount, 0);
     if (defender.isDivineShield()) {
         defender.setDivineShield(false);
-        onAllyBreakDivineShield(idx);
+        onAllyBreakDivineShield(defPlayerIdx);
     } else {
         defender.setHealth(defender.health() - amount);
-        if (defender.health() > 0 && poison) {
+        if (defender.health() > 0 && attacker.isPoison()) {
             defender.setHealth(0);
         }
         if (defender.health() < 0) {
-            overkill++;
             kill++;
+            overKill++;
         } else if (defender.health() == 0) {
             kill++;
         }
-        defender.onDamaged(this, idx, defIdx);
+        defender.onDamaged(this, defPlayerIdx, defIdx);
     }
+    return {kill, overKill};
 }
 
 void Battle::checkForDeath() {
-    // dooodle: we need to first remove all dead minion, and then trigger onDeath one by one.
-    // Otherwise, if more than one minion died during this round, the dead minion could affect other dead minion,
-    // i.e. empty slot
+    // we need to first remove all dead minion, and then trigger onDeath one by one. Otherwise,
+    // if more than one minion died during this round, the dead minion could affect other dead
+    // minion, e.g. if 3 minions were dead, if we don't remove them at first, there could be
+    // less empty slot
     int deadCount = 0;
     do {
         deadCount = 0;
