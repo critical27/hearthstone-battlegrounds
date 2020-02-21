@@ -171,7 +171,7 @@ void Battle::doAttack(BattleMinions& active, size_t atkIdx, BattleMinions& passi
     // 2. m0 was killed when active attacks, which remains [m1, m2] (nextAttacker_ = 1)
     // 3. m1 should be passive's next attcker
     // so if defIdx is less than passive's next attacker idx, we need to backward it
-    // todo: this still need to be check carefully
+    // this still need to be check carefully
     if (!defender.isAlive() && defIdx < passive.nextAttackerIndex()) {
         passive.backwardAttackerIndex();
     }
@@ -216,48 +216,61 @@ std::pair<int, int> Battle::dealDamage(size_t defPlayerIdx, Minion& defender, si
 }
 
 void Battle::checkForDeath() {
+    int deadCount = 0;
+    size_t first, second;
+    if (!rand(0, 1)) {
+        first = 0;
+        second = 1;
+    } else {
+        first = 1;
+        second = 0;
+    }
+    do {
+        deadCount = 0;
+        // doodle: check random player at first, this do affect the battle result,
+        deadCount += checkOnePlayerDeath(first);
+        deadCount += checkOnePlayerDeath(second);
+    } while (deadCount);
+}
+
+int Battle::checkOnePlayerDeath(size_t player) {
     // we need to first remove all dead minion, and then trigger onDeath one by one. Otherwise,
     // if more than one minion died during this round, the dead minion could affect other dead
     // minion, e.g. if 3 minions were dead, if we don't remove them at first, there could be
     // less empty slot
     int deadCount = 0;
-    do {
-        deadCount = 0;
-        // doodle: check random player at first, this do affect the battle result,
-        for (size_t player = 0; player < board_.size(); player++) {
-            std::vector<std::pair<Minion, size_t>> deadMinions;
-            auto& minions = board_[player].battleMinions();
-            int aliveMinionsCount = 0;
-            // iterate through the battle minions
-            for (auto iter = minions.begin(); iter != minions.end(); ) {
-                if (!iter->isAlive()) {
-                    VLOG(3) << "Board " << player << " " << iter->toSimpleString() << " is dead";
-                    deadCount++;
-                    // 1. remove the dead minion, so there would be at least a empty slot
-                    auto deadMinion = *iter;
-                    iter = minions.erase(iter);
-                    // 2. save the aliveMinionsCount, which is the position to trigger onDeath
-                    deadMinions.emplace_back(deadMinion, aliveMinionsCount);
-                    if (deadMinion.isTribe(Tribe::Mech)) {
-                        board_[player].addDeadMech(deadMinion);
-                    }
-                } else {
-                    // 3. if minion is alive, move to next
-                    aliveMinionsCount++;
-                    iter++;
-                }
+    std::vector<std::pair<Minion, size_t>> deadMinions;
+    auto& minions = board_[player].battleMinions();
+    int aliveMinionsCount = 0;
+    // iterate through the battle minions
+    for (auto iter = minions.begin(); iter != minions.end(); ) {
+        if (!iter->isAlive()) {
+            VLOG(3) << "Board " << player << " " << iter->toSimpleString() << " is dead";
+            deadCount++;
+            // 1. remove the dead minion, so there would be at least a empty slot
+            auto deadMinion = *iter;
+            iter = minions.erase(iter);
+            // 2. save the aliveMinionsCount, which is the position to trigger onDeath
+            deadMinions.emplace_back(deadMinion, aliveMinionsCount);
+            if (deadMinion.isTribe(Tribe::Mech)) {
+                board_[player].addDeadMech(deadMinion);
             }
-            int offset = 0;
-            for (auto& pair : deadMinions) {
-                // 4. death trigger, onDeath return the summoned count, which need to apply to all pos in deadMinions
-                // for example: 3 RatPack died, the pos in deadMinions is [0, 0, 0],
-                // after first onDeath, we summon 2 rat, so the remaining pos should count offset, which would be [0, 2, 2],
-                // after second onDeath, we summon another 2 rat, which would be [0, 2, 4],
-                offset += onDeath(player, pair.first, pair.second + offset);
-            }
-            computeAurs();
+        } else {
+            // 3. if minion is alive, move to next
+            aliveMinionsCount++;
+            iter++;
         }
-    } while (deadCount);
+    }
+    int offset = 0;
+    for (auto& pair : deadMinions) {
+        // 4. death trigger, onDeath return the summoned count, which need to apply to all pos in deadMinions
+        // for example: 3 RatPack died, the pos in deadMinions is [0, 0, 0],
+        // after first onDeath, we summon 2 rat, so the remaining pos should count offset, which would be [0, 2, 2],
+        // after second onDeath, we summon another 2 rat, which would be [0, 2, 4],
+        offset += onDeath(player, pair.first, pair.second + offset);
+    }
+    computeAurs();
+    return deadCount;
 }
 
 bool Battle::done() {

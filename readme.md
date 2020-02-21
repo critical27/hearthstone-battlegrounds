@@ -12,7 +12,6 @@ git submodule update --init --recursive
 Then cmake it.
 
 ### todo
-* Auras, such as `DireWolfAlpha`, `PhalanxCommander` and so on.
 * Some trigger details need to be confirmed.
 * Board parser. The only way to simulate is do it in unit test for now.
 * And most importantly, Bob's tavern action (which include battlecry)

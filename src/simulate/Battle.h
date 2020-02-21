@@ -81,6 +81,7 @@ private:
     std::pair<int, int> dealDamage(size_t defPlayerIdx, Minion& defender, size_t defIdx, Minion& attacker);
 
     void checkForDeath();
+    int checkOnePlayerDeath(size_t player);
     bool done();
     bool hasValidAttacker();
     BattleResult result(bool tied = false);
