@@ -43,7 +43,7 @@ void Minion::onAllySummon(Battle* battle, size_t player, Minion& summoned, bool 
         // Tier 6:
         case MinionType::MamaBear:
             if (summoned.isTribe(Tribe::Beast)) {
-                summoned.buff(doubleIfGolden(4), doubleIfGolden(4));
+                summoned.buff(doubleIfGolden(5), doubleIfGolden(5));
             }
             break;
         default:

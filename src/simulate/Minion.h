@@ -20,6 +20,8 @@ class BattleMinions;
 
 class Minion {
 public:
+    Minion(): Minion(MinionType::None) {}
+
     Minion(MinionType type, bool golden = false)
         : minionType_(type), minionInfo_(HsDataUtils::minionInfo(type)), golden_(golden),
           attack_(minionInfo_.attack(golden)), health_(minionInfo_.health(golden)),

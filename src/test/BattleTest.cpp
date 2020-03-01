@@ -514,9 +514,9 @@ TEST(BattleTest, onAllySummonTest) {
         ASSERT_EQ(7, result.turn());
     }
     {
-        // 1 4/4 RatPack [taunt], 1 5/5 MamaBear
+        // 1 4/4 RatPack [taunt], 1 6/6 MamaBear
         // vs
-        // 1 4/4 RatPack [taunt], 1 5/5 MamaBear
+        // 1 4/4 RatPack [taunt], 1 6/6 MamaBear
         std::vector<Minion> minions;
         Minion tauntRatPack(MinionType::RatPack);
         tauntRatPack.buff(2, 2);
