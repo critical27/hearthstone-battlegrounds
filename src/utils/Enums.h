@@ -78,6 +78,7 @@ enum class MinionType : unsigned char {
     ShifterZerus,
     SoulJuggler,
     TheBeast,
+    TwilightEmissary,
     // Tier 4
     AnnoyOModule,
     BolvarFireblood,
@@ -90,6 +91,7 @@ enum class MinionType : unsigned char {
     IronSensei,
     MechanoEgg,
     MenagerieMagician,
+    SavannahHighmane,
     SecurityRover,
     Siegebreaker,
     Toxfin,
@@ -107,10 +109,8 @@ enum class MinionType : unsigned char {
     Murozond,
     PrimalfinLookout,
     RazorgoreTheUntamed,
-    SavannahHighmane,
     SneedsOldShredder,
     StrongshellScavenger,
-    TwilightEmissary,
     Voidlord,
     // Tier 6
     FoeReaper4000,
@@ -124,7 +124,7 @@ enum class MinionType : unsigned char {
     MamaBear,
     NadinaTheRed,
     ZappSlywick,
-    // Tokens
+    // Tokens of tier 1
     Amalgam,
     BigBadWolf,
     DamagedGolem,
@@ -148,22 +148,22 @@ enum class MinionType : unsigned char {
     Tabbycat,
     VaultSafe,
     Voidwalker,
-    // Tokens
+    // Tokens of tier 2
     AmalgamExplorer,
     AnnoyOTron,
     MountedRaptor,
     NightmareAmalgam,
-    // Tokens
+    // Tokens of tier 3
     PhalanxCommander,
     PsychOTron,
     TortollanShellraiser,
-    // Tokens
+    // Tokens of tier 4
     FesterootHulk,
     PilotedSkyGolem,
     TheBoogeymonster,
-    // Tokens
+    // Tokens of tier 5
     SatedThreshadon,
-    // Custom
+    // Custom minion
     ShieldedMinibot,
 };
 
@@ -184,6 +184,7 @@ enum class HeroType {
     DinotamerBrann,
     EdwinVanCleef,
     EliseStarseeker,
+    FungalmancerFlurgl,
     Galakrond,
     GeorgeTheFallen,
     Giantfin,
@@ -218,4 +219,4 @@ enum class HeroType {
     Ysera,
 };
 
-const int HEROTYPE_COUNT = 42;
+const int HEROTYPE_COUNT = 43;

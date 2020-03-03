@@ -67,7 +67,7 @@ class Entity:
 
     def __init__(self, e):
         self.e = e
-        self.name = get_tag_loc_string(self.e, 'CARDNAME')
+        self.name = get_tag_loc_string(self.e, 'CARDNAME', 'enUS')
         self.enum_name = enum_name(self.name)
         self.id = self.e.attrib["CardID"]
         self.tribe = self.get_tribe()
@@ -105,22 +105,17 @@ class Entity:
 
 
 class CustomEntity(Entity):
-    def __init__(self, name):
-        self.name = name
-        self.enum_name = enum_name(self.name)
+    def __init__(self):
         self.custom = True
 
 class NoneEntity(Entity):
     def __init__(self):
         self.name = "(none)"
         self.tier = 0
-        self.custom = False
 
-    def get_int(self, x):
-        return 0
-
-# Some tokens useless
+# Some tokens useless, it doesn't have tag TECH_LEVEL
 extra_names = ["Safeguard", "Plant"]
+
 
 def extract_data():
     # Load xml file
@@ -171,7 +166,9 @@ def add_default_minions(minions):
 # Add a custom minion
 def add_custom_minions(minions):
     # Shielded Minibot is removed in patch 16.4
-    minion = CustomEntity("Shielded Minibot")
+    minion = CustomEntity()
+    minion.name = "Shielded Minibot"
+    minion.enum_name = enum_name("Shielded Minibot")
     minion.tribe = "Mech"
     minion.tier = 2
     minion.attack = 2
@@ -192,10 +189,10 @@ def format_minion_data(name, id, gold_id, tier, tribe, attack, health,
 # enums.h
 # ------------------------------------------------------------------------------
 def sort_minions(minions):
-    return sorted(minions.values(), key = lambda x: (x[0].token, x[0].tier, x[0].name))
+    return sorted(minions.values(), key = lambda x: (x[0].token, x[0].tier, x[0].enum_name))
 
 def sort_heroes(heroes):
-    return sorted(heroes, key=lambda x: x.name)
+    return sorted(heroes, key = lambda x: x.enum_name)
 
 def write_enums_h(minions, heroes):
     with open("src/utils/Enums.h", "wt", encoding = "utf-8") as f:
@@ -223,9 +220,9 @@ def write_enums_h(minions, heroes):
             e = m[0]
             if e.tier != tier:
                 if e.token:
-                    f.write("    // Tokens\n")
+                    f.write("    // Tokens of tier {}\n".format(e.tier))
                 elif e.custom:
-                    f.write("    // Custom\n")
+                    f.write("    // Custom minion\n")
                 else:
                     f.write("    // Tier {}\n".format(e.tier))
                 tier = e.tier
