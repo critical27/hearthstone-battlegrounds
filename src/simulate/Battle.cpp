@@ -65,7 +65,6 @@ void Battle::flipCoin() {
 }
 
 void Battle::prepare() {
-    // todo: hero_power
     // reset the board
     VLOG(1) << "---------------------------------------------";
     board_.clear();
@@ -78,6 +77,7 @@ void Battle::prepare() {
 BattleResult Battle::run() {
     prepare();
     flipCoin();
+    start();
 
     VLOG(1) << "Battle after " << turn_ << " turns:";
     VLOG(1) << "\n" << toPrettyString();
@@ -92,6 +92,15 @@ BattleResult Battle::run() {
     }
     VLOG(1) << "Battle end after " << turn_ << " turns.";
     return result();
+}
+
+void Battle::start() {
+    // trigger minion event on battle start
+    // doodle: check random player at first, this do affect the battle result,
+    auto random = randomOrderPlayer();
+    onBattleStart(random.first);
+    onBattleStart(random.second);
+    checkForDeath();
 }
 
 void Battle::attack() {
@@ -141,7 +150,7 @@ void Battle::singleAttack(BattleMinions& active, BattleMinions& passive, size_t 
                     << "Board " << 1 - attackPlayer_ << " minion " << defIdx << " " << defender.toSimpleString();
             doAttack(active, atkIdx, passive, defIdx);
         }
-        doDefense(attackPlayer_, attacker, atkIdx, defender);
+        doDefense(attacker, atkIdx, defender);
     } else {
         size_t defIdx = passive.minionWithLowestAttack();
         Minion& defender = passive[defIdx];
@@ -149,7 +158,7 @@ void Battle::singleAttack(BattleMinions& active, BattleMinions& passive, size_t 
                 << " **attack** "
                 << "Board " << 1 - attackPlayer_ << " minion " << defIdx << " " << defender.toSimpleString();
         doAttack(active, atkIdx, passive, defIdx);
-        doDefense(attackPlayer_, attacker, atkIdx, defender);
+        doDefense(attacker, atkIdx, defender);
     }
 }
 
@@ -157,8 +166,9 @@ void Battle::doAttack(BattleMinions& active, size_t atkIdx, BattleMinions& passi
     Minion& attacker = active[atkIdx];
     Minion& defender = passive[defIdx];
 
-    // only attacker handle kill and overkill
+    attacker.onAttack(this);
     auto result = dealDamage(1 - attackPlayer_, defender, defIdx, attacker);
+    // only attacker handle kill and overkill
     if (result.first > 0) {
         attacker.onKill(this, attackPlayer_);
     }
@@ -184,10 +194,10 @@ void Battle::doCleaveAttack(BattleMinions& active, size_t atkIdx, BattleMinions&
     }
 }
 
-void Battle::doDefense(size_t atkPlayerIdx, Minion& attacker, size_t atkIdx, Minion& defender) {
-    // only attacker handle kill and overkill
+void Battle::doDefense(Minion& attacker, size_t atkIdx, Minion& defender) {
     if (defender.attack() > 0) {
-        dealDamage(atkPlayerIdx, attacker, atkIdx, defender);
+        // only attacker handle kill and overkill, so we ignore the return value
+        dealDamage(attackPlayer_, attacker, atkIdx, defender);
     }
 }
 
@@ -212,11 +222,15 @@ std::pair<int, int> Battle::dealDamage(size_t defPlayerIdx, Minion& defender, si
         }
         defender.onDamaged(this, defPlayerIdx, defIdx);
     }
+
+    if (kill > 0) {
+        // trigger ally kill of attacker
+        onAllyKill(1 - defPlayerIdx, attacker, kill);
+    }
     return {kill, overKill};
 }
 
-void Battle::checkForDeath() {
-    int deadCount = 0;
+std::pair<size_t, size_t> Battle::randomOrderPlayer() {
     size_t first, second;
     if (!rand(0, 1)) {
         first = 0;
@@ -225,11 +239,17 @@ void Battle::checkForDeath() {
         first = 1;
         second = 0;
     }
+    return {first, second};
+}
+
+void Battle::checkForDeath() {
+    int deadCount = 0;
+    auto random = randomOrderPlayer();
     do {
         deadCount = 0;
         // doodle: check random player at first, this do affect the battle result,
-        deadCount += checkOnePlayerDeath(first);
-        deadCount += checkOnePlayerDeath(second);
+        deadCount += checkOnePlayerDeath(random.first);
+        deadCount += checkOnePlayerDeath(random.second);
     } while (deadCount);
 }
 
@@ -303,3 +323,4 @@ BattleResult Battle::result(bool tied) {
         return BattleResult(turn_);
     }
 }
+

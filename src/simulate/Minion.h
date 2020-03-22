@@ -272,9 +272,11 @@ public:
         this->healthAura_ = 0;
     }
 
+    void takeDamage(Battle* battle, size_t player, size_t pos, int amount);
+
     bool computeAuras(size_t pos, BattleMinions* you, BattleMinions* opponent);
 
-    // bool recompute_aura_from(Board& board, int pos, Board const* enemy_board = nullptr);
+    void onBattleStart(Battle* battle, size_t player);
     void onAllySummon(Battle* battle, size_t player, Minion& summoned, bool played);
     void onAllyAttack(Battle* battle, size_t player);
     void onAllyBreakDivineShield(Battle* battle, size_t player);
@@ -282,5 +284,7 @@ public:
     void onDamaged(Battle* battle, size_t player, size_t pos);
     void onKill(Battle* battle, size_t player);
     void onOverKill(Battle* battle, size_t player, size_t pos);
+    void onAttack(Battle* battle);
+    void onAllyKill(Battle* battle, size_t player, int kill);
 };
 

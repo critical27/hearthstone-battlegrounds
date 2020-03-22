@@ -1415,7 +1415,7 @@ TEST(BattleTest, NextAttackerTest) {
         std::vector<Minion> p1, p2;
         p1.emplace_back(Minion(MinionType::VulgarHomunculus));
         p1.emplace_back(Minion(MinionType::ShieldedMinibot));
-        p1.emplace_back(Minion(MinionType::RatPack));
+        p1.emplace_back(Minion(MinionType::ShieldedMinibot));
         p2.emplace_back(Minion(MinionType::ShieldedMinibot));
         p2.emplace_back(Minion(MinionType::ShieldedMinibot));
         p2.emplace_back(Minion(MinionType::ShieldedMinibot));
@@ -1425,7 +1425,7 @@ TEST(BattleTest, NextAttackerTest) {
         auto result = battle.run();
         ASSERT_EQ(0, result.stars());
         ASSERT_EQ(0, result.count());
-        ASSERT_EQ(7, result.turn());
+        ASSERT_EQ(6, result.turn());
     }
     for (int tauntIdx = 0; tauntIdx < 3; tauntIdx++) {
         // 3 ShieldedMinibot
@@ -1576,6 +1576,13 @@ TEST(BattleTest, NextAttackerTest) {
 }
 
 TEST(BattleTest, Test) {
+    // 好多啊
+    // todo: RedWhelp / GlyphGuardian / UnstableGhoul / WaxriderTogwaggle / DrakonidEnforcer
+    //       小火龙      翻倍龙          食尸鬼           蜡烛骑士             36龙
+    // HeraldOfFlame / HolyMackerel / ImpMama / NadinaTheRed
+    // 超杀龙           胖头鱼          小鬼妈妈   红衣
+
+    // 连胜龙 拉佐尔 55龙没法搞
 }
 
 int main(int argc, char** argv) {

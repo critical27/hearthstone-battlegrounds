@@ -24,6 +24,7 @@ public:
     static const std::vector<MinionType> FourCostMinions;
     static const std::vector<MinionType> DeathRattleMinions;
     static const std::vector<MinionType> LengendaryMinions;
+    static const std::vector<MinionType> DemonMinions;
     static const std::vector<HeroInfo> HeroInfos;
 
     static std::string tribeName(Tribe t) {
@@ -62,16 +63,9 @@ public:
         auto picked = rand(0, LengendaryMinions.size() - 1);
         return LengendaryMinions[picked];
     }
-};
 
-/*
-// additional MinionInfo
-constexpr bool is_aura_minion(MinionType t) {
-    return t == MinionType::DireWolfAlpha
-           || t == MinionType::MurlocWarleader
-           || t == MinionType::OldMurkEye
-           || t == MinionType::PhalanxCommander
-           || t == MinionType::Siegebreaker
-           || t == MinionType::MalGanis;
-}
-*/
+    static MinionType randomDemonMinion() {
+        auto picked = rand(0, DemonMinions.size() - 1);
+        return DemonMinions[picked];
+    }
+};

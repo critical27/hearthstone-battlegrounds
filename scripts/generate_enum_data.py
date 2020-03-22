@@ -304,6 +304,7 @@ def write_enum_data_cpp(minions, heroes):
         write_minion_list(f, minions, "FourCost", lambda e: e.get_int("COST") == 4 and not e.token)
         write_minion_list(f, minions, "DeathRattle", lambda e: e.get_int("DEATHRATTLE") and not e.token)
         write_minion_list(f, minions, "Lengendary", lambda e: e.get_int("RARITY") == 5 and not e.token)
+        write_minion_list(f, minions, "Demon", lambda e: e.tribe == "Demon" and not e.token)
 
         f.write("// -----------------------------------------------------------------------------\n")
         f.write("// Hero / hero power information\n")

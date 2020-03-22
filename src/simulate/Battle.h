@@ -72,12 +72,14 @@ public:
 private:
     void flipCoin();
     void prepare();
+    void start();
+    std::pair<size_t, size_t> randomOrderPlayer();
 
     void attack();
     void singleAttack(BattleMinions& active, BattleMinions& passive, size_t atkIdx);
     void doAttack(BattleMinions& active, size_t atkIdx, BattleMinions& passive, size_t defIdx);
     void doCleaveAttack(BattleMinions& active, size_t atkIdx, BattleMinions& passive, size_t defIdx, std::vector<size_t> adjacent);
-    void doDefense(size_t atkPlayerIdx, Minion& attacker, size_t atkIdx, Minion& defender);
+    void doDefense(Minion& attacker, size_t atkIdx, Minion& defender);
     std::pair<int, int> dealDamage(size_t defPlayerIdx, Minion& defender, size_t defIdx, Minion& attacker);
 
     void checkForDeath();
@@ -86,12 +88,19 @@ private:
     bool hasValidAttacker();
     BattleResult result(bool tied = false);
 
+    void dealDamageTo(size_t player, size_t pos, int amount);
+    void dealDamageToRandomly(size_t player, int amount);
+    bool dealDamageToLeftMost(size_t player, int amount);
+
     // Events during battle
-    void onAllySummon(size_t player, Minion &summoned, bool played = false);
+    void onBattleStart(size_t player);
+    void onAllySummon(size_t player, Minion& summoned, bool played = false);
     void onAllyAttack(size_t player);
     void onAllyBreakDivineShield(size_t player);
     void onAllyDeath(size_t player, const Minion& deadMinion);
     int onDeath(size_t player, const Minion& deadMinion, size_t idx);
+
+    void onAllyKill(size_t player, Minion& minion, int kill);
 
     // summon count minion for player before pos
     // return value is actual the summoned count

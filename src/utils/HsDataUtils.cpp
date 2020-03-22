@@ -244,6 +244,20 @@ const std::vector<MinionType> HsDataUtils::LengendaryMinions = {
     MinionType::Maexxna,
 };
 
+const std::vector<MinionType> HsDataUtils::DemonMinions = {
+    MinionType::FiendishServant,
+    MinionType::VulgarHomunculus,
+    MinionType::Imprisoner,
+    MinionType::NathrezimOverseer,
+    MinionType::ImpGangBoss,
+    MinionType::FloatingWatcher,
+    MinionType::Siegebreaker,
+    MinionType::AnnihilanBattlemaster,
+    MinionType::MalGanis,
+    MinionType::Voidlord,
+    MinionType::ImpMama,
+};
+
 // -----------------------------------------------------------------------------
 // Hero / hero power information
 // -----------------------------------------------------------------------------

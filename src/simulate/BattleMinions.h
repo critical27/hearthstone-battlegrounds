@@ -121,7 +121,7 @@ public:
 
     void giveRandomMinionDivineShield();
 
-    void takeDamageRandom(int amount);
+    void dealDamag(int amount);
 
     void buffRandomMinion(int attack, int health);
 
@@ -129,6 +129,8 @@ public:
                        MinionBoolCondition pred = [] (const Minion& minion) { return true; });
 
     int countIf(MinionBoolCondition pred);
+
+    int countTribe(Tribe tribe);
 
     void addDeadMech(Minion& minion) {
         if (deadMechs_.size() < MAX_MECHS_THAT_DIED) {

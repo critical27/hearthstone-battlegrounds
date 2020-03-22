@@ -74,8 +74,8 @@ size_t BattleMinions::minionWithLowestAttack() {
 }
 
 int BattleMinions::hasMinion(MinionType type) const {
-    // todo: need to check whether a normal and a golden could accumulate
-    // I remember BaronRivendare has been fixed in a patch, only a golden
+    // doodle: need to check whether a normal and a golden could accumulate
+    // I remember that if normal and golden both exist, only the golden one will affect
     int result = 0;
     std::for_each(battleMinions_.begin(), battleMinions_.end(),
                   [type, &result] (const Minion& minion) {
@@ -112,15 +112,6 @@ void BattleMinions::giveRandomMinionDivineShield() {
     }
 }
 
-void BattleMinions::takeDamageRandom(int amount) {
-    auto indexResult = livingMinions();
-    if (!indexResult.empty()) {
-        auto picked = rand(0, indexResult.size() - 1);
-        int current = battleMinions_[picked].health();
-        battleMinions_[picked].setHealth(current - amount);
-    }
-}
-
 void BattleMinions::buffRandomMinion(int attack, int health) {
     auto indexResult = livingMinions();
     if (!indexResult.empty()) {
@@ -145,6 +136,10 @@ int BattleMinions::countIf(MinionBoolCondition pred) {
         }
     }
     return result;
+}
+
+int BattleMinions::countTribe(Tribe tribe) {
+    return countIf([] (const Minion& m) { return m.isTribe(Tribe::Dragon); });
 }
 
 // Duplication effects

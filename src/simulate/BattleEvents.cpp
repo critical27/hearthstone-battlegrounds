@@ -2,18 +2,24 @@
 
 #define TWICE_IF_GOLDEN for (int count = 0; count < (deadMinion.isGolden() ? 2 : 1); ++count)
 
+void Battle::onBattleStart(size_t player) {
+    board_[player].forEachMinion([player, this] (Minion& m) {
+        m.onBattleStart(this, player);
+    });
+}
+
 int Battle::onDeath(size_t player, const Minion& deadMinion, size_t idx) {
     int result = 0;
-    // reborn
-    if (deadMinion.isReborn()) {
-        result += summon(1, deadMinion.rebornCopy(), player, idx);
-    }
-    // deathrattle
+    // 1. deathrattle
     int count = board_[player].extraDeathrattleCount();
     for (int i = 0; i < count; i++) {
         result += deathRattle(player, deadMinion, idx);
     }
-    // onAllyDeath
+    // 2. reborn
+    if (deadMinion.isReborn()) {
+        result += summon(1, deadMinion.rebornCopy(), player, idx);
+    }
+    // 3. onAllyDeath
     onAllyDeath(player, deadMinion);
     return result;
 }
@@ -42,7 +48,7 @@ int Battle::deathRattle(size_t player, const Minion& deadMinion, size_t idx) {
             break;
         case MinionType::KaboomBot:
             TWICE_IF_GOLDEN {
-                board_[1 - player].takeDamageRandom(4);
+                dealDamageToRandomly(1 - player, 4);
             }
             break;
         case MinionType::KindlyGrandmother:
@@ -60,6 +66,15 @@ int Battle::deathRattle(size_t player, const Minion& deadMinion, size_t idx) {
             int amount = deadMinion.doubleIfGolden(1);
             board_[player].forEachMinion([amount] (Minion& m) { m.buff(amount, amount); });
             break;
+        }
+        case MinionType::UnstableGhoul: {
+            int amount = deadMinion.doubleIfGolden(1);
+            for (size_t player = 0; player <= 1; player++) {
+                for (size_t pos = 0; pos < board_[player].size(); pos++) {
+                    // todo: do we need to judge isAlive?
+                    dealDamageTo(player, pos, amount);
+                }
+            }
         }
         // Tier 3
         case MinionType::InfestedWolf:
@@ -93,6 +108,9 @@ int Battle::deathRattle(size_t player, const Minion& deadMinion, size_t idx) {
         case MinionType::MechanoEgg:
             result += summon(1, Minion(MinionType::Robosaur, deadMinion.isGolden()), player, idx);
             break;
+        case MinionType::SavannahHighmane:
+            result += summon(2, Minion(MinionType::Hyena, deadMinion.isGolden()), player, idx);
+            break;
         // Tier 5
         case MinionType::GoldrinnTheGreatWolf: {
             int amount = deadMinion.doubleIfGolden(4);
@@ -109,11 +127,13 @@ int Battle::deathRattle(size_t player, const Minion& deadMinion, size_t idx) {
         case MinionType::SatedThreshadon:
             result += summon(3, Minion(MinionType::MurlocScout, deadMinion.isGolden()), player, idx);
             break;
-        case MinionType::SavannahHighmane:
-            result += summon(2, Minion(MinionType::Hyena, deadMinion.isGolden()), player, idx);
-            break;
         case MinionType::Voidlord:
             result += summon(3, Minion(MinionType::Voidwalker, deadMinion.isGolden()), player, idx);
+            break;
+        case MinionType::SneedsOldShredder:
+            TWICE_IF_GOLDEN {
+                result += summon(1, Minion(HsDataUtils::randomLegendaryMinion()), player, idx);
+            }
             break;
         // Tier 6
         case MinionType::Ghastcoiler:
@@ -131,10 +151,9 @@ int Battle::deathRattle(size_t player, const Minion& deadMinion, size_t idx) {
             }
             break;
         }
-        case MinionType::SneedsOldShredder:
-            TWICE_IF_GOLDEN {
-                result += summon(1, Minion(HsDataUtils::randomLegendaryMinion()), player, idx);
-            }
+        case MinionType::NadinaTheRed:
+            board_[player].forEachMinion([] (Minion& m) { m.setDivineShield(true); },
+                                         [] (const Minion& m) -> bool { return m.isTribe(Tribe::Dragon); });
             break;
         default:
             break;
@@ -202,4 +221,36 @@ void Battle::onAllyDeath(size_t player, const Minion& deadMinion) {
     board_[player].forEachMinion([&] (Minion& m) {
         m.onAllyDeath(this, player, deadMinion);
     });
+}
+
+void Battle::onAllyKill(size_t player, Minion& minion, int kill) {
+    // this only works for WaxriderTogwaggle, so we judge whether attacker is dragon
+    if (minion.isTribe(Tribe::Dragon)) {
+        board_[player].forEachMinion([player, kill, this] (Minion& m) {
+            m.onAllyKill(this, player, kill);
+        });
+    }
+}
+
+void Battle::dealDamageTo(size_t player, size_t pos, int amount) {
+    board_[player][pos].takeDamage(this, player, pos, amount);
+}
+
+void Battle::dealDamageToRandomly(size_t player, int amount) {
+    auto living = board_[player].livingMinions();
+    if (!living.empty()) {
+        auto picked = rand(0, living.size() - 1);
+        dealDamageTo(player, picked, amount);
+    }
+}
+
+// return true for overKill
+bool Battle::dealDamageToLeftMost(size_t player, int amount) {
+    for (size_t pos = 0; pos < board_[player].size(); pos++) {
+        if (board_[player][pos].isAlive()) {
+            dealDamageTo(player, pos, amount);
+            return board_[player][pos].health() < 0;
+        }
+    }
+    return false;
 }

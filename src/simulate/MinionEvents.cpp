@@ -2,6 +2,20 @@
 
 #define TWICE_IF_GOLDEN for (int i = 0; i < (deadMinion.isGolden() ? 2 : 1); ++i)
 
+void Minion::onBattleStart(Battle* battle, size_t player) {
+    CHECK_NOTNULL(battle);
+    if (!isAlive()) {
+        return;
+    }
+    switch (minionType_) {
+        case MinionType::RedWhelp:
+            battle->dealDamageToRandomly(1 - player, battle->player(player).countTribe(Tribe::Dragon));
+            break;
+        default:
+            break;
+    }
+}
+
 void Minion::onAllySummon(Battle* battle, size_t player, Minion& summoned, bool played) {
     CHECK_NOTNULL(battle);
     if (!isAlive()) {
@@ -75,6 +89,12 @@ void Minion::onAllyBreakDivineShield(Battle* battle, size_t player) {
         case MinionType::BolvarFireblood:
             buff(doubleIfGolden(2), 0);
             break;
+        case MinionType::DrakonidEnforcer:
+            buff(doubleIfGolden(2), doubleIfGolden(2));
+            break;
+        case MinionType::HolyMackerel:
+            setDivineShield(true);
+            break;
         default:
             break;
     }
@@ -94,7 +114,7 @@ void Minion::onAllyDeath(Battle *battle, size_t player, const Minion& deadMinion
         case MinionType::SoulJuggler:
             if (deadMinion.isTribe(Tribe::Demon)) {
                 TWICE_IF_GOLDEN {
-                    battle->player(1 - player).takeDamageRandom(3);
+                    battle->dealDamageToRandomly(1 - player, 3);
                 }
             }
             break;
@@ -120,6 +140,13 @@ void Minion::onDamaged(Battle* battle, size_t player, size_t pos) {
         case MinionType::SecurityRover:
             battle->summon(1, Minion(MinionType::GuardBot, golden_), player, pos + 1);
             break;
+        case MinionType::ImpMama: {
+            auto type = HsDataUtils::randomDeathRattleMinion();
+            auto minion = Minion(type, golden_);
+            minion.setTaunt(true);
+            battle->summon(1, minion, player, pos + 1);
+            break;
+        }
         default:
             break;
     }
@@ -146,9 +173,41 @@ void Minion::onOverKill(Battle* battle, size_t player, size_t pos) {
             // forward iter so that new minion is the next attacker
             battle->summon(1, Minion(MinionType::IronhideRunt, golden_), player, pos + 1);
             break;
+        case MinionType::HeraldOfFlame:
+            while (battle->dealDamageToLeftMost(1 - player, doubleIfGolden(3))) {
+                battle->onAllyKill(player, *this, 1);
+            }
+            break;
         default:
             break;
     }
+}
+
+void Minion::onAttack(Battle* battle) {
+    CHECK_NOTNULL(battle);
+    switch (minionType_) {
+        case MinionType::GlyphGuardian:
+            attack_ *= 2;
+            break;
+        default:
+            break;
+    }
+}
+
+void Minion::onAllyKill(Battle* battle, size_t player, int kill) {
+    CHECK_NOTNULL(battle);
+    switch (minionType_) {
+        case MinionType::WaxriderTogwaggle:
+            buff(kill * doubleIfGolden(2), kill * doubleIfGolden(2));
+            break;
+        default:
+            break;
+    }
+}
+
+void Minion::takeDamage(Battle* battle, size_t player, size_t pos, int amount) {
+    health_ -= amount;
+    onDamaged(battle, player, pos);
 }
 
 bool Minion::computeAuras(size_t pos, BattleMinions* you, BattleMinions* opponent) {
@@ -162,8 +221,8 @@ bool Minion::computeAuras(size_t pos, BattleMinions* you, BattleMinions* opponen
         case MinionType::OldMurkEye: {
             // count murlocs for both players, exclude itself
             int count = -1;
-            count += you->countIf([] (const Minion& m) { return m.isTribe(Tribe::Murloc); });
-            count += opponent->countIf([] (const Minion& m) { return m.isTribe(Tribe::Murloc); });
+            count += you->countTribe(Tribe::Murloc);
+            count += opponent->countTribe(Tribe::Murloc);
             if (count > 0) {
                 auraBuff(doubleIfGolden(count), 0);
             }
